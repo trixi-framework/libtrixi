@@ -27,7 +27,7 @@ execute_process(
     RESULT_VARIABLE RESULT
 )
 if( NOT RESULT EQUAL 0 )
-    message( WARNING "Could not determine julia's home directory" )
+    message( WARNING "Could not determine julia's bin directory" )
 endif()
 
 execute_process(
@@ -52,7 +52,7 @@ execute_process(
 
 execute_process(
     COMMAND ${JULIA_SHARE}/julia-config.jl --ldflags
-    OUTPUT_VARIABLE JULIA_LDLAGS
+    OUTPUT_VARIABLE JULIA_LDFLAGS
     RESULT_VARIABLE RESULT
 )
 
