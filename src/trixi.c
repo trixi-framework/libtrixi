@@ -2,7 +2,7 @@
 #include <julia.h>
 #include <mpi.h>
 
-#include "libtrixi.h"
+#include "trixi.h"
 
 
 
