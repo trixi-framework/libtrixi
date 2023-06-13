@@ -15,17 +15,22 @@ static jl_value_t* checked_eval_string(const char* code, const char* func, const
 
 void trixi_initialize(MPI_Fint* comm) {
 
+    // Convert Fortran communicator type to C
+    MPI_Comm comm_c = MPI_Comm_f2c(*comm);
+
     // Init Julia
     jl_init();
 
-    // Activate current project
-    checked_eval_string("using Pkg; Pkg.activate(\".\"); Pkg.status()", LOC);
+    // @todo
+    // Activate julia environment
+    // checked_eval_string("using Pkg; Pkg.activate(\".\"); Pkg.status()", LOC);
 
     // Test Julia
-    checked_eval_string("println(\"Hi, I'm julia!\")", LOC);
+    checked_eval_string("println(\"libtrixi: Hi, I'm julia!\")", LOC);
 
+    // @todo
     // Load Trixi
-    checked_eval_string("using Trixi; trixi_include(default_example())", LOC);
+    // checked_eval_string("using Trixi; trixi_include(default_example())", LOC);
 }
 
 
@@ -43,6 +48,12 @@ double trixi_get_timestep() {
 
 void trixi_integrate() {
 
+}
+
+
+void julia_eval_repl(const char * code) {
+
+    checked_eval_string(code, LOC);
 };
 
 
