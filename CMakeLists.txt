@@ -25,6 +25,8 @@ include_directories( ${JULIA_INCLUDE_DIRS} )
 # Find MPI
 find_package( MPI REQUIRED )
 
+include_directories( ${MPI_C_INCLUDE_DIRS} )
+
 
 
 # Library target
