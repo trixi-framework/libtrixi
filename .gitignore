@@ -1,1 +1,12 @@
 build
+
+# Ignore CMake files for bad users who do in-source builds
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+
+# Further ignore build products
+libtrixi.mod
+libtrixi.so*
+fortran_hello_world
