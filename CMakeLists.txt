@@ -4,8 +4,26 @@ cmake_minimum_required ( VERSION 3.0 )
 # Specify the project info.
 project ( trixi VERSION 0.1.0 DESCRIPTION "Interface library for using Trixi.jl from C/C++/Fortran" )
 
-# Enable fortran
-enable_language(Fortran)
+# Enable C and Fortran
+enable_language(C Fortran)
+
+# Enabling setting rpath for installation
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+
+
+# Additional cmake modules
+list ( APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/" )
+
+# Find Julia
+find_package( Julia REQUIRED )
+
+include_directories( ${JULIA_INCLUDE_DIRS} )
+
+
+
+# Find MPI
+find_package( MPI REQUIRED )
 
 
 
@@ -28,20 +46,8 @@ set_target_properties ( ${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION_M
 # Include directories, public for actual users
 set_target_properties ( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER src/trixi.h )
 
-
-
-# Additional cmake modules
-list ( APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/" )
-
-# Find Julia
-find_package( Julia REQUIRED )
-
-include_directories( ${JULIA_INCLUDE_DIRS} )
-
-
-
-# Find MPI
-find_package( MPI REQUIRED )
+# Fortran mod file location
+set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR})
 
 
 
@@ -50,4 +56,6 @@ add_subdirectory( examples )
 
 
 
-target_include_directories(fortran_hello_world PRIVATE ${MPI_Fortran_INCLUDE_DIRS})
+# Install configuration
+install( TARGETS ${PROJECT_NAME} )
+install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/libtrixi.mod TYPE LIB)
