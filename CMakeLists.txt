@@ -13,6 +13,7 @@ enable_language(Fortran)
 add_library ( ${PROJECT_NAME} SHARED
     src/trixi.c
     src/trixi.h
+    src/trixi.f90
 )
 
 # Include directories, private
