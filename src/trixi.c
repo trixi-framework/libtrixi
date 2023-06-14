@@ -36,6 +36,8 @@ void trixi_initialize(MPI_Fint* comm) {
 
 void trixi_finalize() {
 
+    printf("libtrixi: finalize\n");
+
     jl_atexit_hook(0);
 }
 
@@ -48,10 +50,11 @@ double trixi_get_timestep() {
 
 void trixi_integrate() {
 
+    printf("libtrixi: *tick*\n");
 }
 
 
-void julia_eval_repl(const char * code) {
+void julia_eval_string(const char * code) {
 
     checked_eval_string(code, LOC);
 };

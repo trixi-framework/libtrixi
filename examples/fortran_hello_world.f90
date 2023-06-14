@@ -16,7 +16,10 @@ program fortran_hello_world
   call trixi_initialize(MPI_COMM_WORLD)
 
   ! Say hello to julia
-  call julia_eval_repl('println("fortran:  Hello julia!")')
+  call julia_eval_string('println("fortran:  Hello julia!")')
+
+  ! Do a timestep
+  call trixi_integrate()
 
   ! Finalize Trixi and Julia
   call trixi_finalize()
