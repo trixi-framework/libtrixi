@@ -62,3 +62,14 @@ For building, `cmake` and its typical workflow is used.
 ### Testing
 
 Check out the `fortran_hello_world` example.
+
+## Authors
+Libtrixi was initiated by
+[Benedict Geihe](https://www.mi.uni-koeln.de/NumSim/)
+(University of Cologne, Germany) and
+[Michael Schlottke-Lakemper](https://lakemper.eu)
+(RWTH Aachen University/High-Performance Computing Center Stuttgart (HLRS), Germany), who
+are also its principal maintainers.
+
+## License
+Libtrixi is licensed under the MIT license (see [LICENSE.md](LICENSE.md)).
