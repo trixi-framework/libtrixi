@@ -44,11 +44,9 @@ find_package( MPI REQUIRED )
 
 
 
-# Build examples
-add_executable(fortran_hello_world src/examples/fortran_hello_world.f90)
+# Add examples
+add_subdirectory( examples )
 
-target_link_directories(fortran_hello_world PRIVATE ${CMAKE_BINARY_DIR})
 
-target_link_libraries(fortran_hello_world PRIVATE ${MPI_Fortran_LIBRARIES} ${JULIA_LIBRARY} ${PROJECT_NAME})
 
 target_include_directories(fortran_hello_world PRIVATE ${MPI_Fortran_INCLUDE_DIRS})
