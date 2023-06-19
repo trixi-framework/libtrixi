@@ -54,13 +54,11 @@ function trixi_initialize(libelixir::String)
     # Call `trixi_initialize` above with a raw pointer to the bytes array, which needs to be
     # protected from garbage collection
     GC.@preserve bytes begin
-        simstate_handle = trixi_initialize(pointer(bytes))
+        simstate_handle = trixi_initialize(Cstring(pointer(bytes)))
     end
 
     return simstate_handle
 end
-
-function
 
 """
     trixi_finalize(simstate_handle::Cint)::Cvoid

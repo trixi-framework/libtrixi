@@ -56,10 +56,11 @@ function trixi_step_jl(simstate)
     elseif t[] + dt[] > finaltime[]
         dt[] = finaltime[] - t[]
         t[] += dt[]
-        println("Current time2: ", t[])
+        println("Current time: ", t[])
+        println("Final time reached")
     else
         t[] += dt[]
-        println("Current time3: ", t[])
+        println("Current time: ", t[])
     end
 
     return nothing
