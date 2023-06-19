@@ -6,6 +6,8 @@ function trixi_initialize_jl(filename)
     # Note: we need `invokelatest` here since the function is dynamically upon `include`
     simstate = invokelatest(Main.init_simstate)
 
+    println("Simulation state initialized")
+
     return simstate
 end
 
@@ -15,6 +17,8 @@ function trixi_finalize_jl(simstate)
     # Resize arrays to zero length
     resize!(u0, 0)
     resize!(u, 0)
+
+    println("Simulation state finalized")
 
     return nothing
 end
