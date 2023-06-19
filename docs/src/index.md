@@ -75,15 +75,13 @@ Libtrixi was initiated by
 are also its principal maintainers.
 
 ## License
-Libtrixi is licensed under the MIT license (see [LICENSE.md](LICENSE.md)).
+Libtrixi is licensed under the MIT license (see [License](@ref)).
 
 ## Acknowledgments
-<p align="center">
-  <!-- DFG -->
-  <img align="middle" src="https://user-images.githubusercontent.com/3637659/231429826-31fd7e78-19b4-4bac-8d4c-d292c6570d93.jpg" height="200" />
-  <!-- BMBF -->
-  <img align="middle" src="https://user-images.githubusercontent.com/3637659/231436391-b28a76a4-f027-40f9-bd28-14e3a2f3e16a.png" height="200" />
-</p>
+<!-- DFG -->
+![funding-logo-dfg](https://user-images.githubusercontent.com/3637659/231429826-31fd7e78-19b4-4bac-8d4c-d292c6570d93.jpg)
+<!-- BMBF -->
+![funding-logo-bmbf](https://user-images.githubusercontent.com/3637659/231436391-b28a76a4-f027-40f9-bd28-14e3a2f3e16a.png)
 
 This project has benefited from funding by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation)
 through the research unit FOR 5409 "Structure-Preserving Numerical Methods for Bulk- and

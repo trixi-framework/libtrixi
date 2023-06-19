@@ -10,3 +10,6 @@ cmake_install.cmake
 libtrixi.mod
 libtrixi.so*
 fortran_hello_world
+
+# Documenter
+docs/build
