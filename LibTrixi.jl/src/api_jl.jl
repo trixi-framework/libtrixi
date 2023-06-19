@@ -13,7 +13,7 @@ function trixi_initialize_jl()
     return simstate
 end
 
-function  trixi_finalize_jl(simstate)
+function trixi_finalize_jl(simstate)
     (; u0, u) = simstate.integrator
     resize!(u0, 0)
     resize!(u, 0)

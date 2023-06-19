@@ -72,4 +72,3 @@ Base.@ccallable function trixi_step(simstate_handle::Cint)::Cvoid
     return nothing
 end
 trixi_step_cfptr() = @cfunction(trixi_step, Cvoid, (Cint,))
-
