@@ -26,8 +26,8 @@ function store_simstate(simstate)
 
     simstate_counter[] += 1
     handle = simstate_counter[]
-    if handle in simstates
-        error("simstate handle already exists - this should not have happened...")
+    if in(handle, keys(simstates))
+        error("simstate handle already exists - this should be possible...")
     end
 
     simstates[handle] = simstate
