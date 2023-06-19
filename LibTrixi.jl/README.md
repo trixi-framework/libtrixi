@@ -1,10 +1,10 @@
 # LibTrixi.jl
 
 This package contains the Julia part of
-[Libtrixi](https://github.com/trixi-framework/libtrixi), the interface library for using
+[libtrixi](https://github.com/trixi-framework/libtrixi), the interface library for using
 [Trixi.jl](https://github.com/trixi-framework/Trixi.jl) from C/C++/Fortran.
 It provides the necessary Julia functionality to allow controlling Trixi.jl from the C
-library Libtrixi.
+library libtrixi.
 
 ## Authors
 For author information, see the
