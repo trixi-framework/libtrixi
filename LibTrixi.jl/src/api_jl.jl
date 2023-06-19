@@ -1,17 +1,10 @@
-function trixi_initialize_jl()
-    # Create simulation state
-    semi = (; mesh = "mesh", equations = "equations", solver = "solver", cache = Float64[])
-    integrator = (; t = Ref(0.0), finaltime = Ref(1.0), dt = Ref(0.0), u0 = Float64[],
-                  u = Float64[])
-    simstate = SimulationState(semi, integrator)
+function trixi_initialize_jl(filename)
+    # Load elixir with simulation setup
+    Base.include(Main, filename)
 
-    # Set up some dummy values
-    (; dt, u0, u) = simstate.integrator
-    dt[] = 0.3
-    resize!(u0, 5)
-    u0 .= 1
-    resize!(u, 5)
-    u .= u0
+    # Initialize simulation state
+    # Note: we need `invokelatest` here since the function is dynamically upon `include`
+    simstate = invokelatest(Main.init_simstate)
 
     return simstate
 end
@@ -58,12 +51,15 @@ function trixi_step_jl(simstate)
     # Update time such that we hit `finaltime` exactly
     if isapprox(t[] + dt[], finaltime[])
         t[] = finaltime[]
+        println("Current time: ", t[])
         println("Final time reached")
     elseif t[] + dt[] > finaltime[]
         dt[] = finaltime[] - t[]
+        t[] += dt[]
+        println("Current time2: ", t[])
     else
         t[] += dt[]
-        println("Current time: ", t[])
+        println("Current time3: ", t[])
     end
 
     return nothing

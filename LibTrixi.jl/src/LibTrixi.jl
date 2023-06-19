@@ -16,7 +16,7 @@ export trixi_step,
        trixi_step_cfptr,
        trixi_step_jl
 
-export store_simstate, load_simstate, delete_simstate!
+export SimulationState, store_simstate, load_simstate, delete_simstate!
 
 include("simulationstate.jl")
 include("api_c.jl")
