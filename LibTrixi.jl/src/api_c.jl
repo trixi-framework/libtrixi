@@ -3,7 +3,7 @@
     trixi_initialize(libelixir::AbstractString)::Cint
 
 Initialize a new simulation based on the file `libelixir`and return a handle to the
-corresponding [`simulationstate`](@ref) as a `Cint` (i.e, a plain C `int`).
+corresponding [`SimulationState`](@ref) as a `Cint` (i.e, a plain C `int`).
 
 The libelixir has a similar purpose as a regular "elixir" in Trixi.jl, as it completely
 defines a simulation setup in Julia code. A key difference (and thus the name libelixir) is

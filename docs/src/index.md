@@ -74,7 +74,7 @@ Libtrixi was initiated by
 (RWTH Aachen University/High-Performance Computing Center Stuttgart (HLRS), Germany), who
 are also its principal maintainers.
 
-## License
+## [License](@id readme-license)
 Libtrixi is licensed under the MIT license (see [License](@ref)).
 
 ## Acknowledgments
