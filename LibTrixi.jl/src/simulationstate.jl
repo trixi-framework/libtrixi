@@ -10,7 +10,7 @@ end
 #
 # Opaque handle type that can be passed to and stored in the C program
 const SimulationStateHandle = Cint
-# Variable that internally holds different simulation states such that they are garbage
+# Variable that internally holds different simulation states such that they are not garbage
 # collected prematurely
 const simstates = Dict{SimulationStateHandle, SimulationState}()
 # Number of simulation states already created
@@ -27,7 +27,7 @@ function store_simstate(simstate)
     simstate_counter[] += 1
     handle = simstate_counter[]
     if in(handle, keys(simstates))
-        error("simstate handle already exists - this should be possible...")
+        error("simstate handle already exists - this should not be possible...")
     end
 
     simstates[handle] = simstate

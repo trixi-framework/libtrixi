@@ -83,7 +83,7 @@ end
 trixi_finalize_cfptr() = @cfunction(trixi_finalize, Cvoid, (Ptr{Cvoid},))
 
 """
-    trixi_calculate_dt(simstate_handle::Cint))::Cdouble
+    trixi_calculate_dt(simstate_handle::Cint)::Cdouble
 
 Compute, store, and return the time step size for the next time integration step.
 """
