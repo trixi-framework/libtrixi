@@ -18,7 +18,7 @@ int main ( int argc, char *argv[] ) {
     printf("Current time step length: %f\n", trixi_calculate_dt(handle));
 
     // Main loop
-    while ( trixi_is_finished( handle ) == 0 ) {
+    while ( !trixi_is_finished( handle ) ) {
 
         trixi_step( handle );
     }
