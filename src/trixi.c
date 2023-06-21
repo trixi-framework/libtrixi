@@ -42,19 +42,19 @@ void trixi_initialize(const char * project_directory) {
 }
 
 
-/** Setup Trixi simulation
+/** Set up Trixi simulation
  *
- *  \param[in]  elixir  path to file containing Trixi setup
+ *  \param[in]  libelixir  path to file containing Trixi setup
  *
  *  \return handle (integer) to Trixi simulation instance
  */
-int trixi_setup_simulation(const char * elixir) {
+int trixi_initialize_simulation(const char * libelixir) {
 
     // Get function pointer
-    int (*trixi_setup_simulation_c)(const char *) = jl_unbox_voidpointer( checked_eval_string("trixi_setup_simulation_cfptr()", LOC) ) ;
+    int (*trixi_initialize_simulation_c)(const char *) = jl_unbox_voidpointer( checked_eval_string("trixi_initialize_simulation_cfptr()", LOC) ) ;
 
     // Call function
-    return trixi_setup_simulation_c( elixir );
+    return trixi_initialize_simulation_c( libelixir );
 }
 
 
@@ -108,13 +108,21 @@ void trixi_step(int handle) {
  *
  *  \param[in] handle simulation handle to release
  */
-void trixi_finalize(int handle) {
+void trixi_finalize_simulation(int handle) {
 
     // Get function pointer
-    void (*trixi_finalize_c)(int) = jl_unbox_voidpointer( checked_eval_string("trixi_finalize_cfptr()", LOC) ) ;
+    void (*trixi_finalize_simulation_c)(int) = jl_unbox_voidpointer( checked_eval_string("trixi_finalize_simulation_cfptr()", LOC) ) ;
 
     // Call function
-    trixi_finalize_c(handle);
+    trixi_finalize_simulation_c(handle);
+}
+
+
+/** Finalize Julia runtime environment
+ *
+ *  \param[in] handle simulation handle to release
+ */
+void trixi_finalize() {
 
     printf("libtrixi: finalize\n");
 

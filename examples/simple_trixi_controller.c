@@ -17,22 +17,24 @@ int main ( int argc, char *argv[] ) {
     // Initialize Trixi
     trixi_initialize( argv[1] );
 
-    // Setup the Trixi simulation
+    // Set up the Trixi simulation
     // We get a handle to use subsequently
-    int handle = trixi_setup_simulation( argv[2] );
+    int handle = trixi_initialize_simulation( argv[2] );
 
     // Get time step length
     printf("Current time step length: %f\n", trixi_calculate_dt(handle));
 
     // Main loop
-    while ( trixi_is_finished( handle ) == 0 ) {
+    while ( !trixi_is_finished( handle ) ) {
 
         trixi_step( handle );
     }
 
-    // Finalize Trixi
-    trixi_finalize( handle );
+    // Finalize Trixi simulation
+    trixi_finalize_simulation( handle );
 
+    // Finalize Trixi
+    trixi_finalize();
 
     return 0;
 }

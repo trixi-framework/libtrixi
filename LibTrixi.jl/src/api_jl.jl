@@ -1,4 +1,4 @@
-function trixi_setup_simulation_jl(filename)
+function trixi_initialize_simulation_jl(filename)
     # Load elixir with simulation setup
     Base.include(Main, filename)
 
@@ -11,7 +11,7 @@ function trixi_setup_simulation_jl(filename)
     return simstate
 end
 
-function trixi_finalize_jl(simstate)
+function trixi_finalize_simulation_jl(simstate)
     (; u0, u) = simstate.integrator
 
     # Resize arrays to zero length
