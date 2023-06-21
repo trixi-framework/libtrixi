@@ -13,45 +13,103 @@ static jl_value_t* checked_eval_string(const char* code, const char* func, const
 
 
 
-void trixi_initialize(MPI_Fint* comm) {
-
-    // Convert Fortran communicator type to C
-    MPI_Comm comm_c = MPI_Comm_f2c(*comm);
+/** Initialize Julia runtime environment
+ *
+ *  \todo Path is still hard-coded
+ */
+void trixi_initialize() {
 
     // Init Julia
     jl_init();
 
-    // @todo
     // Activate julia environment
-    // checked_eval_string("using Pkg; Pkg.activate(\".\"); Pkg.status()", LOC);
+    checked_eval_string("using Pkg; Pkg.activate(\"../../LibTrixi.jl\"); Pkg.status()", LOC);
 
-    // Test Julia
-    checked_eval_string("println(\"libtrixi: Hi, I'm julia!\")", LOC);
-
-    // @todo
-    // Load Trixi
-    // checked_eval_string("using Trixi; trixi_include(default_example())", LOC);
+    // Load LibTrixi module
+    checked_eval_string("using LibTrixi;", LOC);
+    checked_eval_string("println(\"Module LibTrixi.jl loaded\")", LOC);
 }
 
 
-void trixi_finalize() {
+/** Setup Trixi simulation
+ *
+ *  \param[in]  elixir  path to file containing Trixi setup
+ *
+ *  \return handle (integer) to Trixi simulation instance
+ */
+int trixi_setup_simulation(const char * elixir) {
+
+    // Get function pointer
+    int (*trixi_setup_simulation_c)(const char *) = jl_unbox_voidpointer( checked_eval_string("trixi_setup_simulation_cfptr()", LOC) ) ;
+
+    // Call function
+    return trixi_setup_simulation_c( elixir );
+}
+
+
+/** Get time step length of Trixi simulation
+ *
+ *  \param[in] handle simulation handle to release
+ *
+ *  \return Time step length
+ */
+double trixi_calculate_dt(int handle) {
+
+    // Get function pointer
+    double (*trixi_calculate_dt_c)(int) = jl_unbox_voidpointer( checked_eval_string("trixi_calculate_dt_cfptr()", LOC) ) ;
+
+    // Call function
+    return trixi_calculate_dt_c( handle );
+}
+
+
+/** Check if Trixi simulation is finished
+ *
+ *  \param[in] handle simulation handle
+ *
+ *  \return 1 if finished, 0 if not
+ */
+int trixi_is_finished(int handle) {
+
+    // Get function pointer
+    int (*trixi_is_finished_c)(int) = jl_unbox_voidpointer( checked_eval_string("trixi_is_finished_cfptr()", LOC) ) ;
+
+    // Call function
+    return trixi_is_finished_c( handle );
+}
+
+
+/** Perform one step in Trixi simulation
+ *
+ *  \param[in] handle simulation handle
+ */
+void trixi_step(int handle) {
+
+    // Get function pointer
+    int (*trixi_step_c)(int) = jl_unbox_voidpointer( checked_eval_string("trixi_step_cfptr()", LOC) ) ;
+
+    // Call function
+    trixi_step_c( handle );
+}
+
+
+/** Finalize Trixi simulation
+ *
+ *  \param[in] handle simulation handle to release
+ */
+void trixi_finalize(int handle) {
+
+    // Get function pointer
+    void (*trixi_finalize_c)(int) = jl_unbox_voidpointer( checked_eval_string("trixi_finalize_cfptr()", LOC) ) ;
+
+    // Call function
+    trixi_finalize_c(handle);
 
     printf("libtrixi: finalize\n");
 
     jl_atexit_hook(0);
 }
 
-
-double trixi_get_timestep() {
-
-    return 1.0;
-}
-
-
-void trixi_integrate() {
-
-    printf("libtrixi: *tick*\n");
-}
 
 
 void julia_eval_string(const char * code) {

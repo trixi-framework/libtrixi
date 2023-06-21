@@ -19,7 +19,7 @@ program fortran_hello_world
   call julia_eval_string('println("fortran:  Hello julia!")')
 
   ! Do a timestep
-  call trixi_integrate()
+  call trixi_step()
 
   ! Finalize Trixi and Julia
   call trixi_finalize()

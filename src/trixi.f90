@@ -10,7 +10,7 @@ module LibTrixi
     subroutine trixi_finalize() bind(c)
     end subroutine
 
-    subroutine trixi_integrate() bind(c)
+    subroutine trixi_step() bind(c)
     end subroutine
 
     subroutine julia_eval_string(code) bind(c)

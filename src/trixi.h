@@ -1,12 +1,13 @@
 #ifndef TRIXI_H_
 #define TRIXI_H_
 
-#include <mpi.h> // required for MPI
+void trixi_initialize();
+int trixi_setup_simulation(const char * elixir);
+double trixi_calculate_dt(int handle);
+int trixi_is_finished(int handle);
+void trixi_step(int handle);
+void trixi_finalize(int handle);
 
-void trixi_initialize(MPI_Fint* comm);
-void trixi_finalize();
-double trixi_get_timestep();
-void trixi_integrate();
 void julia_eval_string(const char * code);
 
 #endif // ifndef LIBTRIXI_H_

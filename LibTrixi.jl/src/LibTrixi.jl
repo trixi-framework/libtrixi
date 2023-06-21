@@ -1,8 +1,8 @@
 module LibTrixi
 
-export trixi_initialize,
-       trixi_initialize_cfptr,
-       trixi_initialize_jl
+export trixi_setup_simulation,
+       trixi_setup_simulation_cfptr,
+       trixi_setup_simulation_jl
 export trixi_finalize,
        trixi_finalize_cfptr,
        trixi_finalize_jl

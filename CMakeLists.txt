@@ -18,14 +18,10 @@ list ( APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/" )
 # Find Julia
 find_package( Julia REQUIRED )
 
-include_directories( ${JULIA_INCLUDE_DIRS} )
-
 
 
 # Find MPI
 find_package( MPI REQUIRED )
-
-include_directories( ${MPI_C_INCLUDE_DIRS} )
 
 
 
@@ -50,6 +46,14 @@ set_target_properties ( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER src/trixi.h )
 
 # Fortran mod file location
 set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR})
+
+
+
+# Include directories
+target_include_directories ( ${PROJECT_NAME} PRIVATE src ${MPI_C_INCLUDE_DIRS} ${JULIA_INCLUDE_DIRS} )
+
+# Libraries to link
+target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} ${MPI_C_LIB_NAMES})
 
 
 

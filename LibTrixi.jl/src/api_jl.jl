@@ -1,4 +1,4 @@
-function trixi_initialize_jl(filename)
+function trixi_setup_simulation_jl(filename)
     # Load elixir with simulation setup
     Base.include(Main, filename)
 
