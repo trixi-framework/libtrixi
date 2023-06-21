@@ -5,7 +5,7 @@ cmake_minimum_required ( VERSION 3.0 )
 project ( trixi VERSION 0.1.0 DESCRIPTION "Interface library for using Trixi.jl from C/C++/Fortran" )
 
 # Enable C and Fortran
-enable_language(C Fortran)
+#enable_language(C Fortran)
 
 # Enabling setting rpath for installation
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -18,14 +18,10 @@ list ( APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/" )
 # Find Julia
 find_package( Julia REQUIRED )
 
-include_directories( ${JULIA_INCLUDE_DIRS} )
-
 
 
 # Find MPI
 find_package( MPI REQUIRED )
-
-include_directories( ${MPI_C_INCLUDE_DIRS} )
 
 
 
@@ -33,11 +29,7 @@ include_directories( ${MPI_C_INCLUDE_DIRS} )
 add_library ( ${PROJECT_NAME} SHARED
     src/trixi.c
     src/trixi.h
-    src/trixi.f90
 )
-
-# Include directories, private
-target_include_directories ( ${PROJECT_NAME} PRIVATE src )
 
 # Version info
 set_target_properties ( ${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION} )
@@ -48,8 +40,31 @@ set_target_properties ( ${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION_M
 # Include directories, public for actual users
 set_target_properties ( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER src/trixi.h )
 
+# Include directories, private
+target_include_directories ( ${PROJECT_NAME} PRIVATE src ${MPI_C_INCLUDE_DIRS} ${JULIA_INCLUDE_DIRS} )
+
+# Libraries to link
+#target_link_libraries( ${PROJECT_NAME} PRIVATE ${MPI_C_LIB_NAMES} -L${JULIA_LIBRARY_DIR} -ljulia)
+target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} ${MPI_C_LIB_NAMES})
+
+# Linker flags
+#set(CMAKE_LINKER_FLAGS ${CMAKE_LINKER_FLAGS} ${MPI_C_LINK_FLAGS})
+
+
+
+
 # Fortran mod file location
-set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR})
+#set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR})
+#  src/trixi.f90
+
+
+message( STATUS "MPI_C_LINK_FLAGS = ${MPI_C_LINK_FLAGS}")
+message( STATUS "MPI_C_LIBRARIES = ${MPI_C_LIBRARIES}")
+message( STATUS "MPI_C_LIB_NAMES = ${MPI_C_LIB_NAMES}")
+message( STATUS "MPI_C_COMPILE_FLAGS = ${MPI_C_COMPILE_FLAGS}")
+message( STATUS "JULIA_LIBRARY = ${JULIA_LIBRARY}")
+
+
 
 
 
