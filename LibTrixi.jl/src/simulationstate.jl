@@ -1,5 +1,9 @@
-# Struct to store a simulation state that consists of a semidiscretization plus the time
-# integrator
+"""
+    SimulationState
+
+Data structure to store a simulation state that consists of a semidiscretization
+plus the time integrator.
+"""
 mutable struct SimulationState{SemiType, IntegratorType}
     semi::SemiType
     integrator::IntegratorType
