@@ -33,7 +33,6 @@ makedocs(
         "Reference" => [
                         "LibTrixi.jl" => "reference-libtrixi-jl.md",
                        ],
-        "Known issues" => "issues.md"
         "License" => "license.md"
     ],
     strict = true # to make the GitHub action fail when doctests fail, see https://github.com/neuropsychology/Psycho.jl/issues/34
