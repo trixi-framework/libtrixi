@@ -13,13 +13,10 @@ program fortran_hello_world
   call MPI_Init(ierror)
 
   ! Initialize Julia and Trixi
-  call trixi_initialize(MPI_COMM_WORLD)
+  call trixi_initialize()
 
   ! Say hello to julia
   call julia_eval_string('println("fortran:  Hello julia!")')
-
-  ! Do a timestep
-  call trixi_step()
 
   ! Finalize Trixi and Julia
   call trixi_finalize()

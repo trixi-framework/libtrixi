@@ -1,6 +1,6 @@
 """
-    trixi_setup_simulation(libelixir::Cstring)::Cint
-    trixi_setup_simulation(libelixir::AbstractString)::Cint
+    trixi_initialize_simulation(libelixir::Cstring)::Cint
+    trixi_initialize_simulation(libelixir::AbstractString)::Cint
 
 Initialize a new simulation based on the file `libelixir`and return a handle to the
 corresponding [`SimulationState`](@ref) as a `Cint` (i.e, a plain C `int`).
@@ -9,7 +9,7 @@ The libelixir has a similar purpose as a regular "elixir" in Trixi.jl, as it com
 defines a simulation setup in Julia code. A key difference (and thus the name libelixir) is
 that instead of running a simulation directly, it should define an argument-less function
 named `init_simstate()` that returns a [`SimulationState`](@ref) with the complete
-simulation setup. `trixi_setup_simulation` will store the `SimulationState` object internally and
+simulation setup. `trixi_initialize_simulation` will store the `SimulationState` object internally and
 allow one to use it in subsequent calls to libtrixi via the handle returned from this
 function.
 
@@ -23,38 +23,38 @@ For convenience, when using LibTrixi.jl directly from Julia, one can also pass a
 
 !!! warning "Thread safety"
     **This function is not thread safe.** Since the libelixir file will be evaluated in the
-    `Main` module, calling `trixi_setup_simulation` simultaneously from different threads can lead
+    `Main` module, calling `trixi_initialize_simulation` simultaneously from different threads can lead
     to undefined behavior.
 
 """
-function trixi_setup_simulation end
+function trixi_initialize_simulation end
 
-Base.@ccallable function trixi_setup_simulation(libelixir::Cstring)::Cint
+Base.@ccallable function trixi_initialize_simulation(libelixir::Cstring)::Cint
     # Create string from Cstring
     filename = unsafe_string(libelixir)
 
     # Create new simulation state and store in global dict
-    simstate = trixi_setup_simulation_jl(filename)
+    simstate = trixi_initialize_simulation_jl(filename)
     simstate_handle = store_simstate(simstate)
 
     # Return handle for usage/storage on C side
     return simstate_handle
 end
 
-trixi_setup_simulation_cfptr() = @cfunction(trixi_setup_simulation, Cint, (Cstring,))
+trixi_initialize_simulation_cfptr() = @cfunction(trixi_initialize_simulation, Cint, (Cstring,))
 
 # Convenience function when using this directly from Julia
-function trixi_setup_simulation(libelixir::String)
+function trixi_initialize_simulation(libelixir::String)
     # Convert string to byte array
     bytes = Vector{UInt8}(libelixir)
 
     # Make it a proper, NULL-terminated C-style char array
     push!(bytes, '\0')
 
-    # Call `trixi_setup_simulation` above with a raw pointer to the bytes array, which needs to be
+    # Call `trixi_initialize_simulation` above with a raw pointer to the bytes array, which needs to be
     # protected from garbage collection
     GC.@preserve bytes begin
-        simstate_handle = trixi_setup_simulation(Cstring(pointer(bytes)))
+        simstate_handle = trixi_initialize_simulation(Cstring(pointer(bytes)))
     end
 
     return simstate_handle
@@ -65,12 +65,12 @@ end
 
 Finalize a simulation and attempt to free the underlying memory.
 """
-function trixi_finalize end
+function trixi_finalize_simulation end
 
-Base.@ccallable function trixi_finalize(simstate_handle::Cint)::Cvoid
+Base.@ccallable function trixi_finalize_simulation(simstate_handle::Cint)::Cvoid
     # Load simulation state and call finalizer
     simstate = load_simstate(simstate_handle)
-    trixi_finalize_jl(simstate)
+    trixi_finalize_simulation_jl(simstate)
 
     # Remove all references to simulation state and call garbage collection
     simstate = nothing
@@ -80,7 +80,7 @@ Base.@ccallable function trixi_finalize(simstate_handle::Cint)::Cvoid
     return nothing
 end
 
-trixi_finalize_cfptr() = @cfunction(trixi_finalize, Cvoid, (Cint,))
+trixi_finalize_simulation_cfptr() = @cfunction(trixi_finalize_simulation, Cvoid, (Cint,))
 
 """
     trixi_calculate_dt(simstate_handle::Cint)::Cdouble

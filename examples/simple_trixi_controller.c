@@ -10,9 +10,9 @@ int main ( int argc, char *argv[] ) {
     // An "elixir" file is required to configure the Trixi simulation
     const char * elixir = "../../LibTrixi.jl/examples/libelixir_demo.jl";
 
-    // Setup the Trixi simulation
+    // Set up the Trixi simulation
     // We get a handle to use subsequently
-    int handle = trixi_setup_simulation( elixir );
+    int handle = trixi_initialize_simulation( elixir );
 
     // Get time step length
     printf("Current time step length: %f\n", trixi_calculate_dt(handle));
@@ -23,9 +23,11 @@ int main ( int argc, char *argv[] ) {
         trixi_step( handle );
     }
 
-    // Finalize Trixi
-    trixi_finalize( handle );
+    // Finalize Trixi simulation
+    trixi_finalize_simulation( handle );
 
+    // Finalize Trixi
+    trixi_finalize();
 
     return 0;
 }
