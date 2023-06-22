@@ -123,13 +123,13 @@ jobs:
           ../build/examples/simple_trixi_controller . libelixir_demo.jl
           lcov --directory ../build  --capture --output-file lcov.info
       - uses: codecov/codecov-action@v3
-        if: ${{ matrix.coverage }}
+        if: ${{ matrix.test_type == 'coverage' }}
         with:
           files: ./lcov.info
           flags: unittests
           name: codecov-umbrella
       - name: Coveralls
-        if: ${{ matrix.coverage }}
+        if: ${{ matrix.test_type == 'coverage' }}
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
