@@ -1,0 +1,141 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'LICENSE.md'
+      - 'README.md'
+  pull_request:
+    paths-ignore:
+      - 'LICENSE.md'
+      - 'README.md'
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
+
+jobs:
+  test:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    name: ${{ matrix.os }} - ${{ matrix.test_type }} - ${{ github.event_name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux
+          - os: ubuntu-latest
+            arch: x64
+            shell: bash
+            test_type: regular
+            julia_version: 1.9
+          - os: ubuntu-latest
+            arch: x64
+            shell: bash
+            test_type: coverage
+            julia_version: 1.9
+          # - os: ubuntu-latest
+          #   arch: x64
+          #   shell: bash
+          #   test_type: valgrind
+          #   julia_version: 1.9
+          # macOS
+          # - os: macos-latest
+          #   arch: x64
+          #   shell: bash
+          #   test_type: regular
+          #   julia_version: 1.9
+          # Windows
+          # - os: windows-latest
+          #   arch: x64
+          #   shell: 'msys2 {0}'
+          #   test_type: regular
+          #   julia_version: 1.9
+    # Set default shell as suggested here: https://github.community/t/setting-default-shell-or-other-step-metadata-conditionally-in-workflows/154055
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - uses: msys2/setup-msys2@v2
+        if: ${{ matrix.os == 'windows-latest' }}
+        with:
+          update: true
+          install: git base-devel mingw-w64-x86_64-toolchain
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: ${{ matrix.julia_version }}
+          arch: ${{ matrix.arch }}
+      - name: Show Julia version information
+        run: julia -e 'using InteractiveUtils; versioninfo(verbose=true)'
+      - name: Install MPI
+        run: |
+          sudo apt-get install -y openmpi-bin libopenmpi-dev
+      - name: Build (regular)
+        if: ${{ matrix.test_type == 'regular' }}
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make -j 2
+      - name: Build (coverage)
+        if: ${{ matrix.test_type == 'coverage' }}
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_C_FLAGS="-cpp --coverage -O0" \
+                   -DCMAKE_Fortran_FLAGS="-cpp --coverage -O0" \
+                   -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
+                   -DCMAKE_SHARED_LINKER_FLAGS="--coverage"
+          make -j 2
+      - name: Set up Julia project directory
+        run: |
+          mkdir run
+          cd run
+          julia --project=. -e 'using Pkg; Pkg.develop(path="../LibTrixi.jl"); Pkg.instantiate()'
+          cp ../LibTrixi.jl/examples/libelixir_demo.jl .
+      - name: Install coverage tools
+        if: ${{ matrix.test_type == 'coverage' }}
+        run: |
+          sudo apt-get install -y lcov
+      - name: Run regular function tests
+        if: ${{ matrix.test_type == 'regular' }}
+        run: |
+          cd run
+          ../build/examples/simple_trixi_controller . libelixir_demo.jl
+      - name: Run memory checks with Valgrind
+        if: ${{ matrix.test_type == 'valgrind' }}
+        run: |
+          sudo apt-get install -y valgrind
+          cd run
+          valgrind --error-exitcode=1 -s ../build/examples/simple_trixi_controller . libelixir_demo.jl
+      - name: Run coverage tests
+        if: ${{ matrix.test_type == 'coverage' }}
+        run: |
+          cd run
+          lcov --directory ../build --zerocounters
+          ../build/examples/simple_trixi_controller . libelixir_demo.jl
+          lcov --directory ../build  --capture --output-file lcov.info
+      - uses: codecov/codecov-action@v3
+        if: ${{ matrix.test_type == 'coverage' }}
+        with:
+          files: ./run/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+      - name: Coveralls
+        if: ${{ matrix.test_type == 'coverage' }}
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./run/lcov.info
+      # Enable tmate debugging of manually-triggered workflows if the input option was provided
+      - name: Setup tmate session for debugging
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled && always() }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 15
