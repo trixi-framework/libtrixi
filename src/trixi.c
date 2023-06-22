@@ -57,11 +57,11 @@ void trixi_initialize( int argc, char *argv[] ) {
     jl_eval_string("using MPI");
     jl_eval_string(buffer);
     jl_eval_string("println(\"Initialized: \", MPI.Initialized())");
-    jl_eval_string("println(\"MPI_COMM_WORLD: \", MPI.COMM_WORLD)");
-    jl_eval_string("println(\"MPI_COMM_WORLD_C: \", MPI_COMM_WORLD_C)");
+    jl_eval_string("println(\"MPI_COMM_WORLD J: \", MPI.COMM_WORLD)");
+    jl_eval_string("println(\"MPI_COMM_WORLD C: \", MPI_COMM_WORLD_C)");
     //jl_eval_string("println(MPI.Init())");
-    jl_eval_string("println(\"MPI.jl: rank: \", MPI.Comm_rank(MPI_COMM_WORLD_C))");
-    jl_eval_string("println(\"MPI.jl: size: \", MPI.Comm_size(MPI_COMM_WORLD_C))");
+    jl_eval_string("println(\"MPI.jl: rank: \", MPI.Comm_rank(MPI.COMM_WORLD))");
+    jl_eval_string("println(\"MPI.jl: size: \", MPI.Comm_size(MPI.COMM_WORLD))");
 
     printf("\n");
 }
