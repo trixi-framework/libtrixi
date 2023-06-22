@@ -4,15 +4,22 @@
 
 int main ( int argc, char *argv[] ) {
 
-    // Initialize Trixi
-    trixi_initialize();
+    if ( argc < 2 ) {
+        fprintf(stderr, "error: missing arguments: PROJECT_DIR LIBELIXIR_PATH\n\n");
+        fprintf(stderr, "usage: %s PROJECT_DIR LIBELIXIR_PATH\n", argv[0]);
+        return 2;
+    } else if ( argc < 3 ) {
+        fprintf(stderr, "error: missing argument: LIBELIXIR_PATH\n\n");
+        fprintf(stderr, "usage: %s PROJECT_DIR LIBELIXIR_PATH\n", argv[0]);
+        return 2;
+    }
 
-    // An "elixir" file is required to configure the Trixi simulation
-    const char * elixir = "../../LibTrixi.jl/examples/libelixir_demo.jl";
+    // Initialize Trixi
+    trixi_initialize( argv[1] );
 
     // Set up the Trixi simulation
     // We get a handle to use subsequently
-    int handle = trixi_initialize_simulation( elixir );
+    int handle = trixi_initialize_simulation( argv[2] );
 
     // Get time step length
     printf("Current time step length: %f\n", trixi_calculate_dt(handle));

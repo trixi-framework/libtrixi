@@ -17,13 +17,24 @@ static jl_value_t* checked_eval_string(const char* code, const char* func, const
  *
  *  \todo Path is still hard-coded
  */
-void trixi_initialize() {
+void trixi_initialize(const char * project_directory) {
 
     // Init Julia
     jl_init();
 
+    // Construct activation command
+    const char * activate = "using Pkg;\n"
+                            "Pkg.activate(\"%s\");\n"
+                            "Pkg.status();\n";
+    if ( strlen(activate) + strlen(project_directory) + 1 > 1024 ) {
+        fprintf(stderr, "error: buffer size not sufficient for activation command\n");
+        exit(1);
+    }
+    char buffer[1024];
+    snprintf(buffer, 1024, activate, project_directory);
+
     // Activate julia environment
-    checked_eval_string("using Pkg; Pkg.activate(\"../../LibTrixi.jl\"); Pkg.status()", LOC);
+    checked_eval_string(buffer, LOC);
 
     // Load LibTrixi module
     checked_eval_string("using LibTrixi;", LOC);
