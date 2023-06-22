@@ -1,0 +1,147 @@
+#!/bin/bash
+
+usage() {
+  cat << EOF >&2
+usage: $0 [-f|--force] REPO
+
+Set up all necessary project files in the current working directory and set appropriate
+Julia preferences for using the system-installed MPI library. Furthermore, this will install
+all dependencies in a local Julia depot folder.
+
+The following files/folders will be created (or upated, if the '-f' flag is given):
+- Project.toml
+- Manifest.toml
+- LocalPreferences.toml
+- JULIA_DEPOT_LIBTRIXI
+
+Note: For this tool to work, the Julia executable 'julia' needs to be on the PATH or
+alternatively provided in the 'JULIA_EXEC' environment variable.
+
+Positional arguments:
+
+    REPO            Path to root directory of a libtrixi clone. Note that the files at the
+                    path must not be moved while libtrixi is used since that will break
+                    library usage.
+
+Optional arguments:
+
+    --force, -f     By default, this tool does nothing if any of the files/folders to be
+                    created already exist. With this option given on the command line, it
+                    will continue anyways.
+EOF
+}
+
+die() {
+  printf 'ERROR: %s\n' "$1" >&2
+  if [ -n "$2" ]; then
+    echo "$2" >&2
+  fi
+  exit 1
+}
+
+# Parse arguments (based on https://stackoverflow.com/a/14203146/1329844)
+POSITIONAL_ARGS=()
+USE_FORCE=0
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h|--help)
+      usage "$0"
+      exit
+      ;;
+    -f|--force)
+      USE_FORCE=1
+      shift
+      ;;
+    -*|--*)
+      die "unknown option '$1' (use '-h' for usage information)"
+      ;;
+    *)
+      POSITIONAL_ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+
+# Verify usage
+if [ $# -lt 1 ]; then
+  echo "ERROR: missing 'PREFIX_OR_REPO' argument" >&2
+  echo >&2
+  usage "$0"
+  exit 2
+fi
+
+# Determine path to LibTrixi.jl
+prefix_or_repo="$1"
+if [ -d "$prefix_or_repo/LibTrixi.jl" ]; then
+  libtrixi_jl_path="$prefix_or_repo/LibTrixi.jl"
+elif [ -d "$prefix_or_repo/share/libtrixi/LibTrixi.jl" ]; then
+  libtrixi_jl_path="$prefix_or_repo/share/libtrixi/LibTrixi.jl"
+else
+  echo "ERROR: no valid path to LibTrixi.jl could be found for the given prefix/repo" >&2
+  echo "We checked the following:" >&2
+  echo "- '$prefix_or_repo/share/libtrixi/LibTrixi.jl' is not a directory"
+  echo "- '$prefix_or_repo/LibTrixi.jl' is not a directory"
+  exit 2
+fi
+
+# Check that no files will be overwritten/modified unless force is used
+if [ $USE_FORCE -ne 1 ]; then
+  for path in Project.toml Manifest.toml LocalPreferences.toml JULIA_DEPOT_LIBTRIXI; do
+    if [ -d $path ] || [ -f $path ] || [ -L $path ]; then
+      die "'$path' already exists in current directory (override with '-f' flag)"
+    fi
+  done
+fi
+
+# Check that Julia executable exists
+if [ -z "$JULIA_EXEC" ]; then
+  julia_exec=julia
+else
+  julia_exec="$JULIA_EXEC"
+fi
+if ! command -v $julia_exec &> /dev/null; then
+  die "no Julia executable '$julia_exec' found"
+fi
+
+# Install MPIPreferences
+echo "Install MPIPreferences.jl... "
+JULIA_DEPOT_PATH=JULIA_DEPOT_LIBTRIXI $julia_exec --project=. \
+    -e 'using Pkg; Pkg.add("MPIPreferences")'
+[ $? -eq 0 ] || die "could not install MPIPreferences.jl"
+echo
+
+# Set system library
+echo "Use system MPI for Julia... "
+JULIA_DEPOT_PATH=JULIA_DEPOT_LIBTRIXI $julia_exec --project=. \
+    -e 'using MPIPreferences; MPIPreferences.use_system_binary()'
+[ $? -eq 0 ] || die "could not configure MPIPreferences"
+echo
+
+# Develop LibTrixi.jl
+echo "Install LibTrixi.jl..."
+JULIA_DEPOT_PATH=JULIA_DEPOT_LIBTRIXI $julia_exec --project=. \
+    -e "using Pkg; Pkg.develop(path=\"$libtrixi_jl_path\")"
+[ $? -eq 0 ] || die "could not install LibTrixi.jl"
+echo
+
+# Install and precompile everything
+echo "Instantiate all packages ..."
+JULIA_DEPOT_PATH=JULIA_DEPOT_LIBTRIXI $julia_exec --project=. \
+    -e "using Pkg; Pkg.instantiate()"
+[ $? -eq 0 ] || die "could not instantiate packages"
+echo
+
+# Congratulate user
+echo
+echo "SUCCESS: Julia has been set up for libtrixi! 🐳"
+echo
+echo "Note: When using libtrixi, you need to set the following environment variable:"
+echo
+echo "    export JULIA_DEPOT_PATH=\"$PWD/JULIA_DEPOT_LIBTRIXI\""
+echo
+echo "When calling libtrixi's 'trixi_initialize' function, you need to provide"
+echo
+echo "    $PWD"
+echo
+echo "as the 'project_directory'."
