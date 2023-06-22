@@ -10,3 +10,5 @@ Trixi = "a7f1ee26-1774-49b1-8366-f1abc58fbfcb"
 
 [compat]
 julia = "1.8"
+OrdinaryDiffEq = "6.53.2"
+Trixi = "0.5.29"
