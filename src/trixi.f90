@@ -2,15 +2,10 @@ module LibTrixi
   implicit none
 
   interface
-    subroutine trixi_initialize(comm) bind(c)
-      use, intrinsic :: iso_c_binding, only: c_int
-      integer, intent(in) :: comm
+    subroutine trixi_initialize() bind(c)
     end subroutine
 
     subroutine trixi_finalize() bind(c)
-    end subroutine
-
-    subroutine trixi_integrate() bind(c)
     end subroutine
 
     subroutine julia_eval_string(code) bind(c)
