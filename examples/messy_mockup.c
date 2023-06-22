@@ -44,5 +44,7 @@ int main ( int argc, char *argv[] ) {
 
     trixi_initialize(argc, argv);
 
+    MPI_Finalize();
+
     return 0;
 }
