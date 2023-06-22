@@ -39,17 +39,17 @@ jobs:
             test_type: valgrind
             julia_version: 1.9
           # macOS
-          - os: macos-latest
-            arch: x64
-            shell: bash
-            test_type: regular
-            julia_version: 1.9
+          # - os: macos-latest
+          #   arch: x64
+          #   shell: bash
+          #   test_type: regular
+          #   julia_version: 1.9
           # Windows
-          - os: windows-latest
-            arch: x64
-            shell: 'msys2 {0}'
-            test_type: regular
-            julia_version: 1.9
+          # - os: windows-latest
+          #   arch: x64
+          #   shell: 'msys2 {0}'
+          #   test_type: regular
+          #   julia_version: 1.9
     # Set default shell as suggested here: https://github.community/t/setting-default-shell-or-other-step-metadata-conditionally-in-workflows/154055
     defaults:
       run:
@@ -69,6 +69,9 @@ jobs:
           arch: ${{ matrix.arch }}
       - name: Show Julia version information
         run: julia -e 'using InteractiveUtils; versioninfo(verbose=true)'
+      - name: Install MPI
+        run: |
+          sudo apt-get install -y openmpi-bin libopenmpi-dev
       - name: Build
         run: |
           mkdir build
