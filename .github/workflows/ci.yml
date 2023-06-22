@@ -100,6 +100,10 @@ jobs:
           cd run
           julia --project=. -e 'using Pkg; Pkg.develop(path="../LibTrixi.jl"); Pkg.instantiate()'
           cp ../LibTrixi.jl/examples/libelixir_demo.jl .
+      - name: Install coverage tools
+        if: ${{ matrix.coverage }}
+        run: |
+          sudo apt-get install -y lcov
       - name: Run regular function tests
         if: ${{ matrix.test_type == 'regular' }}
         run: |
