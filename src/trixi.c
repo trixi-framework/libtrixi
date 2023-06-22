@@ -5,11 +5,35 @@
 #include "trixi.h"
 
 
-
+// Auxiliary declarations for more helpful error messages
+static void print_and_die(const char* message, const char* func, const char* file, int lineno);
 #define LOC __func__, __FILE__, __LINE__
 
 // Auxiliary function to evaluate julia REPL string with exception handling
 static jl_value_t* checked_eval_string(const char* code, const char* func, const char* file, int lineno);
+
+// Store function pointers to avoid overhead of `jl_eval_string`
+enum {
+  TRIXI_FTPR_INITIALIZE_SIMULATION,
+  TRIXI_FTPR_CALCULATE_DT,
+  TRIXI_FTPR_IS_FINISHED,
+  TRIXI_FTPR_STEP,
+  TRIXI_FTPR_FINALIZE_SIMULATION,
+
+  // The last one is for the array size
+  TRIXI_NUM_FPTRS
+};
+static void* trixi_function_pointers[TRIXI_NUM_FPTRS];
+
+// List of function names to obtain C function pointer from Julia
+// OBS! If any name is longer than 250 characters, adjust buffer sizes below
+static const char* trixi_function_pointer_names[] = {
+  [TRIXI_FTPR_INITIALIZE_SIMULATION] = "trixi_initialize_simulation_cfptr",
+  [TRIXI_FTPR_CALCULATE_DT]          = "trixi_calculate_dt_cfptr",
+  [TRIXI_FTPR_IS_FINISHED]           = "trixi_is_finished_cfptr",
+  [TRIXI_FTPR_STEP]                  = "trixi_step_cfptr",
+  [TRIXI_FTPR_FINALIZE_SIMULATION]   = "trixi_finalize_simulation_cfptr",
+};
 
 
 
@@ -39,6 +63,26 @@ void trixi_initialize(const char * project_directory) {
     // Load LibTrixi module
     checked_eval_string("using LibTrixi;", LOC);
     checked_eval_string("println(\"Module LibTrixi.jl loaded\")", LOC);
+
+    // Load function pointers
+    char julia_command[256];
+    for (int i = 0; i < TRIXI_NUM_FPTRS; i++) {
+      // Reset for error detection
+      trixi_function_pointers[i] = NULL;
+
+      // Build Julia command
+      snprintf(julia_command, 256, "%s()", trixi_function_pointer_names[i]);
+
+      // Get and store function pointer
+      trixi_function_pointers[i] = (void *)jl_unbox_voidpointer( checked_eval_string(julia_command, LOC) );
+
+      // Perform sanity check
+      if (trixi_function_pointers[i] == NULL) {
+        fprintf(stderr, "ERROR: could not get function pointer with `%s()`\n",
+                trixi_function_pointer_names[i]);
+        print_and_die("null pointer", LOC);
+      }
+    }
 }
 
 
@@ -51,10 +95,10 @@ void trixi_initialize(const char * project_directory) {
 int trixi_initialize_simulation(const char * libelixir) {
 
     // Get function pointer
-    int (*trixi_initialize_simulation_c)(const char *) = jl_unbox_voidpointer( checked_eval_string("trixi_initialize_simulation_cfptr()", LOC) ) ;
+    int (*initialize_simulation)(const char *) = trixi_function_pointers[TRIXI_FTPR_INITIALIZE_SIMULATION];
 
     // Call function
-    return trixi_initialize_simulation_c( libelixir );
+    return initialize_simulation( libelixir );
 }
 
 
@@ -67,10 +111,10 @@ int trixi_initialize_simulation(const char * libelixir) {
 double trixi_calculate_dt(int handle) {
 
     // Get function pointer
-    double (*trixi_calculate_dt_c)(int) = jl_unbox_voidpointer( checked_eval_string("trixi_calculate_dt_cfptr()", LOC) ) ;
+    double (*calculate_dt)(int) = trixi_function_pointers[TRIXI_FTPR_CALCULATE_DT];;
 
     // Call function
-    return trixi_calculate_dt_c( handle );
+    return calculate_dt( handle );
 }
 
 
@@ -83,10 +127,10 @@ double trixi_calculate_dt(int handle) {
 int trixi_is_finished(int handle) {
 
     // Get function pointer
-    int (*trixi_is_finished_c)(int) = jl_unbox_voidpointer( checked_eval_string("trixi_is_finished_cfptr()", LOC) ) ;
+    int (*is_finished)(int) = trixi_function_pointers[TRIXI_FTPR_IS_FINISHED];
 
     // Call function
-    return trixi_is_finished_c( handle );
+    return is_finished( handle );
 }
 
 
@@ -97,10 +141,10 @@ int trixi_is_finished(int handle) {
 void trixi_step(int handle) {
 
     // Get function pointer
-    int (*trixi_step_c)(int) = jl_unbox_voidpointer( checked_eval_string("trixi_step_cfptr()", LOC) ) ;
+    int (*step)(int) = trixi_function_pointers[TRIXI_FTPR_STEP];
 
     // Call function
-    trixi_step_c( handle );
+    step( handle );
 }
 
 
@@ -111,10 +155,10 @@ void trixi_step(int handle) {
 void trixi_finalize_simulation(int handle) {
 
     // Get function pointer
-    void (*trixi_finalize_simulation_c)(int) = jl_unbox_voidpointer( checked_eval_string("trixi_finalize_simulation_cfptr()", LOC) ) ;
+    void (*finalize_simulation)(int) = trixi_function_pointers[TRIXI_FTPR_FINALIZE_SIMULATION];
 
     // Call function
-    trixi_finalize_simulation_c(handle);
+    finalize_simulation(handle);
 }
 
 
@@ -125,6 +169,11 @@ void trixi_finalize_simulation(int handle) {
 void trixi_finalize() {
 
     printf("libtrixi: finalize\n");
+
+    // Reset function pointers
+    for (int i = 0; i < TRIXI_NUM_FPTRS; i++) {
+      trixi_function_pointers[i] = NULL;
+    }
 
     jl_atexit_hook(0);
 }
@@ -160,4 +209,9 @@ jl_value_t* checked_eval_string(const char* code, const char* func, const char* 
     assert(result && "Missing return value but no exception occurred!");
 
     return result;
+}
+
+void print_and_die(const char* message, const char* func, const char* file, int lineno) {
+  fprintf(stderr, "ERROR in %s:%d (%s): %s\n", file, lineno, func, message);
+  exit(1);
 }
