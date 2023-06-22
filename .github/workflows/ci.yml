@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'LICENSE.md'
+      - 'README.md'
+  pull_request:
+    paths-ignore:
+      - 'LICENSE.md'
+      - 'README.md'
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
+
+jobs:
+  test:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    name: ${{ matrix.os }} - ${{ matrix.test_type }} - ${{ github.event_name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux
+          - os: ubuntu-latest
+            arch: x64
+            shell: bash
+            test_type: regular
+          - os: ubuntu-latest
+            arch: x64
+            shell: bash
+            test_type: valgrind
+          # macOS
+          - os: macos-latest
+            arch: x64
+            shell: bash
+            test_type: regular
+          # Windows
+          - os: windows-latest
+            arch: x64
+            shell: 'msys2 {0}'
+            test_type: regular
+    # Set default shell as suggested here: https://github.community/t/setting-default-shell-or-other-step-metadata-conditionally-in-workflows/154055
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - uses: msys2/setup-msys2@v2
+        if: ${{ matrix.os == 'windows-latest' }}
+        with:
+          update: true
+          install: git base-devel mingw-w64-x86_64-toolchain
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: ${{ matrix.version }}
+          arch: ${{ matrix.arch }}
+      - name: Show Julia version information
+        run: julia -e 'using InteractiveUtils; versioninfo(verbose=true)'
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make -j 2
+      - name: Set up Julia project directory
+        run: |
+          mkdir run
+          cd run
+          julia --project=. -e 'using Pkg; Pkg.develop(path="../LibTrixi.jl"); Pkg.instantiate()'
+          cp ../LibTrixi.jl/examples/libelixir_demo.jl .
+      - name: Run regular function tests
+        if: ${{ matrix.test_type == 'regular' }}
+        run: |
+          cd run
+          ../examples/simple_trixi_controller . libelixir_demo.jl
+      - name: Run memory checks with Valgrind
+        if: matrix.test_type == 'valgrind' }}
+        run: |
+          sudo apt-get install -y valgrind
+          valgrind --error-exitcode=1 -s ../examples/simple_trixi_controller . libelixir_demo.jl
+      # Enable tmate debugging of manually-triggered workflows if the input option was provided
+      - name: Setup tmate session for debugging
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled && always() }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 15
