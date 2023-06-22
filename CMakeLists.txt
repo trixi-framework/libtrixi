@@ -50,6 +50,8 @@ target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} ${MPI_C_LIB_NAME
 # Linker flags
 #set(CMAKE_LINKER_FLAGS ${CMAKE_LINKER_FLAGS} ${MPI_C_LINK_FLAGS})
 
+# Set appropriate compile flags
+target_compile_options( ${PROJECT_NAME} PUBLIC "-fPIC" )
 
 
 
