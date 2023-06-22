@@ -125,7 +125,7 @@ jobs:
       - uses: codecov/codecov-action@v3
         if: ${{ matrix.test_type == 'coverage' }}
         with:
-          files: ./lcov.info
+          files: ./run/lcov.info
           flags: unittests
           name: codecov-umbrella
       - name: Coveralls
@@ -133,7 +133,7 @@ jobs:
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./lcov.info
+          path-to-lcov: ./run/lcov.info
       # Enable tmate debugging of manually-triggered workflows if the input option was provided
       - name: Setup tmate session for debugging
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled && always() }}
