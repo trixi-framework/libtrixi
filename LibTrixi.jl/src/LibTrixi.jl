@@ -1,5 +1,7 @@
 module LibTrixi
 
+using Trixi
+
 export trixi_initialize_simulation,
        trixi_initialize_simulation_cfptr,
        trixi_initialize_simulation_jl
