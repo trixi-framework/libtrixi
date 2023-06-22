@@ -72,11 +72,22 @@ jobs:
       - name: Install MPI
         run: |
           sudo apt-get install -y openmpi-bin libopenmpi-dev
-      - name: Build
+      - name: Build (regular)
+        if: ${{ matrix.test_type == 'regular' }}
         run: |
           mkdir build
           cd build
           cmake ..
+          make -j 2
+      - name: Build (coverage)
+        if: ${{ matrix.test_type == 'coverage' }}
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_C_FLAGS="-cpp --coverage -O0" \
+                   -DCMAKE_Fortran_FLAGS="-cpp --coverage -O0" \
+                   -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
+                   -DCMAKE_SHARED_LINKER_FLAGS="--coverage"
           make -j 2
       - name: Set up Julia project directory
         run: |
@@ -95,6 +106,25 @@ jobs:
           sudo apt-get install -y valgrind
           cd run
           valgrind --error-exitcode=1 -s ../build/examples/simple_trixi_controller . libelixir_demo.jl
+      - name: Run coverage tests
+        if: ${{ matrix.test_type == 'coverage' }}
+        run: |
+          cd run
+          lcov --directory ../build --zerocounters
+          ../build/examples/simple_trixi_controller . libelixir_demo.jl
+          lcov --directory ../build  --capture --output-file lcov.info
+      - uses: codecov/codecov-action@v3
+        if: ${{ matrix.coverage }}
+        with:
+          files: ./lcov.info
+          flags: unittests
+          name: codecov-umbrella
+      - name: Coveralls
+        if: ${{ matrix.coverage }}
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./lcov.info
       # Enable tmate debugging of manually-triggered workflows if the input option was provided
       - name: Setup tmate session for debugging
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled && always() }}
