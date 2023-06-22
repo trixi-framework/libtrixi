@@ -12,11 +12,8 @@ function trixi_initialize_simulation_jl(filename)
 end
 
 function trixi_finalize_simulation_jl(simstate)
-    (; u0, u) = simstate.integrator
-
-    # Resize arrays to zero length
-    resize!(u0, 0)
-    resize!(u, 0)
+    # TODO: call the SummaryCallback(), but its position is arbitrary
+    simstate.integrator.opts.callback.discrete_callbacks[1]()
 
     println("Simulation state finalized")
 
@@ -24,47 +21,23 @@ function trixi_finalize_simulation_jl(simstate)
 end
 
 function trixi_calculate_dt_jl(simstate)
-    (; t, finaltime, dt) = simstate.integrator
-
-    # If next step would take us up to or beyond final time, reduce dt accordingly
-    if isapprox(t[] + dt[], finaltime[]) || t[] + dt[] > finaltime[]
-        dt[] = finaltime[] - t[]
-    end
-
-    return dt[]
+    return simstate.integrator.dtpropose
 end
 
 function trixi_is_finished_jl(simstate)
-    (; t, finaltime) = simstate.integrator
-
     # Return true if current time is approximately the final time
-    return isapprox(t[], finaltime[])
+    return isapprox(simstate.integrator.t, simstate.integrator.sol.prob.tspan[2])
 end
 
 function trixi_step_jl(simstate)
-    (; t, finaltime, dt, u) = simstate.integrator
+    step!(simstate.integrator)
 
-    # Sanity check
-    if isapprox(t[], finaltime[])
-        error("simulation is already finished: t ≈ finaltime")
-    end
+    ret = check_error(simstate.integrator)
 
-    # "Advance" solution in time
-    u .+= 1
-
-    # Update time such that we hit `finaltime` exactly
-    if isapprox(t[] + dt[], finaltime[])
-        t[] = finaltime[]
-        println("Current time: ", t[])
-        println("Final time reached")
-    elseif t[] + dt[] > finaltime[]
-        dt[] = finaltime[] - t[]
-        t[] += dt[]
-        println("Current time: ", t[])
-        println("Final time reached")
+    if ret != :Success
+        error("integrator failed to perform time step, return code: ", ret)
     else
-        t[] += dt[]
-        println("Current time: ", t[])
+        println("advanced to time ", simstate.integrator.t)
     end
 
     return nothing
