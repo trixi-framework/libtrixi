@@ -64,9 +64,33 @@ For building, `cmake` and its typical workflow is used.
 
     This will install all provided file to the specified location.
 
+### Setting up Julia
+After the library has been installed, you need to configure Julia for use with libtrixi. For
+this, create a directory where all necessary files will be placed, e.g., `libtrixi-julia`.
+Then, you can use the [`utils/libtrixi-init-julia`](utils/libtrixi-init-julia) tool to do
+the rest for you:
+```shell
+# Assuming you are in still in the `build/` directory inside the repo clone
+cd ..
+mkdir libtrixi-julia
+cd libtrixi-julia
+../utils/libtrixi-init-julia ..
+```
+When running a program that uses libtrixi, make sure the set up the `JULIA_DEPOT_PATH`
+environment variable to point to the `JULIA_DEPOT_LIBTRIXI` subfolder in the
+`libtrixi-julia` directory. In your code, pass the path to the `libtrixi-julia` directory as
+the `project_directory` argument to `trixi_initialize`.
+
 ### Testing
 
-Check out the `fortran_hello_world` example.
+Go to the repository root directory and run a simple demonstrator:
+```shell
+cd ..
+JULIA_DEPOT_PATH=$PWD/libtrixi-julia/JULIA_DEPOT_LIBTRIXI \
+    build/examples/simple_trixi_controller \
+    $PWD/libtrixi-julia \
+    LibTrixi.jl/examples/libelixir_demo.jl
+```
 
 ## Authors
 Libtrixi was initiated by

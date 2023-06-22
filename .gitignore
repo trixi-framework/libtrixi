@@ -1,6 +1,7 @@
 build
 install
 run
+libtrixi-julia
 
 # Ignore CMake files for bad users who do in-source builds
 CMakeCache.txt
