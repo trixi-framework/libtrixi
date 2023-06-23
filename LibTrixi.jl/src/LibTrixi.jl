@@ -1,9 +1,7 @@
 module LibTrixi
 
-using Reexport: @reexport
-
-@reexport using OrdinaryDiffEq
-@reexport using Trixi
+using OrdinaryDiffEq
+using Trixi
 
 export trixi_initialize_simulation,
        trixi_initialize_simulation_cfptr,

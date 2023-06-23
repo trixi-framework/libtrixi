@@ -21,7 +21,7 @@ find_package( Julia REQUIRED )
 
 
 # Find MPI
-#find_package( MPI REQUIRED )
+find_package( MPI REQUIRED )
 
 
 

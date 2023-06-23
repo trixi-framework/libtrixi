@@ -1,6 +1,37 @@
 #include <stdio.h>
+#include <mpi.h>
 
 #include <trixi.h>
+
+
+
+void init_mpi_external ( int argc, char *argv[] ) {
+
+    int ret;
+
+    int flag_init;
+    ret = MPI_Initialized(&flag_init);
+    printf("[EXT] MPI Initialized: return %d, initialized %d, MPI_COMM_WORLD %p\n", ret, flag_init, MPI_COMM_WORLD);
+
+    if ( flag_init == 0 ) {
+
+        int provided_threadlevel;
+        int requested_threadlevel = MPI_THREAD_SERIALIZED;
+        ret = MPI_Init_thread(&argc, &argv, requested_threadlevel, &provided_threadlevel);
+        printf("[EXT] MPI_Init: return %d, threadlevel requested %d, provided %d\n", ret, requested_threadlevel, provided_threadlevel);
+    }
+
+    MPI_Comm comm = MPI_COMM_WORLD;
+
+    int rank;
+    ret = MPI_Comm_rank(comm, &rank);
+    printf("[EXT] MPI rank: return %d, rank %d\n", ret, rank);
+
+    int nranks;
+    ret = MPI_Comm_size(comm, &nranks);
+    printf("[EXT] MPI size: return %d, size %d\n", ret, nranks);
+}
+
 
 int main ( int argc, char *argv[] ) {
 
@@ -13,6 +44,10 @@ int main ( int argc, char *argv[] ) {
         fprintf(stderr, "usage: %s PROJECT_DIR LIBELIXIR_PATH\n", argv[0]);
         return 2;
     }
+
+    // Initialize MPI
+    printf("\n*** Trixi controller ***   Initialize MPI\n");
+    init_mpi_external(argc, argv);
 
     // Initialize Trixi
     printf("\n*** Trixi controller ***   Initialize Trixi\n");
@@ -40,6 +75,10 @@ int main ( int argc, char *argv[] ) {
     // Finalize Trixi
     printf("\n*** Trixi controller ***   Finalize Trixi\n");
     trixi_finalize();
+
+    // Finalize MPI
+    printf("\n*** Trixi controller ***   Finalize MPI\n");
+    MPI_Finalize();
 
     return 0;
 }

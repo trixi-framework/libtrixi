@@ -21,7 +21,7 @@ install( TARGETS fortran_hello_world )
 #
 add_executable(simple_trixi_controller simple_trixi_controller.c)
 
-target_link_libraries(simple_trixi_controller PRIVATE ${PROJECT_NAME})
+target_link_libraries(simple_trixi_controller PRIVATE ${MPI_C_LIBRARIES} ${PROJECT_NAME})
 
 target_include_directories(simple_trixi_controller PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
