@@ -5,11 +5,11 @@
 int main ( int argc, char *argv[] ) {
 
     if ( argc < 2 ) {
-        fprintf(stderr, "error: missing arguments: PROJECT_DIR LIBELIXIR_PATH\n\n");
+        fprintf(stderr, "ERROR: missing arguments: PROJECT_DIR LIBELIXIR_PATH\n\n");
         fprintf(stderr, "usage: %s PROJECT_DIR LIBELIXIR_PATH\n", argv[0]);
         return 2;
     } else if ( argc < 3 ) {
-        fprintf(stderr, "error: missing argument: LIBELIXIR_PATH\n\n");
+        fprintf(stderr, "ERROR: missing argument: LIBELIXIR_PATH\n\n");
         fprintf(stderr, "usage: %s PROJECT_DIR LIBELIXIR_PATH\n", argv[0]);
         return 2;
     }

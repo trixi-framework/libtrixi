@@ -108,7 +108,8 @@ jobs:
         if: ${{ matrix.test_type == 'regular' }}
         run: |
           cd run
-          ../build/examples/simple_trixi_controller . libelixir_demo.jl
+          ../build/examples/simple_trixi_controller_c . libelixir_demo.jl
+          ../build/examples/simple_trixi_controller_f . libelixir_demo.jl
       - name: Run memory checks with Valgrind
         if: ${{ matrix.test_type == 'valgrind' }}
         run: |
@@ -120,7 +121,8 @@ jobs:
         run: |
           cd run
           lcov --directory ../build --zerocounters
-          ../build/examples/simple_trixi_controller . libelixir_demo.jl
+          ../build/examples/simple_trixi_controller_c . libelixir_demo.jl
+          ../build/examples/simple_trixi_controller_f . libelixir_demo.jl
           lcov --directory ../build  --capture --output-file lcov.info
       - uses: codecov/codecov-action@v3
         if: ${{ matrix.test_type == 'coverage' }}

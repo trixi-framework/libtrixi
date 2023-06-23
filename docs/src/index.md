@@ -87,7 +87,7 @@ Go to the repository root directory and run a simple demonstrator,
 ```shell
 cd ..
 JULIA_DEPOT_PATH=$PWD/libtrixi-julia/JULIA_DEPOT_LIBTRIXI \
-    build/examples/simple_trixi_controller \
+    build/examples/simple_trixi_controller_c \
     $PWD/libtrixi-julia \
     LibTrixi.jl/examples/libelixir_demo.jl
 ```
@@ -108,6 +108,12 @@ Final time reached
 Simulation state finalized
 libtrixi: finalize
 ```
+
+If you change the executable name from `simple_trixi_controller_c` to
+`simple_trixi_controller_f`, you will get a near identical output. The corresponding source
+files `simple_trixi_controller.c` and `simple_trixi_controller.f90` give you an idea on how
+to use the C and Fortran APIs of libtrixi, and can be found in the
+[`examples/`](https://github.com/trixi-framework/libtrixi/tree/main/examples) folder.
 
 ## Authors
 Libtrixi was initiated by
