@@ -2,7 +2,7 @@
 
 usage() {
   cat << EOF >&2
-usage: $0 [-f|--force] REPO
+usage: $0 [-f|--force] REPO P4EST_LIB_PATH
 
 Set up all necessary project files in the current working directory and set appropriate
 Julia preferences for using the system-installed MPI library. Furthermore, this will install
@@ -22,6 +22,8 @@ Positional arguments:
     REPO            Path to root directory of a libtrixi clone. Note that the files at the
                     path must not be moved while libtrixi is used since that will break
                     library usage.
+
+    P4EST_LIB_PATH  Path to local libp4est.so library.
 
 Optional arguments:
 
@@ -71,6 +73,13 @@ if [ $# -lt 1 ]; then
   exit 2
 fi
 
+if [ $# -lt 2 ]; then
+  echo "ERROR: missing 'P4EST_LIB_PATH' argument" >&2
+  echo >&2
+  usage "$0"
+  exit 2
+fi
+
 # Determine path to LibTrixi.jl
 prefix_or_repo="$1"
 if [ -d "$prefix_or_repo/LibTrixi.jl" ]; then
@@ -82,6 +91,17 @@ else
   echo "We checked the following:" >&2
   echo "- '$prefix_or_repo/share/libtrixi/LibTrixi.jl' is not a directory"
   echo "- '$prefix_or_repo/LibTrixi.jl' is not a directory"
+  exit 2
+fi
+
+# Check if libpest.so and libsc.so exist
+libp4est_path="$2"
+if [ ! -f "$libp4est_path/libp4est.so" ]; then
+  echo "ERROR: libp4est.so not found at '$libp4est_path'" >&2
+  exit 2
+fi
+if [ ! -f "$libp4est_path/libsc.so" ]; then
+  echo "ERROR: libsc.so not found at '$libp4est_path'" >&2
   exit 2
 fi
 
@@ -104,33 +124,48 @@ if ! command -v $julia_exec &> /dev/null; then
   die "no Julia executable '$julia_exec' found"
 fi
 
-# Install MPIPreferences
-echo "Install MPIPreferences.jl... "
-JULIA_DEPOT_PATH=JULIA_DEPOT_LIBTRIXI $julia_exec --project=. \
-    -e 'using Pkg; Pkg.add("MPIPreferences")'
-[ $? -eq 0 ] || die "could not install MPIPreferences.jl"
-echo
-
-# Set system library
-echo "Use system MPI for Julia... "
-JULIA_DEPOT_PATH=JULIA_DEPOT_LIBTRIXI $julia_exec --project=. \
-    -e 'using MPIPreferences; MPIPreferences.use_system_binary()'
-[ $? -eq 0 ] || die "could not configure MPIPreferences"
+# Install Dependencies
+echo "Install Dependencies.jl... "
+JULIA_DEPOT_PATH=JULIA_DEPOT_LIBTRIXI JULIA_PKG_PRECOMPILE_AUTO=0 \
+    $julia_exec --project=. \
+    -e "using Pkg; Pkg.add([\"Preferences\", \"UUIDs\", \"MPIPreferences\", \"P4est\"])"
+[ $? -eq 0 ] || die "could not install dependencies"
 echo
 
 # Develop LibTrixi.jl
 echo "Install LibTrixi.jl..."
-JULIA_DEPOT_PATH=JULIA_DEPOT_LIBTRIXI $julia_exec --project=. \
+JULIA_DEPOT_PATH=JULIA_DEPOT_LIBTRIXI JULIA_PKG_PRECOMPILE_AUTO=0 \
+    $julia_exec --project=. \
     -e "using Pkg; Pkg.develop(path=\"$libtrixi_jl_path\")"
 [ $? -eq 0 ] || die "could not install LibTrixi.jl"
 echo
 
-# Install and precompile everything
-echo "Instantiate all packages ..."
+# Set system MPI library
+echo "Use system MPI for Julia... "
 JULIA_DEPOT_PATH=JULIA_DEPOT_LIBTRIXI $julia_exec --project=. \
-    -e "using Pkg; Pkg.instantiate()"
-[ $? -eq 0 ] || die "could not instantiate packages"
+    -e "using MPIPreferences; MPIPreferences.use_system_binary()"
+[ $? -eq 0 ] || die "could not configure MPIPreferences"
 echo
+
+# Set system p4est library
+echo "Use system p4est for Julia... "
+JULIA_DEPOT_PATH=JULIA_DEPOT_LIBTRIXI $julia_exec --project=. \
+    -e "using Preferences, UUIDs;
+        set_preferences!( UUID(\"7d669430-f675-4ae7-b43e-fab78ec5a902\"),
+                          \"libp4est\" => \"$libp4est_path/libp4est.so\", force = true);
+        set_preferences!( UUID(\"7d669430-f675-4ae7-b43e-fab78ec5a902\"), \
+                          \"libpsc\" => \"$libp4est_path/libsc.so\", force = true)"
+[ $? -eq 0 ] || die "could not configure p4est"
+echo
+
+# Install and precompile everything
+echo "Install all packages ..."
+JULIA_DEPOT_PATH=JULIA_DEPOT_LIBTRIXI JULIA_PKG_PRECOMPILE_AUTO=0 \
+    $julia_exec --project=. \
+    -e "using Pkg; Pkg.instantiate(); Pkg.precompile(strict=true)"
+[ $? -eq 0 ] || die "could not install packages"
+echo
+
 
 # Congratulate user
 echo
