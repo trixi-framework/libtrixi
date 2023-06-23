@@ -83,14 +83,37 @@ the `project_directory` argument to `trixi_initialize`.
 
 ### Testing
 
-Go to the repository root directory and run a simple demonstrator:
+Go to the repository root directory and run a simple demonstrator,
 ```shell
 cd ..
 JULIA_DEPOT_PATH=$PWD/libtrixi-julia/JULIA_DEPOT_LIBTRIXI \
-    build/examples/simple_trixi_controller \
+    build/examples/simple_trixi_controller_c \
     $PWD/libtrixi-julia \
     LibTrixi.jl/examples/libelixir_demo.jl
 ```
+which should give you an output similar to this:
+```
+  Activating project at `~/hackathon/libtrixi/libtrixi-julia`
+Status `/mnt/ssd/home/mschlott/hackathon/libtrixi/libtrixi-julia/Project.toml`
+  [7e097bd5] LibTrixi v0.1.0 `../LibTrixi.jl`
+  [3da0fdf6] MPIPreferences v0.1.8
+Module LibTrixi.jl loaded
+Simulation state initialized
+Current time step length: 0.300000
+Current time: 0.3
+Current time: 0.6
+Current time: 0.8999999999999999
+Current time: 1.0
+Final time reached
+Simulation state finalized
+libtrixi: finalize
+```
+
+If you change the executable name from `simple_trixi_controller_c` to
+`simple_trixi_controller_f`, you will get a near identical output. The corresponding source
+files `simple_trixi_controller.c` and `simple_trixi_controller.f90` give you an idea on how
+to use the C and Fortran APIs of libtrixi, and can be found in the
+[`examples/`](examples/) folder.
 
 ## Authors
 Libtrixi was initiated by
