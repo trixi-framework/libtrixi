@@ -1,7 +1,7 @@
 module LibTrixi
 
-using OrdinaryDiffEq
-using Trixi
+using OrdinaryDiffEq: OrdinaryDiffEq, step!, check_error
+using Trixi: Trixi
 
 export trixi_initialize_simulation,
        trixi_initialize_simulation_cfptr,
