@@ -11,3 +11,13 @@ Trixi = "a7f1ee26-1774-49b1-8366-f1abc58fbfcb"
 julia = "1.8"
 OrdinaryDiffEq = "6.53.2"
 Trixi = "0.5.29"
+
+[preferences.OrdinaryDiffEq]
+PrecompileAutoSpecialize = false
+PrecompileAutoSwitch = false
+PrecompileDefaultSpecialize = true
+PrecompileFunctionWrapperSpecialize = false
+PrecompileLowStorage = true
+PrecompileNoSpecialize = false
+PrecompileNonStiff = true
+PrecompileStiff = false

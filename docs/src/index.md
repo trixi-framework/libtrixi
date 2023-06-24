@@ -13,7 +13,8 @@
 
 ### Prerequisites
 
-A local installation of `MPI` and `Julia` is required.
+Currently, libtrixi is only developed and tested for Linux.
+Furthermore, a local installation of `MPI`, `p4est`, and `Julia` is required.
 
 ### Get the sources
 
@@ -77,7 +78,7 @@ cd libtrixi-julia
 ../utils/libtrixi-init-julia ..
 ```
 When running a program that uses libtrixi, make sure the set up the `JULIA_DEPOT_PATH`
-environment variable to point to the `JULIA_DEPOT_LIBTRIXI` subfolder in the
+environment variable to point to the `julia-depot` subfolder in the
 `libtrixi-julia` directory. In your code, pass the path to the `libtrixi-julia` directory as
 the `project_directory` argument to `trixi_initialize`.
 
@@ -86,8 +87,8 @@ the `project_directory` argument to `trixi_initialize`.
 Go to the repository root directory and run a simple demonstrator,
 ```shell
 cd ..
-JULIA_DEPOT_PATH=$PWD/libtrixi-julia/JULIA_DEPOT_LIBTRIXI \
-    build/examples/simple_trixi_controller \
+JULIA_DEPOT_PATH=$PWD/libtrixi-julia/julia-depot \
+    build/examples/simple_trixi_controller_c \
     $PWD/libtrixi-julia \
     LibTrixi.jl/examples/libelixir_demo.jl
 ```
@@ -108,6 +109,12 @@ Final time reached
 Simulation state finalized
 libtrixi: finalize
 ```
+
+If you change the executable name from `simple_trixi_controller_c` to
+`simple_trixi_controller_f`, you will get a near identical output. The corresponding source
+files `simple_trixi_controller.c` and `simple_trixi_controller.f90` give you an idea on how
+to use the C and Fortran APIs of libtrixi, and can be found in the
+[`examples/`](https://github.com/trixi-framework/libtrixi/tree/main/examples) folder.
 
 ## Authors
 Libtrixi was initiated by
