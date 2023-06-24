@@ -161,11 +161,15 @@ else
   p4est_libdir="$(dirname $LIBTRIXI_P4EST_LIBRARY)"
 fi
 p4est_library="$p4est_libdir/libp4est.so"
-sc_library="$p4est_libdir/libsc.so"
-
-# Check if libpest.so and libsc.so exist or try to find them using Julia
 if [ ! -f "$p4est_library" ]; then
   die "p4est library '$p4est_library' not found" 2
+fi
+
+# Check if libsc.so was given by the user or else assume it is next to libp4est.so
+if [ -z "$LIBTRIXI_SC_LIBRARY" ]; then
+  sc_library="$p4est_libdir/libsc.so"
+else
+  sc_library="$LIBTRIXI_SC_LIBRARY"
 fi
 if [ ! -f "$sc_library" ]; then
   die "sc library '$sc_library' not found" 2
