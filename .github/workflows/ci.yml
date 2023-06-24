@@ -74,6 +74,8 @@ jobs:
           arch: ${{ matrix.arch }}
       - name: Show Julia version information
         run: julia -e 'using InteractiveUtils; versioninfo(verbose=true)'
+      - name: Use Julia cache
+        uses: julia-actions/cache@v1
       - name: Install MPI
         run: |
           sudo apt-get install -y openmpi-bin libopenmpi-dev
@@ -115,11 +117,14 @@ jobs:
           cd build
           make install
       - name: Initialize project directory
+        # Note that we set the Julia depot to `~/.julia` *ONLY* to make use of the
+        # julia-actions/cache above (which unfortunately hardcoded the `~/.julia` directory)
         run: |
           mkdir libtrixi-julia
           cd libtrixi-julia
           ../install/bin/libtrixi-init-julia .. \
-              --p4est-library ../p4est-local/prefix/lib/libp4est.so
+              --p4est-library ../p4est-local/prefix/lib/libp4est.so \
+              --julia-depot ~/.julia
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_demo.jl .
       - name: Prepare coverage reporting
         if: ${{ matrix.test_type == 'coverage' }}
@@ -131,18 +136,18 @@ jobs:
         if: ${{ matrix.test_type == 'regular' }} || ${{ matrix.test_type == 'coverage' }}
         run: |
           cd libtrixi-julia
-          JULIA_DEPOT_PATH=$PWD/julia-depot \
+          JULIA_DEPOT_PATH=~/.julia \
               ../build/examples/simple_trixi_controller_c . libelixir_demo.jl
-          JULIA_DEPOT_PATH=$PWD/julia-depot \
+          JULIA_DEPOT_PATH=~/.julia \
               ../build/examples/simple_trixi_controller_f . libelixir_demo.jl
       - name: Run memory checks with Valgrind
         if: ${{ matrix.test_type == 'valgrind' }}
         run: |
           sudo apt-get install -y valgrind
           cd libtrixi-julia
-          JULIA_DEPOT_PATH=$PWD/julia-depot valgrind --error-exitcode=1 -s \
+          JULIA_DEPOT_PATH=~/.julia valgrind --error-exitcode=1 -s \
               ../build/examples/simple_trixi_controller_c . libelixir_demo.jl
-          JULIA_DEPOT_PATH=$PWD/julia-depot valgrind --error-exitcode=1 -s \
+          JULIA_DEPOT_PATH=~/.julia valgrind --error-exitcode=1 -s \
               ../build/examples/simple_trixi_controller_f . libelixir_demo.jl
       - name: Process coverage data
         if: ${{ matrix.test_type == 'coverage' }}
