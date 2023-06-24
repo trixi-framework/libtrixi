@@ -8,7 +8,7 @@ Set up all necessary project files in the current working directory and set appr
 Julia preferences for using the system-installed MPI library. Furthermore, this will install
 all dependencies in a local Julia depot folder.
 
-The following files/folders will be created (or upated, if the '-f' flag is given):
+The following files/folders will be created (or updated, if the '-f' flag is given):
 - Project.toml
 - Manifest.toml
 - LocalPreferences.toml
