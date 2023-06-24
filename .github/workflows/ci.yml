@@ -77,57 +77,68 @@ jobs:
       - name: Install MPI
         run: |
           sudo apt-get install -y openmpi-bin libopenmpi-dev
-      - name: Build (regular)
+      - name: Configure (regular)
         if: ${{ matrix.test_type == 'regular' }}
         run: |
           mkdir build
           cd build
-          cmake ..
-          make -j 2
-      - name: Build (coverage)
+          cmake .. -DCMAKE_INSTALL_PREFIX=../install
+      - name: Configure (coverage)
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_C_FLAGS="-cpp --coverage -O0" \
+          cmake .. -DCMAKE_INSTALL_PREFIX=../install \
+                   -DCMAKE_C_FLAGS="-cpp --coverage -O0" \
                    -DCMAKE_Fortran_FLAGS="-cpp --coverage -O0" \
                    -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
                    -DCMAKE_SHARED_LINKER_FLAGS="--coverage"
-          make -j 2
-      - name: Set up Julia project directory
+      - name: Build
         run: |
-          mkdir run
-          cd run
-          julia --project=. -e 'using Pkg; Pkg.develop(path="../LibTrixi.jl"); Pkg.instantiate()'
-          cp ../LibTrixi.jl/examples/libelixir_demo.jl .
-      - name: Install coverage tools
+          cd build
+          make -j 2
+      - name: Install
+        run: |
+          cd build
+          make install
+      - name: Initialize project directory
+        run: |
+          mkdir libtrixi-julia
+          cd libtrixi-julia
+          ../install/bin/libtrixi-init-julia ..
+          cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_demo.jl .
+      - name: Prepare coverage reporting
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
           sudo apt-get install -y lcov
+          cd libtrixi-julia
+          lcov --directory ../build --zerocounters
       - name: Run regular function tests
-        if: ${{ matrix.test_type == 'regular' }}
+        if: ${{ matrix.test_type == 'regular' }} || ${{ matrix.test_type == 'coverage' }}
         run: |
-          cd run
-          ../build/examples/simple_trixi_controller_c . libelixir_demo.jl
-          ../build/examples/simple_trixi_controller_f . libelixir_demo.jl
+          cd libtrixi-julia
+          JULIA_DEPOT_PATH=$PWD/JULIA_DEPOT_LIBTRIXI \
+              ../build/examples/simple_trixi_controller_c . libelixir_demo.jl
+          JULIA_DEPOT_PATH=$PWD/JULIA_DEPOT_LIBTRIXI \
+              ../build/examples/simple_trixi_controller_f . libelixir_demo.jl
       - name: Run memory checks with Valgrind
         if: ${{ matrix.test_type == 'valgrind' }}
         run: |
           sudo apt-get install -y valgrind
-          cd run
-          valgrind --error-exitcode=1 -s ../build/examples/simple_trixi_controller . libelixir_demo.jl
-      - name: Run coverage tests
+          cd libtrixi-julia
+          JULIA_DEPOT_PATH=$PWD/JULIA_DEPOT_LIBTRIXI valgrind --error-exitcode=1 -s \
+              ../build/examples/simple_trixi_controller_c . libelixir_demo.jl
+          JULIA_DEPOT_PATH=$PWD/JULIA_DEPOT_LIBTRIXI valgrind --error-exitcode=1 -s \
+              ../build/examples/simple_trixi_controller_f . libelixir_demo.jl
+      - name: Process coverage data
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
-          cd run
-          lcov --directory ../build --zerocounters
-          ../build/examples/simple_trixi_controller_c . libelixir_demo.jl
-          ../build/examples/simple_trixi_controller_f . libelixir_demo.jl
+          cd libtrixi-julia
           lcov --directory ../build  --capture --output-file lcov.info
       - uses: codecov/codecov-action@v3
         if: ${{ matrix.test_type == 'coverage' }}
         with:
-          files: ./run/lcov.info
+          files: ./libtrixi-julia/lcov.info
           flags: unittests
           name: codecov-umbrella
       - name: Coveralls
@@ -135,7 +146,7 @@ jobs:
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./run/lcov.info
+          path-to-lcov: ./libtrixi-julia/lcov.info
       # Enable tmate debugging of manually-triggered workflows if the input option was provided
       - name: Setup tmate session for debugging
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled && always() }}
