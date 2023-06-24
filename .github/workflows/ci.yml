@@ -114,7 +114,7 @@ jobs:
           cd libtrixi-julia
           lcov --directory ../build --zerocounters
       - name: Run regular function tests
-        if: ${{ matrix.test_type == 'regular' }}
+        if: ${{ matrix.test_type == 'regular' }} || ${{ matrix.test_type == 'coverage' }}
         run: |
           cd libtrixi-julia
           JULIA_DEPOT_PATH=$PWD/JULIA_DEPOT_LIBTRIXI \
