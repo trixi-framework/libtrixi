@@ -13,7 +13,8 @@
 
 ### Prerequisites
 
-A local installation of `MPI` and `Julia` is required.
+Currently, libtrixi is only developed and tested for Linux.
+Furthermore, a local installation of `MPI`, `p4est`, and `Julia` is required.
 
 ### Get the sources
 
