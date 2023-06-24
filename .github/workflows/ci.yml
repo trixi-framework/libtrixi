@@ -77,6 +77,19 @@ jobs:
       - name: Install MPI
         run: |
           sudo apt-get install -y openmpi-bin libopenmpi-dev
+      - name: Install p4est
+        run: |
+          P4EST_RELEASE=2.8.5
+          mkdir p4est-local
+          cd p4est-local
+          wget https://p4est.github.io/release/p4est-${P4EST_RELEASE}.tar.gz
+          tar xf p4est-${P4EST_RELEASE}.tar.gz
+          mkdir build
+          cd build
+          CC=mpicc CXX=mpicxx FC=mpif90 F77=mpif77 ../p4est-${P4EST_RELEASE}/configure \
+              --prefix=$PWD/../prefix --enable-mpi
+          make -j 2
+          make install
       - name: Configure (regular)
         if: ${{ matrix.test_type == 'regular' }}
         run: |
@@ -105,7 +118,8 @@ jobs:
         run: |
           mkdir libtrixi-julia
           cd libtrixi-julia
-          ../install/bin/libtrixi-init-julia ..
+          ../install/bin/libtrixi-init-julia .. \
+              --p4est-library ../p4est-local/prefix/lib/libp4est.so
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_demo.jl .
       - name: Prepare coverage reporting
         if: ${{ matrix.test_type == 'coverage' }}
