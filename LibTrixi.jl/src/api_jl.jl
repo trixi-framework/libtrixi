@@ -1,6 +1,6 @@
 function trixi_initialize_simulation_jl(filename)
     # Load elixir with simulation setup
-    Base.include(Main, filename)
+    Base.include(Main, abspath(filename))
 
     # Initialize simulation state
     # Note: we need `invokelatest` here since the function is dynamically upon `include`
