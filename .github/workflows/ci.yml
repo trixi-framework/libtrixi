@@ -59,6 +59,9 @@ jobs:
     defaults:
       run:
         shell: ${{ matrix.shell }}
+    env:
+      # Necessary for HDF5 to play nice with Julia
+      LD_PRELOAD: /lib/x86_64-linux-gnu/libcurl.so.4
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -79,6 +82,9 @@ jobs:
       - name: Install MPI
         run: |
           sudo apt-get install -y openmpi-bin libopenmpi-dev
+      - name: Install HDF5
+        run: |
+          sudo apt-get install -y libhdf5-openmpi-dev
       - name: Install p4est
         run: |
           P4EST_RELEASE=2.8.5
@@ -118,13 +124,16 @@ jobs:
           make install
       - name: Initialize project directory
         # Note that we set the Julia depot to `~/.julia` *ONLY* to make use of the
-        # julia-actions/cache above (which unfortunately hardcoded the `~/.julia` directory)
+        # julia-actions/cache above (which unfortunately hardcoded the `~/.julia`
+        # directory). For this reason, we also need to use `--force`
         run: |
           mkdir libtrixi-julia
           cd libtrixi-julia
           ../install/bin/libtrixi-init-julia .. \
+              --hdf5-library /usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so \
               --p4est-library ../p4est-local/prefix/lib/libp4est.so \
-              --julia-depot ~/.julia
+              --julia-depot ~/.julia \
+              --force
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_demo.jl .
       - name: Prepare coverage reporting
         if: ${{ matrix.test_type == 'coverage' }}
