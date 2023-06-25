@@ -269,6 +269,8 @@ echo
 
 # Set system HDF5 library
 echo "Use system HDF5 for Julia... "
+echo JULIA_HDF5_PATH="$hdf5_libdir"
+ls -ls $hdf5_libdir
 JULIA_HDF5_PATH="$hdf5_libdir" JULIA_DEPOT_PATH="$julia_depot" $julia_exec --project=. \
     -e 'using Pkg; Pkg.build("HDF5"; verbose = true)'
 # Note: The following code replaces the previous line for HDF5 v0.17+, which has not yet
