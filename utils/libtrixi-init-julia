@@ -45,6 +45,11 @@ optional arguments:
     --julia-exec JULIA_EXEC
                     Path to Julia executable. (default: 'julia')
 
+    --hdf5-library HDF5_LIBRARY
+                    Path to the HDF5 shared library, i.e., something like
+                    'path/to/libhdf5.so'. If empty, Julia will try to figure out the path
+                    automatically. (default: '')
+
     --mpi-library MPI_LIBRARY
                     Path to the MPI C shared library, i.e., something like
                     'path/to/libmpi.so'. If empty, Julia will try to figure out the path
@@ -98,6 +103,10 @@ while [[ $# -gt 0 ]]; do
       LIBTRIXI_JULIA_DEPOT="$2"
       shift 2
       ;;
+    --hdf5-library)
+      LIBTRIXI_HDF5_LIBRARY="$2"
+      shift 2
+      ;;
     --mpi-library)
       LIBTRIXI_MPI_LIBRARY="$2"
       shift 2
@@ -137,6 +146,24 @@ julia_exec="$LIBTRIXI_JULIA_EXEC"
 
 # Save Julia depot path
 julia_depot="$LIBTRIXI_JULIA_DEPOT"
+
+# Check if libhdf5.so was given by the user or try to find it using Julia
+if [ -z "$LIBTRIXI_HDF5_LIBRARY" ]; then
+  hdf5_libdir="$($julia_exec -e 'using Libdl; find_library("libhdf5") |> dlpath |> dirname |> println')"
+  if [ -z "$hdf5_libdir" ]; then
+    die "location of hdf5 library could not be determined automatically (use '--hdf5-library' instead)"
+  fi
+else
+  hdf5_libdir="$(dirname $LIBTRIXI_HDF5_LIBRARY)"
+fi
+hdf5_library="$hdf5_libdir/libhdf5.so"
+if [ ! -f "$hdf5_library" ]; then
+  die "hdf5 library '$hdf5_library' not found" 2
+fi
+hdf5_hl_library="$hdf5_libdir/libhdf5_hl.so"
+if [ ! -f "$hdf5_hl_library" ]; then
+  die "hdf5 library '$hdf5_hl_library' not found" 2
+fi
 
 # Check if MPI library was given by the user or try to find it using Julia
 if [ -z "$LIBTRIXI_MPI_LIBRARY" ]; then
@@ -202,7 +229,10 @@ fi
 echo "Install dependencies for configuration..."
 JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
     $julia_exec --project=. \
-    -e "using Pkg; Pkg.add([\"Preferences\", \"UUIDs\", \"MPIPreferences\", \"P4est\"])"
+    -e "
+using Pkg
+Pkg.add([\"Preferences\", \"UUIDs\", \"MPIPreferences\", \"P4est\", \"HDF5\"])
+"
 [ $? -eq 0 ] || die "could not install dependencies"
 echo
 
@@ -230,19 +260,35 @@ JULIA_DEPOT_PATH="$julia_depot" $julia_exec --project=. \
     -e "
 using Preferences, UUIDs
 set_preferences!(UUID(\"7d669430-f675-4ae7-b43e-fab78ec5a902\"),
-                 \"libp4est\" => \"$p4est_library\", force = true);
-set_preferences!(UUID(\"7d669430-f675-4ae7-b43e-fab78ec5a902\"),
-                 \"libpsc\" => \"$sc_library\", force = true)
+                 \"libp4est\" => \"$p4est_library\",
+                 \"libpsc\" => \"$sc_library\",
+                 force = true)
 "
 [ $? -eq 0 ] || die "could not configure system p4est library for Julia"
 echo
 
+# Set system HDF5 library
+echo "Use system HDF5 for Julia... "
+JULIA_HDF5_PATH="$hdf5_libdir" JULIA_DEPOT_PATH="$julia_depot" $julia_exec --project=. \
+    -e 'using Pkg; Pkg.build("HDF5"; verbose = true)'
+# Note: The following code replaces the previous line for HDF5 v0.17+, which has not yet
+# been released at the time of writing
+#     -e "
+# using Preferences, UUIDs
+# set_preferences!(UUID(\"f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f\"),
+#                  \"libhdf5\" => \"$hdf5_library\",
+#                  \"libhdf5_hl\" => \"$hdf5_hl_library\",
+#                  force = true)
+# "
+[ $? -eq 0 ] || die "could not configure system HDF5 library for Julia"
+echo
+
 # Install and precompile everything
-echo "Install all packages ..."
+echo "Precompile all packages ..."
 JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
     $julia_exec --project=. \
-    -e "using Pkg; Pkg.instantiate(); Pkg.precompile(strict=true)"
-[ $? -eq 0 ] || die "could not install packages"
+    -e "using Pkg; Pkg.precompile(strict=true)"
+[ $? -eq 0 ] || die "could not precompile packages"
 echo
 
 

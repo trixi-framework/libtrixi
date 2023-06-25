@@ -79,6 +79,9 @@ jobs:
       - name: Install MPI
         run: |
           sudo apt-get install -y openmpi-bin libopenmpi-dev
+      - name: Install HDF5
+        run: |
+          sudo apt-get install -y libhdf5-openmpi-dev
       - name: Install p4est
         run: |
           P4EST_RELEASE=2.8.5
@@ -123,6 +126,7 @@ jobs:
           mkdir libtrixi-julia
           cd libtrixi-julia
           ../install/bin/libtrixi-init-julia .. \
+              --hdf5-library /usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so \
               --p4est-library ../p4est-local/prefix/lib/libp4est.so \
               --julia-depot ~/.julia
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_demo.jl .
