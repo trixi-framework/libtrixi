@@ -1,5 +1,5 @@
-using LibTrixi.Trixi
-using LibTrixi.OrdinaryDiffEq
+using Trixi
+using OrdinaryDiffEq
 
 # The function to create the simulation state needs to be named `init_simstate`
 function init_simstate()
