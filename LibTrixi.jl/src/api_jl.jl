@@ -12,7 +12,7 @@ function trixi_initialize_simulation_jl(filename)
 end
 
 function trixi_finalize_simulation_jl(simstate)
-    # Run summary callback one final fime
+    # Run summary callback one final time
     for cb in simstate.integrator.opts.callback.discrete_callbacks
         if cb isa DiscreteCallback{<:Any, typeof(summary_callback)}
             cb()
