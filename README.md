@@ -86,7 +86,6 @@ the `project_directory` argument to `trixi_initialize`.
 
 Go to the repository root directory and run a simple demonstrator,
 ```shell
-cd ..
 JULIA_DEPOT_PATH=$PWD/libtrixi-julia/julia-depot \
     build/examples/simple_trixi_controller_c \
     $PWD/libtrixi-julia \
@@ -115,6 +114,14 @@ If you change the executable name from `simple_trixi_controller_c` to
 files `simple_trixi_controller.c` and `simple_trixi_controller.f90` give you an idea on how
 to use the C and Fortran APIs of libtrixi, and can be found in the
 [`examples/`](examples/) folder.
+
+If you just want to test the Julia part of libtrixi, i.e., LibTrixi.jl, you can also run
+everything from Julia. From the repositority root, execute
+```shell
+JULIA_DEPOT_PATH=$PWD/libtrixi-julia/julia-depot \
+    julia --project=libtrixi-julia
+    examples/simple_trixi_controller.jl
+```
 
 ## Authors
 Libtrixi was initiated by
