@@ -59,6 +59,9 @@ jobs:
     defaults:
       run:
         shell: ${{ matrix.shell }}
+    env:
+      # Necessary for HDF5 to play nice with Julia
+      LD_PRELOAD: /lib/x86_64-linux-gnu/libcurl.so.4
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
