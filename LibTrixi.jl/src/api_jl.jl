@@ -12,8 +12,12 @@ function trixi_initialize_simulation_jl(filename)
 end
 
 function trixi_finalize_simulation_jl(simstate)
-    # TODO: call the SummaryCallback(), but its position is arbitrary
-    simstate.integrator.opts.callback.discrete_callbacks[1]()
+    # Run summary callback one final fime
+    for cb in simstate.integrator.opts.callback.discrete_callbacks
+        if cb isa DiscreteCallback{<:Any, typeof(summary_callback)}
+            cb()
+        end
+    end
 
     println("Simulation state finalized")
 
