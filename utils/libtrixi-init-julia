@@ -236,14 +236,6 @@ Pkg.add([\"Preferences\", \"UUIDs\", \"MPIPreferences\", \"P4est\", \"HDF5\"])
 [ $? -eq 0 ] || die "could not install dependencies"
 echo
 
-# Develop LibTrixi.jl
-echo "Install LibTrixi.jl..."
-JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
-    $julia_exec --project=. \
-    -e "using Pkg; Pkg.develop(path=\"$libtrixi_jl_path\")"
-[ $? -eq 0 ] || die "could not install LibTrixi.jl"
-echo
-
 # Set system MPI library
 echo "Use system MPI for Julia... "
 JULIA_DEPOT_PATH="$julia_depot" $julia_exec --project=. \
@@ -281,6 +273,25 @@ JULIA_HDF5_PATH="$hdf5_libdir" JULIA_DEPOT_PATH="$julia_depot" $julia_exec --pro
 #                  force = true)
 # "
 [ $? -eq 0 ] || die "could not configure system HDF5 library for Julia"
+echo
+
+# Develop LibTrixi.jl
+echo "Install LibTrixi.jl..."
+JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
+    $julia_exec --project=. \
+    -e "using Pkg; Pkg.develop(path=\"$libtrixi_jl_path\")"
+[ $? -eq 0 ] || die "could not install LibTrixi.jl"
+echo
+
+# Install remaining dependencies
+echo "Install Trixi.jl and OrdinaryDiffEq.jl..."
+JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
+    $julia_exec --project=. \
+    -e "
+using Pkg
+Pkg.add([\"Trixi\", \"OrdinaryDiffEq\"])
+"
+[ $? -eq 0 ] || die "could not install dependencies"
 echo
 
 # Install and precompile everything
