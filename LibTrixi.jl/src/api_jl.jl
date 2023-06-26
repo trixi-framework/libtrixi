@@ -6,8 +6,6 @@ function trixi_initialize_simulation_jl(filename)
     # Note: we need `invokelatest` here since the function is dynamically upon `include`
     simstate = invokelatest(Main.init_simstate)
 
-    println("Simulation state initialized")
-
     return simstate
 end
 
@@ -18,8 +16,6 @@ function trixi_finalize_simulation_jl(simstate)
             cb()
         end
     end
-
-    println("Simulation state finalized")
 
     return nothing
 end
@@ -40,8 +36,6 @@ function trixi_step_jl(simstate)
 
     if ret != :Success
         error("integrator failed to perform time step, return code: ", ret)
-    else
-        println("advanced to time ", simstate.integrator.t)
     end
 
     return nothing
