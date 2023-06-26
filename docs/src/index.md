@@ -15,7 +15,9 @@
 ### Prerequisites
 
 Currently, libtrixi is only developed and tested for Linux.
-Furthermore, a local installation of `MPI`, `p4est`, and `Julia` is required.
+Furthermore, a local installation of `MPI`,
+[`p4est`](https://github.com/cburstedde/p4est) (see steps 5-7 in its README), and
+[`Julia`](https://julialang.org/downloads/platform/) is required.
 
 ### Get the sources
 
@@ -27,7 +29,7 @@ git clone git@github.com:trixi-framework/libtrixi.git
 
 For building, `cmake` and its typical workflow is used.
 
-1. It is recommended to created an out-of-source build directory, e.g.
+1. It is recommended to create an out-of-source build directory, e.g.
 
     ```bash
     mkdir build
@@ -37,14 +39,16 @@ For building, `cmake` and its typical workflow is used.
 2. Call cmake
 
     ```bash
-    cmake -DCMAKE_INSTALL_PREFIX=<install_directory> ..
+    cmake -DCMAKE_BUILD_TYPE=(debug|release) -DCMAKE_INSTALL_PREFIX=<install_directory> ..
     ```
 
     `cmake` should find `MPI` and `Julia` automatically. If not, the directories
     can be specified manually.
     The `cmake` clients `ccmake` or `cmake-gui` could be useful.
 
-    Specifying the directory `install_directory` for later installation is optional.
+    - Specifying the directory `install_directory` for later installation is optional.
+    - Optional specification of build type sets some default compiler options for optimized
+      or debug code
 
 3. Call make
 
@@ -64,34 +68,38 @@ For building, `cmake` and its typical workflow is used.
     make install
     ```
 
-    This will install all provided file to the specified location.
+    This will install all provided files to the specified location.
 
 ### Setting up Julia
 After the library has been installed, you need to configure Julia for use with libtrixi. For
 this, create a directory where all necessary files will be placed, e.g., `libtrixi-julia`.
-Then, you can use the [`utils/libtrixi-init-julia`](utils/libtrixi-init-julia) tool to do
-the rest for you:
+Then, you can use the [`utils/libtrixi-init-julia`](utils/libtrixi-init-julia) tool (also
+available at `<install_directory>/bin`) to do the rest for you. A minimal example would be:
+
 ```shell
-# Assuming you are in still in the `build/` directory inside the repo clone
-cd ..
 mkdir libtrixi-julia
 cd libtrixi-julia
-../utils/libtrixi-init-julia ..
+<install_directory>/bin/libtrixi-init-julia \
+    --p4est-library <p4est_install_directory>/lib/libp4est.so
+    <install_directory>
 ```
-When running a program that uses libtrixi, make sure the set up the `JULIA_DEPOT_PATH`
-environment variable to point to the `julia-depot` subfolder in the
-`libtrixi-julia` directory. In your code, pass the path to the `libtrixi-julia` directory as
-the `project_directory` argument to `trixi_initialize`.
+
+Use `libtrixi-init-julia -h` to get help.
+When running a program that uses libtrixi, make sure to set up the `JULIA_DEPOT_PATH`
+environment variable to point to the `<julia-depot>` folder reported. In your code, pass
+the path to the `libtrixi-julia` directory to `trixi_initialize`, see the code of the
+examples.
 
 ### Testing
 
-Go to the repository root directory and run a simple demonstrator,
+Go to some directory from where you want to run a Trixi simulation.
+
 ```shell
 LIBTRIXI_DEBUG=all \
-JULIA_DEPOT_PATH=$PWD/libtrixi-julia/julia-depot \
-    build/examples/simple_trixi_controller_c \
-    $PWD/libtrixi-julia \
-    LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
+JULIA_DEPOT_PATH=<julia-depot> \
+    <install_directory>/bin/simple_trixi_controller_c \
+    <libtrixi-julia_directory> \
+    <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
 ```
 which should give you an output similar to this:
 ```
@@ -189,14 +197,14 @@ If you change the executable name from `simple_trixi_controller_c` to
 `simple_trixi_controller_f`, you will get a near identical output. The corresponding source
 files `simple_trixi_controller.c` and `simple_trixi_controller.f90` give you an idea on how
 to use the C and Fortran APIs of libtrixi, and can be found in the
-[`examples/`](https://github.com/trixi-framework/libtrixi/tree/main/examples) folder.
+[`examples/`](examples/) folder.
 
 If you just want to test the Julia part of libtrixi, i.e., LibTrixi.jl, you can also run
-everything from Julia. From the repositority root, execute
+everything from Julia. From the repository root, execute
 ```shell
 JULIA_DEPOT_PATH=$PWD/libtrixi-julia/julia-depot \
-    julia --project=libtrixi-julia
-    examples/simple_trixi_controller.jl
+    julia --project=<libtrixi-julia_directory>
+    <install_directory>/share/libtrixi/LibTrixi.jl/examples/simple_trixi_controller.jl
 ```
 
 Note: Most auxiliary output is hidden unless the environment variable `LIBTRIXI_DEBUG` is
