@@ -1,10 +1,10 @@
-# Known issues
+# Troubleshooting
 
-## Missing cuda libraries
+## `dlopen failed` is triggered by OpenMPI
 
 A warning similar to
 
-```
+```shell
 --------------------------------------------------------------------------
 Sorry!  You were supposed to get help about:
     dlopen failed
