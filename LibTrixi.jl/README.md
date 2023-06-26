@@ -7,7 +7,13 @@ It provides the necessary Julia functionality to allow controlling Trixi.jl from
 library libtrixi.
 
 ## Usage
-Install LibTrixi.jl as a normal Julia package and start the REPL. Then you can set up,
+You can add LibTrixi.jl as a Julia package via julia's REPL:
+
+```julia
+julia> using Pkg; Pkg.develop(path="path/to/LibTrixi.jl")
+```
+
+Quit and start the REPL again. Then you can set up,
 run, and finalize a simulation by running the following code:
 ```julia
 julia> using LibTrixi
