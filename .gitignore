@@ -13,7 +13,6 @@ cmake_install.cmake
 # Further ignore build products
 libtrixi.mod
 libtrixi.so*
-fortran_hello_world
 
 # Documenter
 docs/build
