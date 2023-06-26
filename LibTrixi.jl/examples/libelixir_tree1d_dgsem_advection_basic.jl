@@ -1,3 +1,4 @@
+using LibTrixi
 using Trixi
 using OrdinaryDiffEq
 
