@@ -5,7 +5,8 @@
 [![Codecov](https://codecov.io/gh/trixi-framework/libtrixi/branch/main/graph/badge.svg)](https://codecov.io/gh/trixi-framework/libtrixi)
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg)](https://opensource.org/licenses/MIT)
 
-**Libtrixi** is an interface library for using Trixi.jl from C/C++/Fortran.
+**Libtrixi** is an interface library for using
+[Trixi.jl](https://github.com/trixi-framework/Trixi.jl) from C/C++/Fortran.
 
 **Note: This project is in a very early stage and subject to changes without warning at any time.**
 
