@@ -22,4 +22,17 @@ include("simulationstate.jl")
 include("api_c.jl")
 include("api_jl.jl")
 
+# Show debug output depending on environment variable
+function show_debug_output()
+    if !haskey(ENV, "LIBTRIXI_DEBUG")
+        return false
+    end
+
+    if ENV["LIBTRIXI_DEBUG"] in ("all", "julia")
+        return true
+    else
+        return false
+    end
+end
+
 end # module LibTrixi
