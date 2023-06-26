@@ -6,7 +6,9 @@ function trixi_initialize_simulation_jl(filename)
     # Note: we need `invokelatest` here since the function is dynamically upon `include`
     simstate = invokelatest(Main.init_simstate)
 
-    println("Simulation state initialized")
+    if show_debug_output()
+        println("Simulation state initialized")
+    end
 
     return simstate
 end
@@ -18,7 +20,9 @@ function trixi_finalize_simulation_jl(simstate)
     resize!(u0, 0)
     resize!(u, 0)
 
-    println("Simulation state finalized")
+    if show_debug_output()
+        println("Simulation state finalized")
+    end
 
     return nothing
 end
@@ -55,16 +59,25 @@ function trixi_step_jl(simstate)
     # Update time such that we hit `finaltime` exactly
     if isapprox(t[] + dt[], finaltime[])
         t[] = finaltime[]
-        println("Current time: ", t[])
-        println("Final time reached")
+
+        if show_debug_output()
+            println("Current time: ", t[])
+            println("Final time reached")
+        end
     elseif t[] + dt[] > finaltime[]
         dt[] = finaltime[] - t[]
         t[] += dt[]
-        println("Current time: ", t[])
-        println("Final time reached")
+
+        if show_debug_output()
+            println("Current time: ", t[])
+            println("Final time reached")
+        end
     else
         t[] += dt[]
-        println("Current time: ", t[])
+
+        if show_debug_output()
+            println("Current time: ", t[])
+        end
     end
 
     return nothing

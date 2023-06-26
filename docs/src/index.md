@@ -86,7 +86,7 @@ the `project_directory` argument to `trixi_initialize`.
 
 Go to the repository root directory and run a simple demonstrator,
 ```shell
-cd ..
+LIBTRIXI_DEBUG=all \
 JULIA_DEPOT_PATH=$PWD/libtrixi-julia/julia-depot \
     build/examples/simple_trixi_controller_c \
     $PWD/libtrixi-julia \
