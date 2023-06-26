@@ -187,17 +187,20 @@ if [ -z "$LIBTRIXI_P4EST_LIBRARY" ]; then
 else
   p4est_libdir="$(dirname $LIBTRIXI_P4EST_LIBRARY)"
 fi
-p4est_library="$p4est_libdir/libp4est.so"
+p4est_libdir_abs="$(cd $p4est_libdir && pwd)"
+p4est_library="$p4est_libdir_abs/libp4est.so"
 if [ ! -f "$p4est_library" ]; then
   die "p4est library '$p4est_library' not found" 2
 fi
 
 # Check if libsc.so was given by the user or else assume it is next to libp4est.so
 if [ -z "$LIBTRIXI_SC_LIBRARY" ]; then
-  sc_library="$p4est_libdir/libsc.so"
+  sc_libdir="$p4est_libdir"
 else
-  sc_library="$LIBTRIXI_SC_LIBRARY"
+  sc_libdir="$(dirname $LIBTRIXI_SC_LIBRARY)"
 fi
+sc_libdir_abs="$(cd $sc_libdir && pwd)"
+sc_library="$sc_libdir_abs/libsc.so"
 if [ ! -f "$sc_library" ]; then
   die "sc library '$sc_library' not found" 2
 fi
