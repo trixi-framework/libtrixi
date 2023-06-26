@@ -1,11 +1,14 @@
 module LibTrixi
 
-export trixi_initialize,
-       trixi_initialize_cfptr,
-       trixi_initialize_jl
-export trixi_finalize,
-       trixi_finalize_cfptr,
-       trixi_finalize_jl
+using OrdinaryDiffEq: OrdinaryDiffEq, step!, check_error, DiscreteCallback
+using Trixi: Trixi, summary_callback
+
+export trixi_initialize_simulation,
+       trixi_initialize_simulation_cfptr,
+       trixi_initialize_simulation_jl
+export trixi_finalize_simulation,
+       trixi_finalize_simulation_cfptr,
+       trixi_finalize_simulation_jl
 export trixi_calculate_dt,
        trixi_calculate_dt_cfptr,
        trixi_calculate_dt_jl
@@ -21,5 +24,18 @@ export SimulationState, store_simstate, load_simstate, delete_simstate!
 include("simulationstate.jl")
 include("api_c.jl")
 include("api_jl.jl")
+
+# Show debug output depending on environment variable
+function show_debug_output()
+    if !haskey(ENV, "LIBTRIXI_DEBUG")
+        return false
+    end
+
+    if ENV["LIBTRIXI_DEBUG"] in ("all", "julia")
+        return true
+    else
+        return false
+    end
+end
 
 end # module LibTrixi

@@ -18,14 +18,10 @@ list ( APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/" )
 # Find Julia
 find_package( Julia REQUIRED )
 
-include_directories( ${JULIA_INCLUDE_DIRS} )
-
 
 
 # Find MPI
 find_package( MPI REQUIRED )
-
-include_directories( ${MPI_C_INCLUDE_DIRS} )
 
 
 
@@ -53,6 +49,17 @@ set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR})
 
 
 
+# Include directories
+target_include_directories( ${PROJECT_NAME} PRIVATE src ${MPI_C_INCLUDE_DIRS} ${JULIA_INCLUDE_DIRS} )
+
+# Libraries to link
+target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} ${MPI_C_LIB_NAMES})
+
+# Set appropriate compile flags
+target_compile_options( ${PROJECT_NAME} PUBLIC "-fPIC" )
+
+
+
 # Add examples
 add_subdirectory( examples )
 
@@ -61,3 +68,5 @@ add_subdirectory( examples )
 # Install configuration
 install( TARGETS ${PROJECT_NAME} )
 install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/libtrixi.mod TYPE LIB)
+install( DIRECTORY LibTrixi.jl DESTINATION share/libtrixi )
+install( PROGRAMS utils/libtrixi-init-julia TYPE BIN )

@@ -1,0 +1,321 @@
+#!/bin/bash
+
+usage() {
+  cat << EOF >&2
+usage: libtrixi-init-julia [-h] [-f]
+                           [--julia-depot JULIA_DEPOT]
+                           [--julia-exec JULIA_EXEC]
+                           [--mpi-library MPI_LIBRARY]
+                           [--p4est-library P4EST_LIBRARY]
+                           [--sc-library P4EST_LIBRARY]
+                           PREFIX_OR_REPO
+
+Set up all necessary project files in the current working directory and set appropriate
+Julia preferences for using the system-installed MPI and p4est libraries. Furthermore, this
+will install all dependencies in a local Julia depot folder (unless changed with the
+'--julia-depot' flag).
+
+The following files/folders will be created (or updated, if the '-f' flag is given):
+- Project.toml
+- Manifest.toml
+- LocalPreferences.toml
+- julia-depot
+
+Note: Optional arguments with a value can also be set by defining the corresponding
+environment variable prefixed by 'LIBTRIXI_'. For example, to use a Julia executable not on
+the PATH, run this script as 'LIBTRIXI_JULIA_EXEC=julia-1.9.1 libtrixi-init-julia ...'.
+
+positional arguments:
+    PREFIX_OR_REPO  Path to install prefix of a libtrixi installation or, alternatively to
+                    the root directory of a libtrixi clone. Note that the files at the
+                    path must not be moved while libtrixi is used since that will break
+                    library usage.
+
+optional arguments:
+    --help, -h      Show this help.
+
+    --force, -f     By default, this tool does nothing if any of the files/folders to be
+                    created already exist. With this option given on the command line, it
+                    will continue anyways.
+
+    --julia-depot JULIA_DEPOT
+                    Path to the Julia depot to be used, i.e., the folder where all Julia
+                    packages, Julia cache files etc. are stored. (default: 'julia-depot')
+
+    --julia-exec JULIA_EXEC
+                    Path to Julia executable. (default: 'julia')
+
+    --hdf5-library HDF5_LIBRARY
+                    Path to the HDF5 shared library, i.e., something like
+                    'path/to/libhdf5.so'. If empty, Julia will try to figure out the path
+                    automatically. (default: '')
+
+    --mpi-library MPI_LIBRARY
+                    Path to the MPI C shared library, i.e., something like
+                    'path/to/libmpi.so'. If empty, Julia will try to figure out the path
+                    automatically. (default: '')
+
+    --p4est-library P4EST_LIBRARY
+                    Path to the p4est shared library, i.e., something like
+                    'path/to/libp4est.so'. If empty, Julia will try to figure out the path
+                    automatically. (default: '')
+
+    --sc-library SC_LIBRARY
+                    Path to the sc shared library, i.e., something like
+                    'path/to/libsc.so'. If omitted, it will be assumed to be located next
+                    to the p4est library. (default: '\$(dirname \$P4EST_LIBRARY)/libsc.so')
+EOF
+}
+
+die() {
+  printf 'ERROR: %s\n' "$1" >&2
+  if [ -n "$2" ]; then
+    exit $2
+  else
+    exit 1
+  fi
+}
+
+# Parse arguments (based on https://stackoverflow.com/a/14203146/1329844)
+POSITIONAL_ARGS=()
+USE_FORCE=0
+if [ -z "$LIBTRIXI_JULIA_EXEC" ]; then
+  LIBTRIXI_JULIA_EXEC=julia
+fi
+if [ -z "$LIBTRIXI_JULIA_DEPOT" ]; then
+  LIBTRIXI_JULIA_DEPOT=julia-depot
+fi
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h|--help)
+      usage
+      exit
+      ;;
+    -f|--force)
+      USE_FORCE=1
+      shift
+      ;;
+    --julia-exec)
+      LIBTRIXI_JULIA_EXEC="$2"
+      shift 2
+      ;;
+    --julia-depot)
+      LIBTRIXI_JULIA_DEPOT="$2"
+      shift 2
+      ;;
+    --hdf5-library)
+      LIBTRIXI_HDF5_LIBRARY="$2"
+      shift 2
+      ;;
+    --mpi-library)
+      LIBTRIXI_MPI_LIBRARY="$2"
+      shift 2
+      ;;
+    --p4est-library)
+      LIBTRIXI_P4EST_LIBRARY="$2"
+      shift 2
+      ;;
+    --sc-library)
+      LIBTRIXI_SC_LIBRARY="$2"
+      shift 2
+      ;;
+    -*|--*)
+      die "unknown option '$1' (use '-h' for usage information)"
+      ;;
+    *)
+      POSITIONAL_ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+
+# Verify usage
+if [ $# -lt 1 ]; then
+  echo "ERROR: missing 'PREFIX_OR_REPO' argument" >&2
+  echo >&2
+  usage
+  exit 2
+fi
+
+# Check that Julia executable exists
+if ! command -v $LIBTRIXI_JULIA_EXEC &> /dev/null; then
+  die "Julia executable '$LIBTRIXI_JULIA_EXEC' not found" 2
+fi
+julia_exec="$LIBTRIXI_JULIA_EXEC"
+
+# Save Julia depot path
+julia_depot="$LIBTRIXI_JULIA_DEPOT"
+
+# Check if libhdf5.so was given by the user or try to find it using Julia
+if [ -z "$LIBTRIXI_HDF5_LIBRARY" ]; then
+  hdf5_libdir="$($julia_exec -e 'using Libdl; find_library("libhdf5") |> dlpath |> dirname |> println')"
+  if [ -z "$hdf5_libdir" ]; then
+    die "location of hdf5 library could not be determined automatically (use '--hdf5-library' instead)"
+  fi
+else
+  hdf5_libdir="$(dirname $LIBTRIXI_HDF5_LIBRARY)"
+fi
+hdf5_library="$hdf5_libdir/libhdf5.so"
+if [ ! -f "$hdf5_library" ]; then
+  die "hdf5 library '$hdf5_library' not found" 2
+fi
+hdf5_hl_library="$hdf5_libdir/libhdf5_hl.so"
+if [ ! -f "$hdf5_hl_library" ]; then
+  die "hdf5 library '$hdf5_hl_library' not found" 2
+fi
+
+# Check if MPI library was given by the user or try to find it using Julia
+if [ -z "$LIBTRIXI_MPI_LIBRARY" ]; then
+  mpi_library="$($julia_exec -e 'using Libdl; find_library(["libmpi", "libmpi_ibm", "msmpi", "libmpich", "libmpi_cray", "libmpitrampoline"]) |> dlpath |> println')"
+  if [ -z "$mpi_library" ]; then
+    die "location of MPI library could not be determined automatically (use '--mpi-library' instead)"
+  fi
+else
+  mpi_library="$LIBTRIXI_MPI_LIBRARY"
+fi
+if [ ! -f "$mpi_library" ]; then
+  die "MPI library '$mpi_library' not found" 2
+fi
+
+# Check if libpest.so was given by the user or try to find it using Julia
+if [ -z "$LIBTRIXI_P4EST_LIBRARY" ]; then
+  p4est_libdir="$($julia_exec -e 'using Libdl; find_library("libp4est") |> dlpath |> dirname |> println')"
+  if [ -z "$p4est_libdir" ]; then
+    die "location of p4est library could not be determined automatically (use '--p4est-library' instead)"
+  fi
+else
+  p4est_libdir="$(dirname $LIBTRIXI_P4EST_LIBRARY)"
+fi
+p4est_libdir_abs="$(cd $p4est_libdir && pwd)"
+p4est_library="$p4est_libdir_abs/libp4est.so"
+if [ ! -f "$p4est_library" ]; then
+  die "p4est library '$p4est_library' not found" 2
+fi
+
+# Check if libsc.so was given by the user or else assume it is next to libp4est.so
+if [ -z "$LIBTRIXI_SC_LIBRARY" ]; then
+  sc_libdir="$p4est_libdir"
+else
+  sc_libdir="$(dirname $LIBTRIXI_SC_LIBRARY)"
+fi
+sc_libdir_abs="$(cd $sc_libdir && pwd)"
+sc_library="$sc_libdir_abs/libsc.so"
+if [ ! -f "$sc_library" ]; then
+  die "sc library '$sc_library' not found" 2
+fi
+
+# Determine path to LibTrixi.jl
+prefix_or_repo="$1"
+if [ -d "$prefix_or_repo/LibTrixi.jl" ]; then
+  libtrixi_jl_path="$prefix_or_repo/LibTrixi.jl"
+elif [ -d "$prefix_or_repo/share/libtrixi/LibTrixi.jl" ]; then
+  libtrixi_jl_path="$prefix_or_repo/share/libtrixi/LibTrixi.jl"
+else
+  echo "ERROR: no valid path to LibTrixi.jl could be found for the given prefix/repo" >&2
+  echo "We checked the following:" >&2
+  echo "- '$prefix_or_repo/share/libtrixi/LibTrixi.jl' is not a directory"
+  echo "- '$prefix_or_repo/LibTrixi.jl' is not a directory"
+  exit 2
+fi
+
+# Check that no files will be overwritten/modified unless force is used
+if [ $USE_FORCE -ne 1 ]; then
+  for path in Project.toml Manifest.toml LocalPreferences.toml "$julia_depot"; do
+    if [ -d $path ] || [ -f $path ] || [ -L $path ]; then
+      die "'$path' already exists in current directory (override with '-f' flag)"
+    fi
+  done
+fi
+
+# Install dependencies for configuration
+echo "Install dependencies for configuration..."
+JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
+    $julia_exec --project=. \
+    -e "
+using Pkg
+Pkg.add([\"Preferences\", \"UUIDs\", \"MPIPreferences\", \"P4est\", \"HDF5\"])
+"
+[ $? -eq 0 ] || die "could not install dependencies"
+echo
+
+# Set system MPI library
+echo "Use system MPI for Julia... "
+JULIA_DEPOT_PATH="$julia_depot" $julia_exec --project=. \
+    -e "
+using MPIPreferences
+MPIPreferences.use_system_binary(; library_names=\"$mpi_library\")
+"
+[ $? -eq 0 ] || die "could not configure system MPI library for Julia"
+echo
+
+# Set system p4est library
+echo "Use system p4est for Julia... "
+JULIA_DEPOT_PATH="$julia_depot" $julia_exec --project=. \
+    -e "
+using Preferences, UUIDs
+set_preferences!(UUID(\"7d669430-f675-4ae7-b43e-fab78ec5a902\"),
+                 \"libp4est\" => \"$p4est_library\",
+                 \"libpsc\" => \"$sc_library\",
+                 force = true)
+"
+[ $? -eq 0 ] || die "could not configure system p4est library for Julia"
+echo
+
+# Set system HDF5 library
+echo "Use system HDF5 for Julia... "
+JULIA_HDF5_PATH="$hdf5_libdir" JULIA_DEPOT_PATH="$julia_depot" $julia_exec --project=. \
+    -e 'using Pkg; Pkg.build("HDF5"; verbose = true)'
+# Note: The following code replaces the previous line for HDF5 v0.17+, which has not yet
+# been released at the time of writing
+#     -e "
+# using Preferences, UUIDs
+# set_preferences!(UUID(\"f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f\"),
+#                  \"libhdf5\" => \"$hdf5_library\",
+#                  \"libhdf5_hl\" => \"$hdf5_hl_library\",
+#                  force = true)
+# "
+[ $? -eq 0 ] || die "could not configure system HDF5 library for Julia"
+echo
+
+# Develop LibTrixi.jl
+echo "Install LibTrixi.jl..."
+JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
+    $julia_exec --project=. \
+    -e "using Pkg; Pkg.develop(path=\"$libtrixi_jl_path\")"
+[ $? -eq 0 ] || die "could not install LibTrixi.jl"
+echo
+
+# Install remaining dependencies
+echo "Install Trixi.jl and OrdinaryDiffEq.jl..."
+JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
+    $julia_exec --project=. \
+    -e "
+using Pkg
+Pkg.add([\"Trixi\", \"OrdinaryDiffEq\"])
+"
+[ $? -eq 0 ] || die "could not install dependencies"
+echo
+
+# Install and precompile everything
+echo "Precompile all packages ..."
+JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
+    $julia_exec --project=. \
+    -e "using Pkg; Pkg.precompile(strict=true)"
+[ $? -eq 0 ] || die "could not precompile packages"
+echo
+
+
+# Congratulate user
+echo
+echo "SUCCESS: Julia has been set up for libtrixi! 🐳"
+echo
+echo "Note: When using libtrixi, you need to set the following environment variable:"
+echo
+echo "    export JULIA_DEPOT_PATH=\"$PWD/$julia_depot\""
+echo
+echo "When calling libtrixi's 'trixi_initialize' function, you need to provide"
+echo
+echo "    $PWD"
+echo
+echo "as the 'project_directory'."
