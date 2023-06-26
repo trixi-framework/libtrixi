@@ -116,6 +116,11 @@ files `simple_trixi_controller.c` and `simple_trixi_controller.f90` give you an 
 to use the C and Fortran APIs of libtrixi, and can be found in the
 [`examples/`](https://github.com/trixi-framework/libtrixi/tree/main/examples) folder.
 
+Note: Most auxiliary output is hidden unless the environment variable `LIBTRIXI_DEBUG` is
+set to `all`. Alternative values for the variable are `c` or `julia` to only show debug
+statements from the C or Julia part of the library, respectively. All values are
+case-sensitive and must be provided all lowercase.
+
 ## Authors
 Libtrixi was initiated by
 [Benedict Geihe](https://www.mi.uni-koeln.de/NumSim/)
