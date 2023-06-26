@@ -134,7 +134,8 @@ jobs:
               --p4est-library ../p4est-local/prefix/lib/libp4est.so \
               --julia-depot ~/.julia \
               --force
-          cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_demo.jl .
+          cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl .
+          cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl .
       - name: Prepare coverage reporting
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
@@ -146,9 +147,13 @@ jobs:
         run: |
           cd libtrixi-julia
           JULIA_DEPOT_PATH=~/.julia \
-              ../build/examples/simple_trixi_controller_c . libelixir_demo.jl
+              ../build/examples/simple_trixi_controller_c . libelixir_tree1d_dgsem_advection_basic.jl
           JULIA_DEPOT_PATH=~/.julia \
-              ../build/examples/simple_trixi_controller_f . libelixir_demo.jl
+              ../build/examples/simple_trixi_controller_f . libelixir_tree1d_dgsem_advection_basic.jl
+          JULIA_DEPOT_PATH=~/.julia \
+              ../build/examples/simple_trixi_controller_c . libelixir_p4est2d_dgsem_euler_sedov.jl
+          JULIA_DEPOT_PATH=~/.julia \
+              ../build/examples/simple_trixi_controller_f . libelixir_p4est2d_dgsem_euler_sedov.jl
         env:
           LIBTRIXI_DEBUG: all
       - name: Run memory checks with Valgrind
@@ -157,9 +162,13 @@ jobs:
           sudo apt-get install -y valgrind
           cd libtrixi-julia
           JULIA_DEPOT_PATH=~/.julia valgrind --error-exitcode=1 -s \
-              ../build/examples/simple_trixi_controller_c . libelixir_demo.jl
+              ../build/examples/simple_trixi_controller_c . libelixir_tree1d_dgsem_advection_basic.jl
           JULIA_DEPOT_PATH=~/.julia valgrind --error-exitcode=1 -s \
-              ../build/examples/simple_trixi_controller_f . libelixir_demo.jl
+              ../build/examples/simple_trixi_controller_f . libelixir_tree1d_dgsem_advection_basic.jl
+          JULIA_DEPOT_PATH=~/.julia valgrind --error-exitcode=1 -s \
+              ../build/examples/simple_trixi_controller_c . libelixir_p4est2d_dgsem_euler_sedov.jl
+          JULIA_DEPOT_PATH=~/.julia valgrind --error-exitcode=1 -s \
+              ../build/examples/simple_trixi_controller_f . libelixir_p4est2d_dgsem_euler_sedov.jl
       - name: Process coverage data
         if: ${{ matrix.test_type == 'coverage' }}
         run: |

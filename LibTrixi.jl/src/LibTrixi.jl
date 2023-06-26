@@ -1,5 +1,8 @@
 module LibTrixi
 
+using OrdinaryDiffEq: OrdinaryDiffEq, step!, check_error, DiscreteCallback
+using Trixi: Trixi, summary_callback
+
 export trixi_initialize_simulation,
        trixi_initialize_simulation_cfptr,
        trixi_initialize_simulation_jl
