@@ -10,7 +10,7 @@ target_link_libraries(fortran_hello_world PRIVATE ${MPI_Fortran_LIBRARIES} ${PRO
 target_include_directories(fortran_hello_world PRIVATE ${MPI_Fortran_INCLUDE_DIRS})
 
 # Set runtime path for installed binaries
-set_target_properties( fortran_hello_world PROPERTIES INSTALL_RPATH "../lib")
+set_target_properties( fortran_hello_world PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 install( TARGETS fortran_hello_world )
 
@@ -32,7 +32,7 @@ target_include_directories(
 )
 
 # Set runtime path for installed binaries
-set_target_properties( simple_trixi_controller_c PROPERTIES INSTALL_RPATH "../lib")
+set_target_properties( simple_trixi_controller_c PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 install( TARGETS simple_trixi_controller_c )
 
@@ -56,6 +56,6 @@ target_include_directories(
 )
 
 # Set runtime path for installed binaries
-set_target_properties( simple_trixi_controller_f PROPERTIES INSTALL_RPATH "../lib")
+set_target_properties( simple_trixi_controller_f PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 install( TARGETS simple_trixi_controller_f )
