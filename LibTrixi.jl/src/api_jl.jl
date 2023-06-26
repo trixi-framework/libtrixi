@@ -6,6 +6,10 @@ function trixi_initialize_simulation_jl(filename)
     # Note: we need `invokelatest` here since the function is dynamically upon `include`
     simstate = invokelatest(Main.init_simstate)
 
+    if show_debug_output()
+        println("Simulation state initialized")
+    end
+
     return simstate
 end
 
@@ -15,6 +19,10 @@ function trixi_finalize_simulation_jl(simstate)
         if cb isa DiscreteCallback{<:Any, typeof(summary_callback)}
             cb()
         end
+    end
+
+    if show_debug_output()
+        println("Simulation state finalized")
     end
 
     return nothing

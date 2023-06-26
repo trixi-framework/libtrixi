@@ -83,9 +83,9 @@ environment variable to point to the `julia-depot` subfolder in the
 the `project_directory` argument to `trixi_initialize`.
 
 ### Testing
-
 Go to the repository root directory and run a simple demonstrator,
 ```shell
+LIBTRIXI_DEBUG=all \
 JULIA_DEPOT_PATH=$PWD/libtrixi-julia/julia-depot \
     build/examples/simple_trixi_controller_c \
     $PWD/libtrixi-julia \
@@ -122,6 +122,11 @@ JULIA_DEPOT_PATH=$PWD/libtrixi-julia/julia-depot \
     julia --project=libtrixi-julia
     examples/simple_trixi_controller.jl
 ```
+
+Note: Most auxiliary output is hidden unless the environment variable `LIBTRIXI_DEBUG` is
+set to `all`. Alternative values for the variable are `c` or `julia` to only show debug
+statements from the C or Julia part of the library, respectively. All values are
+case-sensitive and must be provided all lowercase.
 
 ## Authors
 Libtrixi was initiated by

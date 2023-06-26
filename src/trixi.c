@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <julia.h>
 
 // TODO
@@ -13,6 +15,9 @@ static void print_and_die(const char* message, const char* func, const char* fil
 
 // Auxiliary function to evaluate julia REPL string with exception handling
 static jl_value_t* checked_eval_string(const char* code, const char* func, const char* file, int lineno);
+
+// Auxiliary function to determine debug level
+static int show_debug_output();
 
 // Store function pointers to avoid overhead of `jl_eval_string`
 enum {
@@ -49,9 +54,12 @@ void trixi_initialize(const char * project_directory) {
     jl_init();
 
     // Construct activation command
-    const char * activate = "using Pkg;\n"
-                            "Pkg.activate(\"%s\");\n"
-                            "Pkg.status();\n";
+    const char * activate_regular = "using Pkg;\n"
+                                    "Pkg.activate(\"%s\"; io=devnull);\n";
+    const char * activate_debug = "using Pkg;\n"
+                                  "Pkg.activate(\"%s\");\n"
+                                  "Pkg.status();\n";
+    const char * activate = show_debug_output() ? activate_debug : activate_regular;
     if ( strlen(activate) + strlen(project_directory) + 1 > 1024 ) {
         fprintf(stderr, "error: buffer size not sufficient for activation command\n");
         exit(1);
@@ -64,7 +72,9 @@ void trixi_initialize(const char * project_directory) {
 
     // Load LibTrixi module
     checked_eval_string("using LibTrixi;", LOC);
-    checked_eval_string("println(\"Module LibTrixi.jl loaded\")", LOC);
+    if (show_debug_output()) {
+      checked_eval_string("println(\"Module LibTrixi.jl loaded\")", LOC);
+    }
 
     // Load function pointers
     char julia_command[256];
@@ -170,7 +180,9 @@ void trixi_finalize_simulation(int handle) {
  */
 void trixi_finalize() {
 
-    printf("libtrixi: finalize\n");
+    if (show_debug_output()) {
+        printf("libtrixi: finalize\n");
+    }
 
     // Reset function pointers
     for (int i = 0; i < TRIXI_NUM_FPTRS; i++) {
@@ -216,4 +228,17 @@ jl_value_t* checked_eval_string(const char* code, const char* func, const char* 
 void print_and_die(const char* message, const char* func, const char* file, int lineno) {
   fprintf(stderr, "ERROR in %s:%d (%s): %s\n", file, lineno, func, message);
   exit(1);
+}
+
+static int show_debug_output() {
+  const char * env = getenv("LIBTRIXI_DEBUG");
+  if (!env) {
+    return 0;
+  }
+
+  if (strcmp(env, "all") == 0 || strcmp(env, "c") == 0) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
