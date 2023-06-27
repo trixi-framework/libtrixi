@@ -67,6 +67,6 @@ add_subdirectory( examples )
 
 # Install configuration
 install( TARGETS ${PROJECT_NAME} )
-install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/libtrixi.mod TYPE LIB)
+install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/libtrixi.mod TYPE INCLUDE)
 install( DIRECTORY LibTrixi.jl DESTINATION share/libtrixi )
 install( PROGRAMS utils/libtrixi-init-julia TYPE BIN )
