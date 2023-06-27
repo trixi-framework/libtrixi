@@ -122,6 +122,10 @@ jobs:
         run: |
           cd build
           make install
+      - name: Test building with an external Makefile
+        run: |
+          cd examples
+          make -f MakefileExternal LIBTRIXI_PREFIX=$PWD/../install
       - name: Initialize project directory
         # Note that we set the Julia depot to `~/.julia` *ONLY* to make use of the
         # julia-actions/cache above (which unfortunately hardcoded the `~/.julia`

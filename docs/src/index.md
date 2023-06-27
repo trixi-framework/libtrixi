@@ -10,6 +10,7 @@
 
 **Note: This project is in a very early stage and subject to changes without warning at any time.**
 
+
 ## Getting started
 
 ### Prerequisites
@@ -25,7 +26,7 @@ Furthermore, a local installation of `MPI`,
 git clone git@github.com:trixi-framework/libtrixi.git
 ```
 
-### Building
+### [Building](@id building-libtrixi)
 
 For building, `cmake` and its typical workflow is used.
 
@@ -212,6 +213,25 @@ set to `all`. Alternative values for the variable are `c` or `julia` to only sho
 statements from the C or Julia part of the library, respectively. All values are
 case-sensitive and must be provided all lowercase.
 
+
+### Linking against libtrixi
+To use libtrixi in your program, you need to specify `-I$LIBTRIXI_PREFIX/include` for the
+include directory with header and module files, `-L$LIBTRIXI_PREFIX/lib` for the library
+directory, and `-ltrixi` for the library itself during your build process. Optionally, you
+can additionally specify `-Wl,-rpath,$LIBTRIXI_PREFIX/lib` such that the runtime loader
+knows where to find `libtrixi.so`. Here, `$LIBTRIXI_PREFIX` is the install prefix you
+specified during the CMake configure stage with `-DCMAKE_INSTALL_PREFIX`
+(see [above](@ref building-libtrixi)).
+
+An example `Makefile` is provided with
+[`examples/MakefileExternal`](https://github.com/trixi-framework/libtrixi/tree/main/examples/MakefileExternal),
+which can be invoked from inside the `examples/` directory as
+```shell
+make -f MakefileExternal LIBTRIXI_PREFIX=path/to/libtrixi/prefix
+```
+to build `simple_trixi_controller_f`.
+
+
 ## Authors
 Libtrixi was initiated by
 [Benedict Geihe](https://www.mi.uni-koeln.de/NumSim/)
@@ -222,6 +242,7 @@ are also its principal maintainers.
 
 ## [License](@id readme-license)
 Libtrixi is licensed under the MIT license (see [License](@ref)).
+
 
 ## Acknowledgments
 This project has benefited from funding by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation)
