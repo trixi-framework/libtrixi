@@ -1,0 +1,10 @@
+# Override any of these variables on the command line if necessary, e.g.,
+# make -f MakefileExternal LIBTRIXI_PREFIX=path/to/install/dir FC=gfortran
+LIBTRIXI_PREFIX ?= ERROR_LIBTRIXI_PREFIX_NOT_SET
+FC ?= f95
+
+libdir := $(LIBTRIXI_PREFIX)/lib
+incdir := $(LIBTRIXI_PREFIX)/include
+
+simple_trixi_controller_f: simple_trixi_controller.f90
+	$(FC) $< -o $@ -I$(incdir) -L$(libdir) -Wl,-rpath,$(LIBTRIXI_LIBRARY_DIR) -ltrixi
