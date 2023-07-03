@@ -76,8 +76,8 @@ After the library has been installed, you need to configure Julia for use with l
 this, create a directory where all necessary files will be placed, e.g., `libtrixi-julia`.
 Then, you can use the
 [`utils/libtrixi-init-julia`](https://github.com/trixi-framework/libtrixi/tree/main/utils/libtrixi-init-julia)
-tool (also
-available at `<install_directory>/bin`) to do the rest for you. A minimal example would be:
+tool (also available at `<install_directory>/bin`) to do the rest for you. A minimal example
+would be:
 
 ```shell
 mkdir libtrixi-julia
