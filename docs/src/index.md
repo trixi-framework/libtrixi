@@ -74,8 +74,10 @@ For building, `cmake` and its typical workflow is used.
 ### Setting up Julia
 After the library has been installed, you need to configure Julia for use with libtrixi. For
 this, create a directory where all necessary files will be placed, e.g., `libtrixi-julia`.
-Then, you can use the [`utils/libtrixi-init-julia`](utils/libtrixi-init-julia) tool (also
-available at `<install_directory>/bin`) to do the rest for you. A minimal example would be:
+Then, you can use the
+[`utils/libtrixi-init-julia`](https://github.com/trixi-framework/libtrixi/tree/main/utils/libtrixi-init-julia)
+tool (also available at `<install_directory>/bin`) to do the rest for you. A minimal example
+would be:
 
 ```shell
 mkdir libtrixi-julia
@@ -198,7 +200,7 @@ If you change the executable name from `simple_trixi_controller_c` to
 `simple_trixi_controller_f`, you will get a near identical output. The corresponding source
 files `simple_trixi_controller.c` and `simple_trixi_controller.f90` give you an idea on how
 to use the C and Fortran APIs of libtrixi, and can be found in the
-[`examples/`](examples/) folder.
+[`examples/`](https://github.com/trixi-framework/libtrixi/tree/main/examples/) folder.
 
 If you just want to test the Julia part of libtrixi, i.e., LibTrixi.jl, you can also run
 everything from Julia. From the repository root, execute
