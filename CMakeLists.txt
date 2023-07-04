@@ -59,6 +59,11 @@ target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} ${MPI_C_LIB_NAME
 target_compile_options( ${PROJECT_NAME} PUBLIC "-fPIC" )
 
 
+# Add auxiliary *object* library to support fast thread-local storage (TLS)
+add_library ( ${PROJECT_NAME}_tls OBJECT
+    src/trixi_tls.c
+)
+target_include_directories( ${PROJECT_NAME}_tls PRIVATE ${JULIA_INCLUDE_DIRS} )
 
 # Add examples
 add_subdirectory( examples )
@@ -68,5 +73,6 @@ add_subdirectory( examples )
 # Install configuration
 install( TARGETS ${PROJECT_NAME} )
 install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/libtrixi.mod TYPE INCLUDE)
+install( FILES $<TARGET_OBJECTS:${PROJECT_NAME}_tls> TYPE LIB RENAME lib${PROJECT_NAME}_tls.o )
 install( DIRECTORY LibTrixi.jl DESTINATION share/libtrixi )
 install( PROGRAMS utils/libtrixi-init-julia TYPE BIN )

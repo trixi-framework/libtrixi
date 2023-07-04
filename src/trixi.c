@@ -3,9 +3,6 @@
 #include <string.h>
 #include <julia.h>
 
-// TODO
-// JULIA_DEFINE_FAST_TLS // only define this once, in an executable (not in a shared library) if you want fast code.
-
 #include "trixi.h"
 
 
