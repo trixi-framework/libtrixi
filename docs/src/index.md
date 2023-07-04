@@ -235,7 +235,7 @@ to build `simple_trixi_controller_f`.
 
 Note: On Linux and FreeBSD systems (i.e., *not* on macOS or Windows), Julia may internally
 use a faster implementation for thread-local storage (TLS), which is used whenever Julia
-functions such task management, garbage colletion etc. are used in a multithreaded
+functions such task management, garbage collection etc. are used in a multithreaded
 context, or when they are themselves multithreaded. To activate the fast TLS in your
 program, you need to add the file `$LIBTRIXI_PREFIX/lib/libtrixi_tls.o` to the list of files
 that are linked with your main program. See `MakefileExternal` for an example of how to do
