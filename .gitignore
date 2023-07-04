@@ -16,3 +16,6 @@ libtrixi.so*
 
 # Documenter
 docs/build
+
+# VS Code
+.vscode

@@ -16,7 +16,7 @@ on:
       debug_enabled:
         description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
         required: false
-        default: false
+        default: "false"
 
 jobs:
   test:
@@ -123,6 +123,7 @@ jobs:
           cd build
           make install
       - name: Test building with an external Makefile
+        if: ${{ matrix.test_type == 'regular' }}
         run: |
           cd examples
           make -f MakefileExternal LIBTRIXI_PREFIX=$PWD/../install

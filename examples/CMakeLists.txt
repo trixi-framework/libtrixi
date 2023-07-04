@@ -5,7 +5,7 @@ add_executable(simple_trixi_controller_c simple_trixi_controller.c)
 
 target_link_libraries(
   simple_trixi_controller_c
-  PRIVATE ${MPI_C_LIBRARIES} ${PROJECT_NAME}
+  PRIVATE ${MPI_C_LIBRARIES} ${PROJECT_NAME} ${PROJECT_NAME}_tls
 )
 
 target_include_directories(
@@ -29,7 +29,7 @@ target_link_directories(simple_trixi_controller_f PRIVATE ${CMAKE_BINARY_DIR})
 
 target_link_libraries(
   simple_trixi_controller_f
-  PRIVATE ${MPI_Fortran_LIBRARIES} ${PROJECT_NAME}
+  PRIVATE ${MPI_Fortran_LIBRARIES} ${PROJECT_NAME}  ${PROJECT_NAME}_tls
 )
 
 target_include_directories(
