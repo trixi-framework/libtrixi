@@ -41,3 +41,25 @@ target_include_directories(
 set_target_properties( simple_trixi_controller_f PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 install( TARGETS simple_trixi_controller_f )
+
+
+
+#
+# Trixi Controller with Data (C version)
+#
+add_executable(trixi_controller_data_c trixi_controller_data.c)
+
+target_link_libraries(
+  trixi_controller_data_c
+  PRIVATE ${MPI_C_LIBRARIES} ${PROJECT_NAME} ${PROJECT_NAME}_tls
+)
+
+target_include_directories(
+  trixi_controller_data_c
+  PRIVATE ${CMAKE_SOURCE_DIR}/src ${MPI_C_INCLUDE_DIRS}
+)
+
+# Set runtime path for installed binaries
+set_target_properties( trixi_controller_data_c PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+
+install( TARGETS trixi_controller_data_c )

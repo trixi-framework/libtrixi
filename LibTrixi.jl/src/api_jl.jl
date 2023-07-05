@@ -49,3 +49,53 @@ function trixi_step_jl(simstate)
 
     return nothing
 end
+
+function trixi_ndims_jl(simstate)
+    mesh, _, _, _ = Trixi.mesh_equations_solver_cache(simstate.semi)
+    return ndims(mesh)
+end
+
+function trixi_nelements_jl(simstate)
+    _, _, solver, cache = Trixi.mesh_equations_solver_cache(simstate.semi)
+    return Trixi.nelements(solver, cache)
+end
+
+function trixi_nvariables_jl(simstate)
+    _, equations, _, api_jl = Trixi.mesh_equations_solver_cache(simstate.semi)
+    return Trixi.nvariables(equations)
+end
+
+function trixi_get_cell_averages_jl(data_, simstate)
+
+    mesh, equations, solver, cache = Trixi.mesh_equations_solver_cache(simstate.semi)
+    nelements = Trixi.nelements(solver, cache)
+    nvariables = Trixi.nvariables(equations)
+
+    # convert C to julia
+    data = unsafe_wrap(Array, data_, nelements*nvariables)
+
+    u_ode = simstate.integrator.u
+    u = Trixi.wrap_array(u_ode, mesh, equations, solver, cache)
+
+    for (index, element) in enumerate(Trixi.eachelement(solver, cache))
+
+        # temporary storage for mean value on current element for all variables
+        u_mean = zero(Trixi.get_node_vars(u, equations, solver, 1, 1, element))
+
+        # compute mean value using nodal dg values and quadrature
+        for j in Trixi.eachnode(solver), i in Trixi.eachnode(solver)
+            u_node_prim = Trixi.cons2prim(Trixi.get_node_vars(u, equations, solver, i, j, element), equations)
+            u_mean += u_node_prim * solver.basis.weights[i] * solver.basis.weights[j]
+        end
+
+        # normalize to unit element
+        u_mean = u_mean / 2^ndims(mesh)
+
+        # copy to provided array
+        for ivar = 0:nvariables-1
+            data[index + ivar * nelements] = u_mean[ivar+1]
+        end
+    end
+
+    return nothing
+end
