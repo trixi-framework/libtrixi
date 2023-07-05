@@ -19,6 +19,9 @@ list ( APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/" )
 find_package( Julia REQUIRED )
 
 
+# Find t8code
+find_package( T8code REQUIRED )
+
 
 # Find MPI
 find_package( MPI REQUIRED )
