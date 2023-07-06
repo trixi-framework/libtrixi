@@ -35,9 +35,9 @@ module LibTrixi
     subroutine trixi_finalize() bind(c)
     end subroutine
 
-    subroutine julia_eval_string(code) bind(c)
+    subroutine julia_eval_string_c(code) bind(c, name='julia_eval_string')
       use, intrinsic :: iso_c_binding, only: c_char
-      character(kind=c_char), intent(in) :: code(*)
+      character(kind=c_char), dimension(*), intent(in) :: code
     end subroutine
   end interface
 
@@ -64,4 +64,10 @@ module LibTrixi
     trixi_initialize_simulation = trixi_initialize_simulation_c(trim(adjustl(libelixir)) // c_null_char)
   end function
 
+  subroutine julia_eval_string(code)
+    use, intrinsic :: iso_c_binding, only: c_null_char
+    character(len=*), intent(in) :: code
+
+    call julia_eval_string_c(trim(adjustl(code)) // c_null_char)
+  end subroutine
 end module
