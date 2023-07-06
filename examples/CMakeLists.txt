@@ -1,7 +1,7 @@
 set ( EXAMPLES
       simple_trixi_controller.c
       simple_trixi_controller.f90
-      t8code.c )
+      simple_t8code.c )
 
 
 foreach ( EXAMPLE ${EXAMPLES} )
