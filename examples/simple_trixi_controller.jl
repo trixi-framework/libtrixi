@@ -1,6 +1,5 @@
 using LibTrixi
 
-project_dir = "libtrixi-julia"
 libelixir = "LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl"
 
 println("*** Trixi controller ***   Set up Trixi simulation")
