@@ -1,43 +1,46 @@
-#
-# Simple Trixi Controller (C version)
-#
-add_executable(simple_trixi_controller_c simple_trixi_controller.c)
-
-target_link_libraries(
-  simple_trixi_controller_c
-  PRIVATE ${MPI_C_LIBRARIES} ${PROJECT_NAME} ${PROJECT_NAME}_tls
-)
-
-target_include_directories(
-  simple_trixi_controller_c
-  PRIVATE ${CMAKE_SOURCE_DIR}/src ${MPI_C_INCLUDE_DIRS}
-)
-
-# Set runtime path for installed binaries
-set_target_properties( simple_trixi_controller_c PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-
-install( TARGETS simple_trixi_controller_c )
+set ( EXAMPLES
+      simple_trixi_controller.c
+      simple_trixi_controller.f90 )
 
 
+foreach ( EXAMPLE ${EXAMPLES} )
 
-#
-# Simple Trixi Controller (Fortran version)
-#
-add_executable(simple_trixi_controller_f simple_trixi_controller.f90)
+    get_filename_component ( EXAMPLE_EXT ${EXAMPLE} EXT )
+    get_filename_component ( EXAMPLE_BASE ${EXAMPLE} NAME_WE )
 
-target_link_directories(simple_trixi_controller_f PRIVATE ${CMAKE_BINARY_DIR})
+    if ( ${EXAMPLE_EXT} STREQUAL ".c" )
+        set ( EXAMPLE_LANG "C" )
+        set ( TARGET_EXT "c" )
+    elseif ( ${EXAMPLE_EXT} STREQUAL ".f90" )
+        set ( EXAMPLE_LANG "Fortran" )
+        set ( TARGET_EXT "f" )
+    else ()
+        message( FATAL_ERROR "Cannot handle extension " ${EXAMPLE_EXT} )
+    endif()
 
-target_link_libraries(
-  simple_trixi_controller_f
-  PRIVATE ${MPI_Fortran_LIBRARIES} ${PROJECT_NAME}  ${PROJECT_NAME}_tls
-)
+    # define target
+    set ( TARGET_NAME ${EXAMPLE_BASE}_${TARGET_EXT} )
+    add_executable ( ${TARGET_NAME} ${EXAMPLE})
 
-target_include_directories(
-  simple_trixi_controller_f
-  PRIVATE ${CMAKE_SOURCE_DIR}/src ${MPI_Fortran_INCLUDE_DIRS}
-)
+    # set libraries to link
+    target_link_libraries(
+        ${TARGET_NAME}
+        PRIVATE ${MPI_${EXAMPLE_LANG}_LIBRARIES} ${PROJECT_NAME} ${PROJECT_NAME}_tls
+    )
 
-# Set runtime path for installed binaries
-set_target_properties( simple_trixi_controller_f PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    # set include directories
+    target_include_directories(
+        ${TARGET_NAME}
+        PRIVATE ${CMAKE_SOURCE_DIR}/src ${MPI_${EXAMPLE_LANG}_INCLUDE_DIRS}
+    )
 
-install( TARGETS simple_trixi_controller_f )
+    # set runtime path for installed binaries
+    set_target_properties(
+        ${TARGET_NAME}
+        PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib"
+    )
+
+    # add to installation
+    install( TARGETS ${TARGET_NAME} )
+
+endforeach()
