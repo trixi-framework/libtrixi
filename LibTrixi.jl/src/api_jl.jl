@@ -49,3 +49,8 @@ function trixi_step_jl(simstate)
 
     return nothing
 end
+
+function trixi_get_t8code_mesh_jl(simstate)
+    mesh, _, _, _ = Trixi.mesh_equations_solver_cache(simstate.semi)
+    return mesh.forest
+end

@@ -23,6 +23,7 @@ enum {
   TRIXI_FTPR_IS_FINISHED,
   TRIXI_FTPR_STEP,
   TRIXI_FTPR_FINALIZE_SIMULATION,
+  TRIXI_FTPR_GET_T8CODE_MESH,
 
   // The last one is for the array size
   TRIXI_NUM_FPTRS
@@ -37,6 +38,7 @@ static const char* trixi_function_pointer_names[] = {
   [TRIXI_FTPR_IS_FINISHED]           = "trixi_is_finished_cfptr",
   [TRIXI_FTPR_STEP]                  = "trixi_step_cfptr",
   [TRIXI_FTPR_FINALIZE_SIMULATION]   = "trixi_finalize_simulation_cfptr",
+  [TRIXI_FTPR_GET_T8CODE_MESH]       = "trixi_get_t8code_mesh_cfptr"
 };
 
 
@@ -172,8 +174,6 @@ void trixi_finalize_simulation(int handle) {
 
 
 /** Finalize Julia runtime environment
- *
- *  \param[in] handle simulation handle to release
  */
 void trixi_finalize() {
 
@@ -187,6 +187,24 @@ void trixi_finalize() {
     }
 
     jl_atexit_hook(0);
+}
+
+
+/** Get t8code forest
+ *
+ *  For Trixi simulations on t8code meshes, the t8code forest is returned
+ *
+ *  \param[in] handle simulation handle to release
+ *
+ *  \return t8code forest
+ */
+t8_forest_t trixi_get_t8code_mesh(int handle) {
+
+  // Get function pointer
+  t8_forest_t (*get_t8code_mesh)(int) = trixi_function_pointers[TRIXI_FTPR_GET_T8CODE_MESH];
+
+    // Call function
+  return get_t8code_mesh(handle);
 }
 
 

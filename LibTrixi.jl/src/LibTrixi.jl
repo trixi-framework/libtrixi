@@ -18,6 +18,7 @@ export trixi_is_finished,
 export trixi_step,
        trixi_step_cfptr,
        trixi_step_jl
+export trixi_get_t8code_mesh_cfptr
 
 export SimulationState, store_simstate, load_simstate, delete_simstate!
 

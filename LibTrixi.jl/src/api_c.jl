@@ -129,3 +129,18 @@ Base.@ccallable function trixi_step(simstate_handle::Cint)::Cvoid
 end
 
 trixi_step_cfptr() = @cfunction(trixi_step, Cvoid, (Cint,))
+
+
+"""
+    trixi_get_t8code_mesh(simstate_handle::Cint)::::Ptr{Trixi.t8_forest}
+
+Return t8code forest of the current T8codeMesh.
+"""
+function trixi_get_t8code_mesh end
+
+Base.@ccallable function trixi_get_t8code_mesh(simstate_handle::Cint)::Ptr{Trixi.t8_forest}
+    simstate = load_simstate(simstate_handle)
+    return trixi_get_t8code_mesh_jl(simstate)
+end
+
+trixi_get_t8code_mesh_cfptr() = @cfunction(trixi_get_t8code_mesh, Ptr{Trixi.t8_forest}, (Cint,))
