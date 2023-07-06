@@ -1,6 +1,7 @@
 set ( EXAMPLES
       simple_trixi_controller.c
-      simple_trixi_controller.f90 )
+      simple_trixi_controller.f90
+      t8code.c )
 
 
 foreach ( EXAMPLE ${EXAMPLES} )
@@ -25,13 +26,13 @@ foreach ( EXAMPLE ${EXAMPLES} )
     # set libraries to link
     target_link_libraries(
         ${TARGET_NAME}
-        PRIVATE ${MPI_${EXAMPLE_LANG}_LIBRARIES} ${PROJECT_NAME} ${PROJECT_NAME}_tls
+        PRIVATE ${MPI_${EXAMPLE_LANG}_LIBRARIES} ${PROJECT_NAME} ${PROJECT_NAME}_tls ${T8CODE_LIBRARIES}
     )
 
     # set include directories
     target_include_directories(
         ${TARGET_NAME}
-        PRIVATE ${CMAKE_SOURCE_DIR}/src ${MPI_${EXAMPLE_LANG}_INCLUDE_DIRS}
+        PRIVATE ${CMAKE_SOURCE_DIR}/src ${MPI_${EXAMPLE_LANG}_INCLUDE_DIRS} ${T8CODE_INCLUDE_DIR}
     )
 
     # set runtime path for installed binaries
