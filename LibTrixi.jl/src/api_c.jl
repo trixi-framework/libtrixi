@@ -144,3 +144,64 @@ Base.@ccallable function trixi_get_t8code_mesh(simstate_handle::Cint)::Ptr{Trixi
 end
 
 trixi_get_t8code_mesh_cfptr() = @cfunction(trixi_get_t8code_mesh, Ptr{Trixi.t8_forest}, (Cint,))
+
+
+"""
+    trixi_ndims(simstate_handle::Cint)::Cint
+
+Return number of spatial dimensions
+"""
+function trixi_ndims end
+
+Base.@ccallable function trixi_ndims(simstate_handle::Cint)::Cint
+    simstate = load_simstate(simstate_handle)
+    return trixi_ndims_jl(simstate)
+end
+
+trixi_ndims_cfptr() = @cfunction(trixi_ndims, Cint, (Cint,))
+
+
+"""
+    trixi_nelements(simstate_handle::Cint)::Cint
+
+Return number of elements (cells)
+"""
+function trixi_nelements end
+
+Base.@ccallable function trixi_nelements(simstate_handle::Cint)::Cint
+    simstate = load_simstate(simstate_handle)
+    return trixi_nelements_jl(simstate)
+end
+
+trixi_nelements_cfptr() = @cfunction(trixi_nelements, Cint, (Cint,))
+
+
+"""
+    trixi_nvariables(simstate_handle::Cint)::Cint
+
+Return number of elements (cells)
+"""
+function trixi_nvariables end
+
+Base.@ccallable function trixi_nvariables(simstate_handle::Cint)::Cint
+    simstate = load_simstate(simstate_handle)
+    return trixi_nvariables_jl(simstate)
+end
+
+trixi_nvariables_cfptr() = @cfunction(trixi_nvariables, Cint, (Cint,))
+
+
+"""
+    trixi_get_cell_averages(simstate_handle::Cint)::Cint
+
+Return number of elements (cells)
+"""
+function trixi_get_cell_averages end
+
+Base.@ccallable function trixi_get_cell_averages(data::Ptr{Cdouble}, simstate_handle::Cint)::Cvoid
+    simstate = load_simstate(simstate_handle)
+    trixi_get_cell_averages_jl(data, simstate)
+    return nothing
+end
+
+trixi_get_cell_averages_cfptr() = @cfunction(trixi_get_cell_averages, Cvoid, (Ptr{Cdouble}, Cint,))

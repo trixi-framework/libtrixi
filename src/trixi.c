@@ -24,6 +24,10 @@ enum {
   TRIXI_FTPR_STEP,
   TRIXI_FTPR_FINALIZE_SIMULATION,
   TRIXI_FTPR_GET_T8CODE_MESH,
+  TRIXI_FTPR_NDIMS,
+  TRIXI_FTPR_NELEMENTS,
+  TRIXI_FTPR_NVARIABLES,
+  TRIXI_FTPR_GET_CELL_AVERAGES,
 
   // The last one is for the array size
   TRIXI_NUM_FPTRS
@@ -39,13 +43,17 @@ static const char* trixi_function_pointer_names[] = {
   [TRIXI_FTPR_STEP]                  = "trixi_step_cfptr",
   [TRIXI_FTPR_FINALIZE_SIMULATION]   = "trixi_finalize_simulation_cfptr",
   [TRIXI_FTPR_GET_T8CODE_MESH]       = "trixi_get_t8code_mesh_cfptr"
+  [TRIXI_FTPR_NDIMS]                 = "trixi_ndims_cfptr",
+  [TRIXI_FTPR_NELEMENTS]             = "trixi_nelements_cfptr",
+  [TRIXI_FTPR_NVARIABLES]            = "trixi_nvariables_cfptr",
+  [TRIXI_FTPR_GET_CELL_AVERAGES]     = "trixi_get_cell_averages_cfptr",
 };
 
 
 
 /** Initialize Julia runtime environment
  *
- *  \todo Path is still hard-coded
+ *  \param[in]  project_directory  path to julia project directory
  */
 void trixi_initialize(const char * project_directory) {
 
@@ -207,6 +215,69 @@ t8_forest_t trixi_get_t8code_mesh(int handle) {
   return get_t8code_mesh(handle);
 }
 
+
+/** Return number of spatial dimensions
+ *
+ *  \param[in] handle simulation handle to release
+ */
+int trixi_ndims(int handle) {
+
+    // Get function pointer
+    int (*ndims)(int) = trixi_function_pointers[TRIXI_FTPR_NDIMS];
+
+    // Call function
+    return ndims(handle);
+}
+
+
+/** Return number of elements (cells)
+ *
+ *  \param[in] handle simulation handle to release
+ */
+int trixi_nelements(int handle) {
+
+    // Get function pointer
+    int (*nelements)(int) = trixi_function_pointers[TRIXI_FTPR_NELEMENTS];
+
+    // Call function
+    return nelements(handle);
+}
+
+
+/** Return number of (conservative) variables
+ *
+ *  \param[in] handle simulation handle to release
+ */
+int trixi_nvariables(int handle) {
+
+    // Get function pointer
+    int (*nvariables)(int) = trixi_function_pointers[TRIXI_FTPR_NVARIABLES];
+
+    // Call function
+    return nvariables(handle);
+}
+
+// int trixi_polydeg(int handle);       // Return polynomial degree of DGSEM approximation
+// int trixi_ndofs(int handle);         // Return total number of degrees of freedom
+// int trixi_ndofs_element(int handle); // Return number of degrees of freedom for one element
+
+
+/** Return cell averaged values
+ *
+ *  Cell averaged values for each cell and each variable are stored in a contiguous array.
+ *  The given array has to be of correct size and memory has to be allocated beforehand.
+ *
+ *  \param[in] handle simulation handle to release
+ *  \param[out] data cell averaged values for all cells and all variables
+ */
+void trixi_get_cell_averages(double * data, int handle) {
+
+    // Get function pointer
+    void (*get_cell_averages)(double *, int) = trixi_function_pointers[TRIXI_FTPR_GET_CELL_AVERAGES];
+
+    // Call function
+    get_cell_averages(data, handle);
+}
 
 
 void julia_eval_string(const char * code) {
