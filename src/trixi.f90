@@ -2,9 +2,10 @@ module LibTrixi
   implicit none
 
   interface
-    subroutine trixi_initialize_c(project_directory) bind(c, name='trixi_initialize')
+    subroutine trixi_initialize_c(project_directory, depot_path) bind(c, name='trixi_initialize')
       use, intrinsic :: iso_c_binding, only: c_char
       character(kind=c_char), dimension(*), intent(in) :: project_directory
+      character(kind=c_char), dimension(*), intent(in), optional :: depot_path
     end subroutine
 
     integer(c_int) function trixi_initialize_simulation_c(libelixir) bind(c, name='trixi_initialize_simulation')
@@ -50,11 +51,17 @@ module LibTrixi
     trixi_is_finished = trixi_is_finished_c(handle) == 1
   end function
 
-  subroutine trixi_initialize(project_directory)
+  subroutine trixi_initialize(project_directory, depot_path)
     use, intrinsic :: iso_c_binding, only: c_null_char
     character(len=*), intent(in) :: project_directory
+    character(len=*), intent(in), optional :: depot_path
 
-    call trixi_initialize_c(trim(adjustl(project_directory)) // c_null_char)
+    if (present(depot_path)) then
+      call trixi_initialize_c(trim(adjustl(project_directory)) // c_null_char, &
+                              trim(adjustl(depot_path)) // c_null_char)
+    else
+      call trixi_initialize_c(trim(adjustl(project_directory)) // c_null_char)
+    end if
   end subroutine
 
   integer(c_int) function trixi_initialize_simulation(libelixir)

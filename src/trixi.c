@@ -1,3 +1,4 @@
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,6 +16,9 @@ static jl_value_t* checked_eval_string(const char* code, const char* func, const
 
 // Auxiliary function to determine debug level
 static int show_debug_output();
+
+// Auxiliary function to update JULIA_DEPOT_PATH environment variable
+static void update_depot_path(const char * project_directory, const char * depot_path);
 
 // Store function pointers to avoid overhead of `jl_eval_string`
 enum {
@@ -39,13 +43,23 @@ static const char* trixi_function_pointer_names[] = {
   [TRIXI_FTPR_FINALIZE_SIMULATION]   = "trixi_finalize_simulation_cfptr",
 };
 
+// Default depot path *relative* to the project directory
+// OBS! If you change the value here, you should also update the default value of
+// `LIBTRIXI_JULIA_DEPOT` in `utils/libtrixi-init-julia` accordingly
+static const char* default_depot_path = "julia-depot";
 
 
 /** Initialize Julia runtime environment
  *
- *  \todo Path is still hard-coded
+ * Initialize Julia and activate the project at `project_directory`. If `depot_path` is not
+ * a null pointer, forcefully set the environment variable `JULIA_DEPOT_PATH` to the value
+ * of `depot_path`. If `depot_path` *is* null, then proceed as follows:
+ * If `JULIA_DEPOT_PATH` is already set, do not touch it. Otherwise, set `JULIA_DEPOT_PATH`
+ * to `project_directory` + `default_depot_path`
  */
-void trixi_initialize(const char * project_directory) {
+void trixi_initialize(const char * project_directory, const char * depot_path) {
+    // Update JULIA_DEPOT_PATH environment variable before initializing Julia
+    update_depot_path(project_directory, depot_path);
 
     // Init Julia
     jl_init();
@@ -58,8 +72,7 @@ void trixi_initialize(const char * project_directory) {
                                   "Pkg.status();\n";
     const char * activate = show_debug_output() ? activate_debug : activate_regular;
     if ( strlen(activate) + strlen(project_directory) + 1 > 1024 ) {
-        fprintf(stderr, "error: buffer size not sufficient for activation command\n");
-        exit(1);
+      print_and_die("buffer size not sufficient for activation command", LOC);
     }
     char buffer[1024];
     snprintf(buffer, 1024, activate, project_directory);
@@ -197,6 +210,46 @@ void julia_eval_string(const char * code) {
 };
 
 
+/** Set JULIA_DEPOT_PATH environment variable appropriately
+ *
+ */
+void update_depot_path(const char * project_directory, const char * depot_path) {
+  // Set/modify Julia's depot path if desired
+  if (depot_path != NULL) {
+    // If depot path is provided as an argument, set environment variable JULIA_DEPOT_PATH
+    // to it
+    setenv("JULIA_DEPOT_PATH", depot_path, 1);
+    if (show_debug_output()) {
+      printf("JULIA_DEPOT_PATH set to \"%s\"\n", depot_path);
+    }
+  } else if (getenv("JULIA_DEPOT_PATH") == NULL) {
+    // Otherwise, if environment variable is *not* already set, set it to
+    // `project_directory` + `default_depot_path`
+
+    // Verify that buffer size is large enough (+2 for '/' and trailing null)
+    char path[1024];
+    if ( strlen(project_directory) + strlen(default_depot_path) + 2 > 1024 ) {
+      print_and_die("buffer size not sufficient for depot path construction", LOC);
+    }
+
+    // Construct complete path
+    strcpy(path, project_directory);
+    strcat(path, "/");
+    strcat(path, default_depot_path);
+
+    // Construct absolute path
+    char absolute_path[PATH_MAX];
+    realpath(path, absolute_path);
+
+    // Set environment variable
+    setenv("JULIA_DEPOT_PATH", absolute_path, 1);
+    if (show_debug_output()) {
+      printf("JULIA_DEPOT_PATH set to \"%s\"\n", absolute_path);
+    }
+  }
+}
+
+
 /*  Run Julia command and check for errors
  *
  *  Adapted from the Julia repository.
@@ -227,9 +280,9 @@ void print_and_die(const char* message, const char* func, const char* file, int 
   exit(1);
 }
 
-static int show_debug_output() {
+int show_debug_output() {
   const char * env = getenv("LIBTRIXI_DEBUG");
-  if (!env) {
+  if (env == NULL) {
     return 0;
   }
 
