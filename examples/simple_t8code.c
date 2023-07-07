@@ -54,9 +54,31 @@ int main ( int argc, char *argv[] ) {
         trixi_step( handle );
     }
 
+
+    // get t8code forest
     t8_global_productionf("t8code here.\n");
     t8_forest_t forest = trixi_get_t8code_mesh(handle);
     t8_print_forest_information (forest);
+
+
+    // get number of elements
+    int nelements = trixi_nelements( handle );
+    printf("\n*** Trixi controller ***   nelements %d\n", nelements);
+
+    // get number of variables
+    int nvariables = trixi_nvariables( handle );
+    printf("\n*** Trixi controller ***   nvariables %d\n", nvariables);
+
+    // allocate memory
+    double* data = malloc( sizeof(double) * nelements * nvariables );
+
+    // get averaged cell values for each variable
+    trixi_get_cell_averages(data, handle);
+
+    for (int i = 0; i < nelements; ++i) {
+
+        printf("u[cell %3d] = %f\n", i, data[i] );
+    }
 
 
     // Finalize Trixi simulation
