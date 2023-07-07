@@ -3,7 +3,7 @@ module LibTrixi
 
   interface
     subroutine trixi_initialize_c(project_directory, depot_path) bind(c, name='trixi_initialize')
-      use, intrinsic :: iso_c_binding, only: c_char, c_int
+      use, intrinsic :: iso_c_binding, only: c_char
       character(kind=c_char), dimension(*), intent(in) :: project_directory
       character(kind=c_char), dimension(*), intent(in), optional :: depot_path
     end subroutine
