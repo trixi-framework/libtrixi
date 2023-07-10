@@ -1,3 +1,7 @@
+!>
+!! @addtogroup api_f Fortran API
+!! @{
+
 module LibTrixi
   implicit none
 
@@ -33,6 +37,11 @@ module LibTrixi
       integer(c_int), value, intent(in) :: handle
     end subroutine
 
+    !>
+    !! @fn trixi_finalize()
+    !! @brief Finalize Julia runtime environment.
+    !!
+    !! For more details, please refer to the [C API description](trixi_finalize(void)).
     subroutine trixi_finalize() bind(c)
     end subroutine
 
@@ -44,6 +53,11 @@ module LibTrixi
 
   contains
 
+  !>
+  !! @brief Check if simulation is finished.
+  !!
+  !! For more details, please consult the C API description of this function:
+  !! trixi_is_finished(int)
   logical function trixi_is_finished(handle)
     use, intrinsic :: iso_c_binding, only: c_int
     integer(c_int), intent(in) :: handle
@@ -78,3 +92,6 @@ module LibTrixi
     call julia_eval_string_c(trim(adjustl(code)) // c_null_char)
   end subroutine
 end module
+
+!>
+!! @}

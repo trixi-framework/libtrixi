@@ -49,13 +49,17 @@ static const char* trixi_function_pointer_names[] = {
 static const char* default_depot_path = "julia-depot";
 
 
-/** Initialize Julia runtime environment
- *
+/**
+ * @brief Initialize Julia runtime environment
+ * 
  * Initialize Julia and activate the project at `project_directory`. If `depot_path` is not
  * a null pointer, forcefully set the environment variable `JULIA_DEPOT_PATH` to the value
  * of `depot_path`. If `depot_path` *is* null, then proceed as follows:
  * If `JULIA_DEPOT_PATH` is already set, do not touch it. Otherwise, set `JULIA_DEPOT_PATH`
  * to `project_directory` + `default_depot_path`
+ * 
+ * @param project_directory Path to project directory.
+ * @param depot_path Path to Julia depot path (optional; can be null pointer).
  */
 void trixi_initialize(const char * project_directory, const char * depot_path) {
     // Update JULIA_DEPOT_PATH environment variable before initializing Julia
@@ -184,9 +188,8 @@ void trixi_finalize_simulation(int handle) {
 }
 
 
-/** Finalize Julia runtime environment
+/** Finalize Julia runtime environment.
  *
- *  \param[in] handle simulation handle to release
  */
 void trixi_finalize() {
 

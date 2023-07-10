@@ -1,0 +1,14 @@
+/** @mainpage
+ * 
+ * This website documents the C/Fortran API of
+ * [libtrixi](https://github.com/trixi-framework/libtrixi), an interface library for using
+ * the Julia package [Trixi.jl](https://github.com/trixi-framework/Trixi.jl) from
+ * C/C++/Fortran.
+ *
+ * You can find the API description separated by programming language:
+ * - [C API](@ref api_c)
+ * - [Fortran API](@ref api_f)
+ * 
+ * For information on libtrixi itself, such as installation, usage etc., please refer to the
+ * [main documentation](https://trixi-framework.github.io/libtrixi).
+*/
