@@ -8,7 +8,8 @@
 **Libtrixi** is an interface library for using
 [Trixi.jl](https://github.com/trixi-framework/Trixi.jl) from C/C++/Fortran.
 
-**Note: This project is in a very early stage and subject to changes without warning at any time.**
+**Note: This project is in an early stage and the API is still under development. 
+Nevertheless, basic functionality is already implemented and actively tested.
 
 
 ## Getting started
