@@ -9,7 +9,7 @@
 [Trixi.jl](https://github.com/trixi-framework/Trixi.jl) from C/C++/Fortran.
 
 **Note: This project is in an early stage and the API is still under development. 
-Nevertheless, basic functionality is already implemented and actively tested.
+Nevertheless, basic functionality is already implemented and actively tested.**
 
 
 ## Getting started
