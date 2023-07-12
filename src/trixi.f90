@@ -1,50 +1,128 @@
 !>
 !! @addtogroup api_f Fortran API
+!!
+!! **NOTE**: It is a known limitation of doxygen that Fortran interfaces will be listed as
+!! "Data Types". Please refer to the "Functions/Subroutines" section instead.
+!!
 !! @{
 
 module LibTrixi
   implicit none
 
   interface
+    !>
+    !! @fn LibTrixi::trixi_initialize_c::trixi_initialize_c(project_directory, depot_path)
+    !!
+    !! @brief Initialize Julia runtime environment (C char pointer version)
+    !!
+    !! Initialize Julia and activate the project at `project_directory`. If `depot_path` is
+    !! given, forcefully set the environment variable `JULIA_DEPOT_PATH` to the value of
+    !! depot_path`. If `depot_path` is not given, then proceed as follows: If
+    !! `JULIA_DEPOT_PATH` is already set, do not touch it. Otherwise, set
+    !! `JULIA_DEPOT_PATH` to `project_directory` + `default_depot_path`.
+    !!
+    !! @param[in]  project_directory  Path to project directory (C char pointer)
+    !! @param[in]  depot_path         Path to Julia depot path (optional, C char pointer)
+    !!
+    !! @see @ref trixi_initialize        "trixi_initialize (Fortran convenience version)"
+    !! @see @ref trixi_initialize_api_c  "trixi_initialize (C API)"
     subroutine trixi_initialize_c(project_directory, depot_path) bind(c, name='trixi_initialize')
       use, intrinsic :: iso_c_binding, only: c_char
       character(kind=c_char), dimension(*), intent(in) :: project_directory
       character(kind=c_char), dimension(*), intent(in), optional :: depot_path
     end subroutine
 
+    !>
+    !! @fn LibTrixi::trixi_initialize_simulation_c::trixi_initialize_simulation_c(libelexir)
+    !!
+    !! @brief Set up Trixi simulation (C char pointer version)
+    !!
+    !! @param[in]  libelixir  Path to libelexir file.
+    !!
+    !! @return handle (integer) to Trixi simulation instance
+    !!
+    !! @see @ref trixi_initialize_simulation       "trixi_initialize_simulation (Fortran convenience version)"
+    !! @see @ref trixi_initialize_simulation_api_c "trixi_initialize_simulation (C API)"
     integer(c_int) function trixi_initialize_simulation_c(libelixir) bind(c, name='trixi_initialize_simulation')
       use, intrinsic :: iso_c_binding, only: c_char, c_int
       character(kind=c_char), dimension(*), intent(in) :: libelixir
     end function
 
+    !>
+    !! @fn LibTrixi::trixi_calculate_dt::trixi_calculate_dt(handle)
+    !!
+    !! @brief Get time step length
+    !!
+    !! @param[in]  handle  simulation handle
+    !!
+    !! @return Time step length
+    !!
+    !! @see @ref trixi_calculate_dt_api_c "trixi_calculate_dt (C API)"
     real(c_double) function trixi_calculate_dt(handle) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int, c_double
       integer(c_int), value, intent(in) :: handle
     end function
 
+    !>
+    !! @fn LibTrixi::trixi_is_finished_c::trixi_is_finished_c(handle)
+    !!
+    !! @brief Check if simulation is finished (C integer version)
+    !!
+    !! @param[in]  handle  simulation handle
+    !!
+    !! @return 1 if finished, 0 if not
+    !!
+    !! @see @ref trixi_is_finished       "trixi_is_finished (Fortran convenience version)"
+    !! @see @ref trixi_is_finished_api_c "trixi_is_finished (C API)"
     integer(c_int) function trixi_is_finished_c(handle) bind(c, name='trixi_is_finished')
       use, intrinsic :: iso_c_binding, only: c_int
       integer(c_int), value, intent(in) :: handle
     end function
 
+    !>
+    !! @fn LibTrixi::trixi_step::trixi_step(handle)
+    !!
+    !! @brief Perform next simulation step
+    !!
+    !! @param[in]  handle  simulation handle
+    !!
+    !! @see @ref trixi_step_api_c "trixi_step (C API)"
     subroutine trixi_step(handle) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int
       integer(c_int), value, intent(in) :: handle
     end subroutine
 
+    !>
+    !! @fn LibTrixi::trixi_finalize_simulation::trixi_finalize_simulation(handle)
+    !!
+    !! @brief Finalize simulation
+    !!
+    !! @param[in]  handle  simulation handle
+    !!
+    !! @see trixi_finalize_simulation_api_c "trixi_finalize_simulation (C API)"
     subroutine trixi_finalize_simulation(handle) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int
       integer(c_int), value, intent(in) :: handle
     end subroutine
 
     !>
-    !! @fn trixi_finalize()
+    !! @fn LibTrixi::trixi_finalize::trixi_finalize()
+    !!
     !! @brief Finalize Julia runtime environment.
     !!
-    !! For more details, please refer to the [C API description](trixi_finalize(void)).
+    !! @see @ref trixi_finalize_api_c "trixi_finalize (C API)"
     subroutine trixi_finalize() bind(c)
     end subroutine
 
+    !>
+    !! @fn LibTrixi::julia_eval_string_c::julia_eval_string_c(code)
+    !!
+    !! @brief Execute Julia code (C char pointer version)
+    !!
+    !! @warning Only for development. Code is not checked prior to execution.
+    !!
+    !! @see @ref julia_eval_string       "julia_eval_string_c (Fortran convenience version)"
+    !! @see @ref julia_eval_string_api_c "julia_eval_string_c (C API)"
     subroutine julia_eval_string_c(code) bind(c, name='julia_eval_string')
       use, intrinsic :: iso_c_binding, only: c_char
       character(kind=c_char), dimension(*), intent(in) :: code
@@ -54,10 +132,16 @@ module LibTrixi
   contains
 
   !>
-  !! @brief Check if simulation is finished.
+  !! @brief Check if simulation is finished (Fortran convenience version)
   !!
-  !! For more details, please consult the C API description of this function:
-  !! trixi_is_finished(int)
+  !! @param[in]  handle  simulation handle
+  !!
+  !! @return true if finished, false if not
+  !!
+  !! @see @ref trixi_is_finished_c::trixi_is_finished_c
+  !!           "trixi_is_finished (C integer version)"
+  !! @see @ref trixi_is_finished_api_c
+  !!           "trixi_is_finished (C API)"
   logical function trixi_is_finished(handle)
     use, intrinsic :: iso_c_binding, only: c_int
     integer(c_int), intent(in) :: handle
@@ -65,6 +149,16 @@ module LibTrixi
     trixi_is_finished = trixi_is_finished_c(handle) == 1
   end function
 
+  !>
+  !! @brief Initialize Julia runtime environment (Fortran convenience version)
+  !!
+  !! @param[in]  project_directory  Path to project directory (Fortran string).
+  !! @param[in]  depot_path         Path to Julia depot path (Fortran string).
+  !!
+  !! @see @ref trixi_initialize_c::trixi_initialize_c
+  !!           "trixi_initialize_c (C char pointer version)"
+  !! @see @ref trixi_initialize_api_c
+  !!           "trixi_initialize (C API)"
   subroutine trixi_initialize(project_directory, depot_path)
     use, intrinsic :: iso_c_binding, only: c_null_char
     character(len=*), intent(in) :: project_directory
@@ -78,6 +172,17 @@ module LibTrixi
     end if
   end subroutine
 
+  !>
+  !! @brief Set up Trixi simulation (Fortran convencience version)
+  !!
+  !! @param[in]  libelixir  Path to libelexir file.
+  !!
+  !! @return handle (integer) to Trixi simulation instance
+  !!
+  !! @see @ref trixi_initialize_simulation_c::trixi_initialize_simulation_c
+  !!           "trixi_initialize_simulation_c (C char pointer version)"
+  !! @see @ref trixi_initialize_simulation_api_c
+  !!           "trixi_initialize_simulation (C API)"
   integer(c_int) function trixi_initialize_simulation(libelixir)
     use, intrinsic :: iso_c_binding, only: c_int, c_null_char
     character(len=*), intent(in) :: libelixir
@@ -85,6 +190,15 @@ module LibTrixi
     trixi_initialize_simulation = trixi_initialize_simulation_c(trim(adjustl(libelixir)) // c_null_char)
   end function
 
+  !>
+  !! @brief Execute Julia code (Fortran convenience version)
+  !!
+  !! @warning Only for development. Code is not checked prior to execution.
+  !!
+  !! @see @ref julia_eval_string_c::julia_eval_string_c
+  !!           "julia_eval_string_c (C char pointer version)"
+  !! @see @ref julia_eval_string_api_c
+  !!           "julia_eval_string_c (C API)"
   subroutine julia_eval_string(code)
     use, intrinsic :: iso_c_binding, only: c_null_char
     character(len=*), intent(in) :: code
