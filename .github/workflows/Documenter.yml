@@ -64,6 +64,5 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          deploy_key: ${{ secrets.DOCUMENTER_KEY }}
           publish_dir: ./docs/doxygen/build
           destination_dir: c-fortran-api
