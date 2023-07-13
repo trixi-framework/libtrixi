@@ -26,6 +26,8 @@ concurrency:
 jobs:
   build-docs:
     runs-on: ubuntu-latest
+    outputs:
+      doxygen_dir: ${{ steps.determine_doxygen_dir.outputs.doxygen_dir }}
     steps:
       - uses: actions/checkout@v3
       - uses: julia-actions/setup-julia@v1
@@ -45,6 +47,12 @@ jobs:
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }} # For authentication with SSH deploy key
           GKSwstype: 100 # To make GitHub Action work, disable showing a plot window with the GR backend of the Plots package
         run: julia --project=docs --color=yes docs/make.jl
+      - name: Determine folder for doxygen docs
+        id: determine_doxygen_dir
+        run: |
+          doxygen_dir=$(julia --project=docs --color=yes docs/determine_doxygen_dir.jl)
+          echo "doxygen_dir=$doxygen_dir"
+          echo "doxygen_dir=$doxygen_dir" >> "$GITHUB_OUTPUT"
 
   build-doxygen:
     runs-on: ubuntu-latest
@@ -66,4 +74,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           publish_dir: ./docs/doxygen/build/html
-          destination_dir: c-fortran-api
+          destination_dir: ${{ needs.build-docs.outputs.doxygen_dir }}

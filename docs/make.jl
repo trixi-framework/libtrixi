@@ -40,6 +40,9 @@ makedocs(
     strict = true # to make the GitHub action fail when doctests fail, see https://github.com/neuropsychology/Psycho.jl/issues/34
 )
 
+
+# Note: If you change any input values here, make sure you also update the values in
+# `determine_doxygen_dir.jl` accordingly
 deploydocs(
     repo = "github.com/trixi-framework/libtrixi",
     devbranch = "main",
