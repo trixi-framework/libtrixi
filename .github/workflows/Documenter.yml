@@ -49,6 +49,8 @@ jobs:
         run: julia --project=docs --color=yes docs/make.jl
       - name: Determine folder for doxygen docs
         id: determine_doxygen_dir
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Required to determine directory
         run: |
           doxygen_dir=$(julia --project=docs --color=yes docs/determine_doxygen_dir.jl)
           echo "doxygen_dir=$doxygen_dir"
