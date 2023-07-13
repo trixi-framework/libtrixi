@@ -320,4 +320,4 @@ echo "as the 'project_directory'. The environment variable"
 echo
 echo "    JULIA_DEPOT_PATH=\"$PWD/$julia_depot\""
 echo
-echo "will then automatically be set. It may be overriden manually."
+echo "will then automatically be set. It may be overridden manually."
