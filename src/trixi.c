@@ -49,13 +49,19 @@ static const char* trixi_function_pointer_names[] = {
 static const char* default_depot_path = "julia-depot";
 
 
-/** Initialize Julia runtime environment
+/**
+ * @anchor trixi_initialize_api_c
  *
+ * @brief Initialize Julia runtime environment
+ * 
  * Initialize Julia and activate the project at `project_directory`. If `depot_path` is not
  * a null pointer, forcefully set the environment variable `JULIA_DEPOT_PATH` to the value
  * of `depot_path`. If `depot_path` *is* null, then proceed as follows:
  * If `JULIA_DEPOT_PATH` is already set, do not touch it. Otherwise, set `JULIA_DEPOT_PATH`
  * to `project_directory` + `default_depot_path`
+ * 
+ * @param[in]  project_directory  Path to project directory.
+ * @param[in]  depot_path         Path to Julia depot path (optional; can be null pointer).
  */
 void trixi_initialize(const char * project_directory, const char * depot_path) {
     // Update JULIA_DEPOT_PATH environment variable before initializing Julia
@@ -108,11 +114,21 @@ void trixi_initialize(const char * project_directory, const char * depot_path) {
 }
 
 
-/** Set up Trixi simulation
+/**
+ * @anchor trixi_initialize_simulation_api_c
  *
- *  \param[in]  libelixir  path to file containing Trixi setup
+ * @brief Set up Trixi simulation
  *
- *  \return handle (integer) to Trixi simulation instance
+ * Set up a Trixi simulation by reading the provided libelixir file. It resembles Trixi's
+ * typical elixir files with the following differences:
+ * - Everything (except `using ...`) has to be inside a `function init_simstate()`
+ * - OrdinaryDiffEq's integrator has to be created by calling `init` (instead of `solve`)
+ * - A `SimulationState` has to be created from the semidiscretization and the integrator
+ * See the examples in the `LibTrixi.jl/examples` folder
+ *
+ * @param[in]  libelixir  Path to libelexir file.
+ *
+ * @return handle (integer) to Trixi simulation instance
  */
 int trixi_initialize_simulation(const char * libelixir) {
 
@@ -124,11 +140,16 @@ int trixi_initialize_simulation(const char * libelixir) {
 }
 
 
-/** Get time step length of Trixi simulation
+/**
+ * @anchor trixi_calculate_dt_api_c
  *
- *  \param[in] handle simulation handle to release
+ * @brief Get time step length
  *
- *  \return Time step length
+ * Get the current time step length of the simulation identified by handle.
+ *
+ * @param[in]  handle  simulation handle
+ *
+ * @return Time step length
  */
 double trixi_calculate_dt(int handle) {
 
@@ -140,11 +161,16 @@ double trixi_calculate_dt(int handle) {
 }
 
 
-/** Check if Trixi simulation is finished
+/**
+ * @anchor trixi_is_finished_api_c
  *
- *  \param[in] handle simulation handle
+ * @brief Check if simulation is finished
  *
- *  \return 1 if finished, 0 if not
+ * Checks if the simulation identified by handle has reached its final time.
+ *
+ * @param[in]  handle  simulation handle
+ *
+ * @return 1 if finished, 0 if not
  */
 int trixi_is_finished(int handle) {
 
@@ -156,9 +182,14 @@ int trixi_is_finished(int handle) {
 }
 
 
-/** Perform one step in Trixi simulation
+/**
+ * @anchor trixi_step_api_c
  *
- *  \param[in] handle simulation handle
+ * @brief Perform next simulation step
+ *
+ * Let the simulation identified by handle advance by one step.
+ *
+ * @param[in]  handle  simulation handle
  */
 void trixi_step(int handle) {
 
@@ -170,9 +201,14 @@ void trixi_step(int handle) {
 }
 
 
-/** Finalize Trixi simulation
+/**
+ * @anchor trixi_finalize_simulation_api_c
  *
- *  \param[in] handle simulation handle to release
+ * @brief Finalize simulation
+ *
+ * Finalize the simulation identified by handle. This will also release the handle.
+ *
+ * @param[in]  handle  simulation handle
  */
 void trixi_finalize_simulation(int handle) {
 
@@ -184,9 +220,10 @@ void trixi_finalize_simulation(int handle) {
 }
 
 
-/** Finalize Julia runtime environment
+/**
+ * @anchor trixi_finalize_api_c
  *
- *  \param[in] handle simulation handle to release
+ * @brief Finalize Julia runtime environment
  */
 void trixi_finalize() {
 
@@ -203,16 +240,23 @@ void trixi_finalize() {
 }
 
 
-
+/**
+ * @anchor julia_eval_string_api_c
+ *
+ * @brief Execute Julia code
+ *
+ * Execute the provided code in the current Julia runtime environment.
+ *
+ * @warning Only for development. Code is not checked prior to execution.
+ */
 void julia_eval_string(const char * code) {
 
     checked_eval_string(code, LOC);
-};
+}
 
 
-/** Set JULIA_DEPOT_PATH environment variable appropriately
- *
- */
+
+// Set JULIA_DEPOT_PATH environment variable appropriately
 void update_depot_path(const char * project_directory, const char * depot_path) {
   // Set/modify Julia's depot path if desired
   if (depot_path != NULL) {
@@ -250,11 +294,8 @@ void update_depot_path(const char * project_directory, const char * depot_path) 
 }
 
 
-/*  Run Julia command and check for errors
- *
- *  Adapted from the Julia repository.
- *  Source: https://github.com/JuliaLang/julia/blob/c0dd6ff8363f948237304821941b06d67014fa6a/test/embedding/embedding.c#L17-L31
- */
+// Run Julia command and check for errors
+// Source: https://github.com/JuliaLang/julia/blob/c0dd6ff8363f948237304821941b06d67014fa6a/test/embedding/embedding.c#L17-L31
 jl_value_t* checked_eval_string(const char* code, const char* func, const char* file, int lineno) {
 
     jl_value_t *result = jl_eval_string(code);
@@ -275,10 +316,12 @@ jl_value_t* checked_eval_string(const char* code, const char* func, const char* 
     return result;
 }
 
+
 void print_and_die(const char* message, const char* func, const char* file, int lineno) {
   fprintf(stderr, "ERROR in %s:%d (%s): %s\n", file, lineno, func, message);
   exit(1);
 }
+
 
 int show_debug_output() {
   const char * env = getenv("LIBTRIXI_DEBUG");
