@@ -69,8 +69,7 @@ jobs:
         run: |
           cd docs/doxygen
           doxygen
-      - name: Deploy doxygen docs (only on main)
-        # if: ${{ github.ref == 'refs/heads/main' }} # TODO remove comment before merge!
+      - name: Deploy doxygen docs
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
