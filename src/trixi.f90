@@ -115,6 +115,60 @@ module LibTrixi
     end subroutine
 
     !>
+    !! @fn LibTrixi::trixi_ndims::trixi_ndims(handle)
+    !!
+    !! @brief Return number of spatial dimensions
+    !!
+    !! @param[in]  handle  simulation handle
+    !!
+    !! @see @ref trixi_ndims_api_c "trixi_ndims (C API)"
+    integer(c_int) function trixi_ndims(handle) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int
+      integer(c_int), value, intent(in) :: handle
+    end function
+
+    !>
+    !! @fn LibTrixi::trixi_nelements::trixi_nelements(handle)
+    !!
+    !! @brief Return number of elements (cells)
+    !!
+    !! @param[in]  handle  simulation handle
+    !!
+    !! @see @ref trixi_nelements_api_c "trixi_nelements (C API)"
+    integer(c_int) function trixi_nelements(handle) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int
+      integer(c_int), value, intent(in) :: handle
+    end function
+
+    !>
+    !! @fn LibTrixi::trixi_nvariables::trixi_nvariables(handle)
+    !!
+    !! @brief Return number of (conservative) variables
+    !!
+    !! @param[in]  handle  simulation handle
+    !!
+    !! @see @ref trixi_nvariables_api_c "trixi_nvariables (C API"
+    integer(c_int) function trixi_nvariables(handle) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int
+      integer(c_int), value, intent(in) :: handle
+    end function
+
+    !>
+    !! @fn LibTrixi::trixi_get_cell_averages::trixi_get_cell_averages(data, handle)
+    !!
+    !! @brief Return cell averaged values
+    !!
+    !! @param[in]  handle  simulation handle
+    !! @param[out] data    cell averaged values for all cells and all variables
+    !!
+    !! @see @ref trixi_get_cell_averages_api_c "trixi_get_cell_averages (C API)"
+    subroutine trixi_get_cell_averages(data, handle) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int
+      integer(c_int), intent(in) :: data(*)
+      integer(c_int), value, intent(in) :: handle
+    end subroutine
+
+    !>
     !! @fn LibTrixi::julia_eval_string_c::julia_eval_string_c(code)
     !!
     !! @brief Execute Julia code (C char pointer version)
