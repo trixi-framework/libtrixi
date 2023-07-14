@@ -163,8 +163,8 @@ module LibTrixi
     !!
     !! @see @ref trixi_get_cell_averages_api_c "trixi_get_cell_averages (C API)"
     subroutine trixi_get_cell_averages(data, handle) bind(c)
-      use, intrinsic :: iso_c_binding, only: c_int
-      integer(c_int), intent(in) :: data(*)
+      use, intrinsic :: iso_c_binding, only: c_int, c_double
+      real(c_double), intent(in) :: data(*)
       integer(c_int), value, intent(in) :: handle
     end subroutine
 
