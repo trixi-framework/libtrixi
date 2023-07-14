@@ -1,7 +1,8 @@
 module LibTrixi
 
 using OrdinaryDiffEq: OrdinaryDiffEq, step!, check_error, DiscreteCallback
-using Trixi: Trixi, summary_callback
+using Trixi: Trixi, summary_callback, mesh_equations_solver_cache, nelements, nvariables,
+             wrap_array, eachelement, cons2prim, get_node_vars, eachnode
 
 export trixi_initialize_simulation,
        trixi_initialize_simulation_cfptr,
@@ -18,6 +19,18 @@ export trixi_is_finished,
 export trixi_step,
        trixi_step_cfptr,
        trixi_step_jl
+export trixi_ndims,
+       trixi_ndims_cfptr,
+       trixi_ndims_jl
+export trixi_nelements,
+       trixi_nelements_cfptr,
+       trixi_nelements_jl
+export trixi_nvariables,
+       trixi_nvariables_cfptr,
+       trixi_nvariables_jl
+export trixi_load_cell_averages,
+       trixi_load_cell_averages_cfptr,
+       trixi_load_cell_averages_jl
 
 export SimulationState, store_simstate, load_simstate, delete_simstate!
 

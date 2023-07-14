@@ -1,6 +1,8 @@
 set ( EXAMPLES
       simple_trixi_controller.c
-      simple_trixi_controller.f90 )
+      simple_trixi_controller.f90
+      trixi_controller_data.c
+      trixi_controller_data.f90 )
 
 
 foreach ( EXAMPLE ${EXAMPLES} )
