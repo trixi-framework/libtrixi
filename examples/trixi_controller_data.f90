@@ -1,13 +1,13 @@
 program simple_trixi_controller_f
   use LibTrixi
   use, intrinsic :: iso_fortran_env, only: error_unit
-  use, intrinsic :: iso_c_binding, only: c_int, c_null_char, c_double
+  use, intrinsic :: iso_c_binding, only: c_int, c_null_char, c_double, c_loc
 
   implicit none
 
   integer(c_int) :: handle, nelements, nvariables, i
   character(len=256) :: argument
-  real(c_double), allocatable, target :: u(:)
+  real(c_double), allocatable, target :: data(:)
   real(c_double) :: gas_constant
 
 
@@ -50,21 +50,24 @@ program simple_trixi_controller_f
 
   ! get number of variables
   nvariables = trixi_nvariables( handle );
-  write(*, '(a,i6)') "*** Trixi controller ***   nvariables ", nelements
+  write(*, '(a,i6)') "*** Trixi controller ***   nvariables ", nvariables
   write(*, '(a)') ""
 
   ! allocate memory
-  allocate ( u(0:nelements*nvariables) )
+  allocate ( data(0:nelements*nvariables) )
 
   ! get averaged cell values for each variable
-  call trixi_get_cell_averages(u,handle);
+  call trixi_get_cell_averages(c_loc(data),handle);
 
   ! compute temperature
   gas_constant = 0.287;
 
-  do i = 1,size(u)
-    print "('T[cell ' i5, '] = ', e10.10)", i, u(i+3*nelements)/(gas_constant*u(i))
+  do i = 0,nelements-1
+    print "('T[cell  ', i4, '] = ', e14.8)", i, data(i+3*nelements)/(gas_constant*data(i))
   end do
+
+  write(*, '(a,i6)') "*** Trixi controller ***   Finalize Trixi simulation "
+  write(*, '(a)') ""
 
   ! Finalize Trixi simulation
   call trixi_finalize_simulation(handle)
