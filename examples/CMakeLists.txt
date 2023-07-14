@@ -1,6 +1,6 @@
 set ( EXAMPLES
       simple_trixi_controller.c
-      simple_trixi_controller.f9
+      simple_trixi_controller.f90
       trixi_controller_data.c )
 
 

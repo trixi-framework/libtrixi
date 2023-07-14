@@ -18,10 +18,18 @@ export trixi_is_finished,
 export trixi_step,
        trixi_step_cfptr,
        trixi_step_jl
-export trixi_ndims_cfptr
-export trixi_nelements_cfptr
-export trixi_nvariables_cfptr
-export trixi_get_cell_averages_cfptr
+export trixi_ndims,
+       trixi_ndims_cfptr,
+       trixi_ndims_jl
+export trixi_nelements,
+       trixi_nelements_cfptr,
+       trixi_nelements_jl
+export trixi_nvariables,
+       trixi_nvariables_cfptr,
+       trixi_nvariables_jl
+export trixi_get_cell_averages,
+       trixi_get_cell_averages_cfptr,
+       trixi_get_cell_averages_jl
 
 export SimulationState, store_simstate, load_simstate, delete_simstate!
 
