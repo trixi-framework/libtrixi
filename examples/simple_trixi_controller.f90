@@ -25,18 +25,21 @@ program simple_trixi_controller_f
 
   ! Initialize Trixi
   call get_command_argument(1, argument)
-  call trixi_initialize(trim(argument) // c_null_char)
+  call trixi_initialize(argument)
 
   ! Set up the Trixi simulation
   ! We get a handle to use subsequently
   call get_command_argument(2, argument)
-  handle = trixi_initialize_simulation(trim(argument) // c_null_char)
+  handle = trixi_initialize_simulation(argument)
 
   ! Get time step length
   write(*, '(a, e14.8)') "Current time step length: ", trixi_calculate_dt(handle)
 
   ! Main loop
-  do while ( trixi_is_finished(handle) == 0 )
+  do
+    ! Exit loop once simulation is completed
+    if ( trixi_is_finished(handle) ) exit
+
     call trixi_step(handle)
   end do
 

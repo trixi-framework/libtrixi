@@ -8,7 +8,8 @@
 **Libtrixi** is an interface library for using
 [Trixi.jl](https://github.com/trixi-framework/Trixi.jl) from C/C++/Fortran.
 
-**Note: This project is in a very early stage and subject to changes without warning at any time.**
+**Note: This project is in an early stage and the API is still under development. 
+Nevertheless, basic functionality is already implemented and actively tested.**
 
 
 ## Getting started
@@ -84,12 +85,13 @@ cd libtrixi-julia
     --p4est-library <p4est_install_directory>/lib/libp4est.so
     <install_directory>
 ```
-
 Use `libtrixi-init-julia -h` to get help.
-When running a program that uses libtrixi, make sure to set up the `JULIA_DEPOT_PATH`
-environment variable to point to the `<julia-depot>` folder reported. In your code, pass
-the path to the `libtrixi-julia` directory to `trixi_initialize`, see the code of the
-examples.
+
+In your code, pass the path to the `libtrixi-julia` directory to `trixi_initialize`,
+see the code of the examples. If you did not modify the default value for the Julia depot
+when calling `libtrixi-init-julia`, libtrixi will find it automatically.
+Otherwise, when running a program that uses libtrixi, you need to make sure to set the
+`JULIA_DEPOT_PATH` environment variable to point to the `<julia-depot>` folder reported. 
 
 ### Testing
 
@@ -97,7 +99,6 @@ Go to some directory from where you want to run a Trixi simulation.
 
 ```shell
 LIBTRIXI_DEBUG=all \
-JULIA_DEPOT_PATH=<julia-depot> \
     <install_directory>/bin/simple_trixi_controller_c \
     <libtrixi-julia_directory> \
     <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl

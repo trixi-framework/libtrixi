@@ -9,9 +9,9 @@ The libelixir has a similar purpose as a regular "elixir" in Trixi.jl, as it com
 defines a simulation setup in Julia code. A key difference (and thus the name libelixir) is
 that instead of running a simulation directly, it should define an argument-less function
 named `init_simstate()` that returns a [`SimulationState`](@ref) with the complete
-simulation setup. `trixi_initialize_simulation` will store the `SimulationState` object internally and
-allow one to use it in subsequent calls to libtrixi via the handle returned from this
-function.
+simulation setup. `trixi_initialize_simulation` will store the `SimulationState` object
+internally and allow one to use it in subsequent calls to libtrixi via the handle returned
+from this function.
 
 For convenience, when using LibTrixi.jl directly from Julia, one can also pass a regular
 `String` in the `libelixir` argument.

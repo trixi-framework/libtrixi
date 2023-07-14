@@ -83,6 +83,8 @@ if [ -z "$LIBTRIXI_JULIA_EXEC" ]; then
   LIBTRIXI_JULIA_EXEC=julia
 fi
 if [ -z "$LIBTRIXI_JULIA_DEPOT" ]; then
+  # OBS! If you change this value here, you should also update the default value for
+  # `default_depot_path` in `src/trixi.c` accordingly
   LIBTRIXI_JULIA_DEPOT=julia-depot
 fi
 while [[ $# -gt 0 ]]; do
@@ -310,12 +312,12 @@ echo
 echo
 echo "SUCCESS: Julia has been set up for libtrixi! 🐳"
 echo
-echo "Note: When using libtrixi, you need to set the following environment variable:"
-echo
-echo "    export JULIA_DEPOT_PATH=\"$PWD/$julia_depot\""
-echo
-echo "When calling libtrixi's 'trixi_initialize' function, you need to provide"
+echo "Note: When calling libtrixi's 'trixi_initialize' function, you need to provide"
 echo
 echo "    $PWD"
 echo
-echo "as the 'project_directory'."
+echo "as the 'project_directory'. The environment variable"
+echo
+echo "    JULIA_DEPOT_PATH=\"$PWD/$julia_depot\""
+echo
+echo "will then automatically be set. It may be overridden manually."

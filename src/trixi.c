@@ -1,3 +1,4 @@
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,6 +16,9 @@ static jl_value_t* checked_eval_string(const char* code, const char* func, const
 
 // Auxiliary function to determine debug level
 static int show_debug_output();
+
+// Auxiliary function to update JULIA_DEPOT_PATH environment variable
+static void update_depot_path(const char * project_directory, const char * depot_path);
 
 // Store function pointers to avoid overhead of `jl_eval_string`
 enum {
@@ -47,13 +51,29 @@ static const char* trixi_function_pointer_names[] = {
   [TRIXI_FTPR_GET_CELL_AVERAGES]     = "trixi_get_cell_averages_cfptr",
 };
 
+// Default depot path *relative* to the project directory
+// OBS! If you change the value here, you should also update the default value of
+// `LIBTRIXI_JULIA_DEPOT` in `utils/libtrixi-init-julia` accordingly
+static const char* default_depot_path = "julia-depot";
 
 
-/** Initialize Julia runtime environment
+/**
+ * @anchor trixi_initialize_api_c
  *
- *  \param[in]  project_directory  path to julia project directory
+ * @brief Initialize Julia runtime environment
+ * 
+ * Initialize Julia and activate the project at `project_directory`. If `depot_path` is not
+ * a null pointer, forcefully set the environment variable `JULIA_DEPOT_PATH` to the value
+ * of `depot_path`. If `depot_path` *is* null, then proceed as follows:
+ * If `JULIA_DEPOT_PATH` is already set, do not touch it. Otherwise, set `JULIA_DEPOT_PATH`
+ * to `project_directory` + `default_depot_path`
+ * 
+ * @param[in]  project_directory  Path to project directory.
+ * @param[in]  depot_path         Path to Julia depot path (optional; can be null pointer).
  */
-void trixi_initialize(const char * project_directory) {
+void trixi_initialize(const char * project_directory, const char * depot_path) {
+    // Update JULIA_DEPOT_PATH environment variable before initializing Julia
+    update_depot_path(project_directory, depot_path);
 
     // Init Julia
     jl_init();
@@ -66,8 +86,7 @@ void trixi_initialize(const char * project_directory) {
                                   "Pkg.status();\n";
     const char * activate = show_debug_output() ? activate_debug : activate_regular;
     if ( strlen(activate) + strlen(project_directory) + 1 > 1024 ) {
-        fprintf(stderr, "error: buffer size not sufficient for activation command\n");
-        exit(1);
+      print_and_die("buffer size not sufficient for activation command", LOC);
     }
     char buffer[1024];
     snprintf(buffer, 1024, activate, project_directory);
@@ -103,11 +122,21 @@ void trixi_initialize(const char * project_directory) {
 }
 
 
-/** Set up Trixi simulation
+/**
+ * @anchor trixi_initialize_simulation_api_c
  *
- *  \param[in]  libelixir  path to file containing Trixi setup
+ * @brief Set up Trixi simulation
  *
- *  \return handle (integer) to Trixi simulation instance
+ * Set up a Trixi simulation by reading the provided libelixir file. It resembles Trixi's
+ * typical elixir files with the following differences:
+ * - Everything (except `using ...`) has to be inside a `function init_simstate()`
+ * - OrdinaryDiffEq's integrator has to be created by calling `init` (instead of `solve`)
+ * - A `SimulationState` has to be created from the semidiscretization and the integrator
+ * See the examples in the `LibTrixi.jl/examples` folder
+ *
+ * @param[in]  libelixir  Path to libelexir file.
+ *
+ * @return handle (integer) to Trixi simulation instance
  */
 int trixi_initialize_simulation(const char * libelixir) {
 
@@ -119,11 +148,16 @@ int trixi_initialize_simulation(const char * libelixir) {
 }
 
 
-/** Get time step length of Trixi simulation
+/**
+ * @anchor trixi_calculate_dt_api_c
  *
- *  \param[in] handle simulation handle to release
+ * @brief Get time step length
  *
- *  \return Time step length
+ * Get the current time step length of the simulation identified by handle.
+ *
+ * @param[in]  handle  simulation handle
+ *
+ * @return Time step length
  */
 double trixi_calculate_dt(int handle) {
 
@@ -135,11 +169,16 @@ double trixi_calculate_dt(int handle) {
 }
 
 
-/** Check if Trixi simulation is finished
+/**
+ * @anchor trixi_is_finished_api_c
  *
- *  \param[in] handle simulation handle
+ * @brief Check if simulation is finished
  *
- *  \return 1 if finished, 0 if not
+ * Checks if the simulation identified by handle has reached its final time.
+ *
+ * @param[in]  handle  simulation handle
+ *
+ * @return 1 if finished, 0 if not
  */
 int trixi_is_finished(int handle) {
 
@@ -151,9 +190,14 @@ int trixi_is_finished(int handle) {
 }
 
 
-/** Perform one step in Trixi simulation
+/**
+ * @anchor trixi_step_api_c
  *
- *  \param[in] handle simulation handle
+ * @brief Perform next simulation step
+ *
+ * Let the simulation identified by handle advance by one step.
+ *
+ * @param[in]  handle  simulation handle
  */
 void trixi_step(int handle) {
 
@@ -165,9 +209,14 @@ void trixi_step(int handle) {
 }
 
 
-/** Finalize Trixi simulation
+/**
+ * @anchor trixi_finalize_simulation_api_c
  *
- *  \param[in] handle simulation handle to release
+ * @brief Finalize simulation
+ *
+ * Finalize the simulation identified by handle. This will also release the handle.
+ *
+ * @param[in]  handle  simulation handle
  */
 void trixi_finalize_simulation(int handle) {
 
@@ -179,7 +228,10 @@ void trixi_finalize_simulation(int handle) {
 }
 
 
-/** Finalize Julia runtime environment
+/**
+ * @anchor trixi_finalize_api_c
+ *
+ * @brief Finalize Julia runtime environment
  */
 void trixi_finalize() {
 
@@ -196,9 +248,12 @@ void trixi_finalize() {
 }
 
 
-/** Return number of spatial dimensions
+/**
+ * @anchor trixi_ndims_api_c
  *
- *  \param[in] handle simulation handle to release
+ * @brief Return number of spatial dimensions
+ *
+ * @param[in]  handle  simulation handle
  */
 int trixi_ndims(int handle) {
 
@@ -210,9 +265,12 @@ int trixi_ndims(int handle) {
 }
 
 
-/** Return number of elements (cells)
+/**
+ * @anchor trixi_nelements_api_c
  *
- *  \param[in] handle simulation handle to release
+ * @brief Return number of elements (cells)
+ *
+ * @param[in]  handle  simulation handle
  */
 int trixi_nelements(int handle) {
 
@@ -224,9 +282,12 @@ int trixi_nelements(int handle) {
 }
 
 
-/** Return number of (conservative) variables
+/**
+ * @anchor trixi_nvariables_api_c
  *
- *  \param[in] handle simulation handle to release
+ * @brief Return number of (conservative) variables
+ *
+ * @param[in]  handle  simulation handle
  */
 int trixi_nvariables(int handle) {
 
@@ -237,18 +298,17 @@ int trixi_nvariables(int handle) {
     return nvariables(handle);
 }
 
-// int trixi_polydeg(int handle);       // Return polynomial degree of DGSEM approximation
-// int trixi_ndofs(int handle);         // Return total number of degrees of freedom
-// int trixi_ndofs_element(int handle); // Return number of degrees of freedom for one element
 
-
-/** Return cell averaged values
+/** 
+ * @anchor trixi_get_cell_averages_api_c
  *
- *  Cell averaged values for each cell and each variable are stored in a contiguous array.
- *  The given array has to be of correct size and memory has to be allocated beforehand.
+ * @brief Return cell averaged values
  *
- *  \param[in] handle simulation handle to release
- *  \param[out] data cell averaged values for all cells and all variables
+ * Cell averaged values for each cell and each variable are stored in a contiguous array.
+ * The given array has to be of correct size and memory has to be allocated beforehand.
+ *
+ * @param[in]  handle  simulation handle
+ * @param[out] data    cell averaged values for all cells and all variables
  */
 void trixi_get_cell_averages(double * data, int handle) {
 
@@ -260,17 +320,62 @@ void trixi_get_cell_averages(double * data, int handle) {
 }
 
 
+/**
+ * @anchor julia_eval_string_api_c
+ *
+ * @brief Execute Julia code
+ *
+ * Execute the provided code in the current Julia runtime environment.
+ *
+ * @warning Only for development. Code is not checked prior to execution.
+ */
 void julia_eval_string(const char * code) {
 
     checked_eval_string(code, LOC);
-};
+}
 
 
-/*  Run Julia command and check for errors
- *
- *  Adapted from the Julia repository.
- *  Source: https://github.com/JuliaLang/julia/blob/c0dd6ff8363f948237304821941b06d67014fa6a/test/embedding/embedding.c#L17-L31
- */
+
+// Set JULIA_DEPOT_PATH environment variable appropriately
+void update_depot_path(const char * project_directory, const char * depot_path) {
+  // Set/modify Julia's depot path if desired
+  if (depot_path != NULL) {
+    // If depot path is provided as an argument, set environment variable JULIA_DEPOT_PATH
+    // to it
+    setenv("JULIA_DEPOT_PATH", depot_path, 1);
+    if (show_debug_output()) {
+      printf("JULIA_DEPOT_PATH set to \"%s\"\n", depot_path);
+    }
+  } else if (getenv("JULIA_DEPOT_PATH") == NULL) {
+    // Otherwise, if environment variable is *not* already set, set it to
+    // `project_directory` + `default_depot_path`
+
+    // Verify that buffer size is large enough (+2 for '/' and trailing null)
+    char path[1024];
+    if ( strlen(project_directory) + strlen(default_depot_path) + 2 > 1024 ) {
+      print_and_die("buffer size not sufficient for depot path construction", LOC);
+    }
+
+    // Construct complete path
+    strcpy(path, project_directory);
+    strcat(path, "/");
+    strcat(path, default_depot_path);
+
+    // Construct absolute path
+    char absolute_path[PATH_MAX];
+    realpath(path, absolute_path);
+
+    // Set environment variable
+    setenv("JULIA_DEPOT_PATH", absolute_path, 1);
+    if (show_debug_output()) {
+      printf("JULIA_DEPOT_PATH set to \"%s\"\n", absolute_path);
+    }
+  }
+}
+
+
+// Run Julia command and check for errors
+// Source: https://github.com/JuliaLang/julia/blob/c0dd6ff8363f948237304821941b06d67014fa6a/test/embedding/embedding.c#L17-L31
 jl_value_t* checked_eval_string(const char* code, const char* func, const char* file, int lineno) {
 
     jl_value_t *result = jl_eval_string(code);
@@ -291,14 +396,16 @@ jl_value_t* checked_eval_string(const char* code, const char* func, const char* 
     return result;
 }
 
+
 void print_and_die(const char* message, const char* func, const char* file, int lineno) {
   fprintf(stderr, "ERROR in %s:%d (%s): %s\n", file, lineno, func, message);
   exit(1);
 }
 
-static int show_debug_output() {
+
+int show_debug_output() {
   const char * env = getenv("LIBTRIXI_DEBUG");
-  if (!env) {
+  if (env == NULL) {
     return 0;
   }
 

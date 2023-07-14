@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <mpi.h>
 
 #include <trixi.h>
@@ -51,7 +52,7 @@ int main ( int argc, char *argv[] ) {
 
     // Initialize Trixi
     printf("\n*** Trixi controller ***   Initialize Trixi\n");
-    trixi_initialize( argv[1] );
+    trixi_initialize( argv[1], NULL );
 
     // Set up the Trixi simulation
     // We get a handle to use subsequently
