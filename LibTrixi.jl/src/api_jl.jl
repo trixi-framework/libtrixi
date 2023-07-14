@@ -77,7 +77,7 @@ function trixi_get_cell_averages_jl(data_, simstate)
     u_ode = simstate.integrator.u
     u = Trixi.wrap_array(u_ode, mesh, equations, solver, cache)
 
-    for (index, element) in enumerate(Trixi.eachelement(solver, cache))
+    for element in Trixi.eachelement(solver, cache)
 
         # temporary storage for mean value on current element for all variables
         u_mean = zero(Trixi.get_node_vars(u, equations, solver, 1, 1, element))
@@ -93,7 +93,7 @@ function trixi_get_cell_averages_jl(data_, simstate)
 
         # copy to provided array
         for ivar = 0:nvariables-1
-            data[index + ivar * nelements] = u_mean[ivar+1]
+            data[element + ivar * nelements] = u_mean[ivar+1]
         end
     end
 
