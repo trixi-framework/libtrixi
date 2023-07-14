@@ -149,7 +149,7 @@ trixi_ndims_cfptr() = @cfunction(trixi_ndims, Cint, (Cint,))
 """
     trixi_nelements(simstate_handle::Cint)::Cint
 
-Return number of elements (cells)
+Return number of elements (cells).
 """
 function trixi_nelements end
 
