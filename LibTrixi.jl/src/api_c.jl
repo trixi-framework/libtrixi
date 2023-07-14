@@ -134,7 +134,7 @@ trixi_step_cfptr() = @cfunction(trixi_step, Cvoid, (Cint,))
 """
     trixi_ndims(simstate_handle::Cint)::Cint
 
-Return number of spatial dimensions
+Return number of spatial dimensions.
 """
 function trixi_ndims end
 
