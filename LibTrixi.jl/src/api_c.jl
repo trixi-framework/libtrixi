@@ -164,7 +164,7 @@ trixi_nelements_cfptr() = @cfunction(trixi_nelements, Cint, (Cint,))
 """
     trixi_nvariables(simstate_handle::Cint)::Cint
 
-Return number of elements (cells)
+Return number of variables.
 """
 function trixi_nvariables end
 
