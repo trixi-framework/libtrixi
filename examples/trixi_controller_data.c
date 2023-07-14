@@ -49,7 +49,6 @@ int main ( int argc, char *argv[] ) {
     const double gas_constant = 0.287;
 
     for (int i = 0; i < nelements; ++i) {
-
         printf("T[cell %3d] = %f\n", i, data[i+3*nelements] / (gas_constant * data[i]) );
     }
 
