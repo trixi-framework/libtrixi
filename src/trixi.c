@@ -30,7 +30,7 @@ enum {
   TRIXI_FTPR_NDIMS,
   TRIXI_FTPR_NELEMENTS,
   TRIXI_FTPR_NVARIABLES,
-  TRIXI_FTPR_GET_CELL_AVERAGES,
+  TRIXI_FTPR_LOAD_CELL_AVERAGES,
 
   // The last one is for the array size
   TRIXI_NUM_FPTRS
@@ -48,7 +48,7 @@ static const char* trixi_function_pointer_names[] = {
   [TRIXI_FTPR_NDIMS]                 = "trixi_ndims_cfptr",
   [TRIXI_FTPR_NELEMENTS]             = "trixi_nelements_cfptr",
   [TRIXI_FTPR_NVARIABLES]            = "trixi_nvariables_cfptr",
-  [TRIXI_FTPR_GET_CELL_AVERAGES]     = "trixi_get_cell_averages_cfptr",
+  [TRIXI_FTPR_LOAD_CELL_AVERAGES]    = "trixi_load_cell_averages_cfptr",
 };
 
 // Default depot path *relative* to the project directory
@@ -300,23 +300,25 @@ int trixi_nvariables(int handle) {
 
 
 /** 
- * @anchor trixi_get_cell_averages_api_c
+ * @anchor trixi_load_cell_averages_api_c
  *
  * @brief Return cell averaged values
  *
- * Cell averaged values for each cell and each variable are stored in a contiguous array.
+ * Cell averaged values for each cell and each primitive variable are stored in a
+ * contiguous array, where cell values for the first variable appear first and values for
+ * the other variables subsequently.
  * The given array has to be of correct size and memory has to be allocated beforehand.
  *
  * @param[in]  handle  simulation handle
- * @param[out] data    cell averaged values for all cells and all variables
+ * @param[out] data    cell averaged values for all cells and all primitive variables
  */
-void trixi_get_cell_averages(double * data, int handle) {
+void trixi_load_cell_averages(double * data, int handle) {
 
     // Get function pointer
-    void (*get_cell_averages)(double *, int) = trixi_function_pointers[TRIXI_FTPR_GET_CELL_AVERAGES];
+    void (*load_cell_averages)(double *, int) = trixi_function_pointers[TRIXI_FTPR_LOAD_CELL_AVERAGES];
 
     // Call function
-    get_cell_averages(data, handle);
+    load_cell_averages(data, handle);
 }
 
 

@@ -154,15 +154,15 @@ module LibTrixi
     end function
 
     !>
-    !! @fn LibTrixi::trixi_get_cell_averages::trixi_get_cell_averages(data, handle)
+    !! @fn LibTrixi::trixi_load_cell_averages::trixi_load_cell_averages(data, handle)
     !!
     !! @brief Return cell averaged values
     !!
     !! @param[in]  handle  simulation handle
     !! @param[out] data    cell averaged values for all cells and all variables
     !!
-    !! @see @ref trixi_get_cell_averages_api_c "trixi_get_cell_averages (C API)"
-    subroutine trixi_get_cell_averages(data, handle) bind(c)
+    !! @see @ref trixi_load_cell_averages_api_c "trixi_load_cell_averages (C API)"
+    subroutine trixi_load_cell_averages(data, handle) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int, c_ptr
       type(c_ptr), value :: data
       integer(c_int), value, intent(in) :: handle

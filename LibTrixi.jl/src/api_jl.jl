@@ -65,7 +65,7 @@ function trixi_nvariables_jl(simstate)
     return Trixi.nvariables(equations)
 end
 
-function trixi_get_cell_averages_jl(data_, simstate)
+function trixi_load_cell_averages_jl(data_, simstate)
 
     mesh, equations, solver, cache = Trixi.mesh_equations_solver_cache(simstate.semi)
     nelements = Trixi.nelements(solver, cache)

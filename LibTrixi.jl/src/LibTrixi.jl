@@ -27,9 +27,9 @@ export trixi_nelements,
 export trixi_nvariables,
        trixi_nvariables_cfptr,
        trixi_nvariables_jl
-export trixi_get_cell_averages,
-       trixi_get_cell_averages_cfptr,
-       trixi_get_cell_averages_jl
+export trixi_load_cell_averages,
+       trixi_load_cell_averages_cfptr,
+       trixi_load_cell_averages_jl
 
 export SimulationState, store_simstate, load_simstate, delete_simstate!
 

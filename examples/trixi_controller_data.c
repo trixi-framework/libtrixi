@@ -43,7 +43,7 @@ int main ( int argc, char *argv[] ) {
     double* data = malloc( sizeof(double) * nelements * nvariables );
 
     // get averaged cell values for each variable
-    trixi_get_cell_averages(data, handle);
+    trixi_load_cell_averages(data, handle);
 
     // compute temperature
     const double gas_constant = 0.287;

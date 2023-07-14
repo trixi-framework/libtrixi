@@ -22,7 +22,7 @@ int trixi_nelements(int handle);     // Return number of elements (cells)
 int trixi_nvariables(int handle);    // Return number of (conservative) variables
 
 // Data
-void trixi_get_cell_averages(double * data, int handle);
+void trixi_load_cell_averages(double * data, int handle);
 
 // Misc
 double trixi_calculate_dt(int handle);

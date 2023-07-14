@@ -177,16 +177,21 @@ trixi_nvariables_cfptr() = @cfunction(trixi_nvariables, Cint, (Cint,))
 
 
 """
-    trixi_get_cell_averages(simstate_handle::Cint)::Cint
+    trixi_load_cell_averages(simstate_handle::Cint)::Cint
 
-Return number of elements (cells)
+Return cell averaged values
+
+Cell averaged values for each cell and each primitive variable are stored in a contiguous
+array, where cell values for the first variable appear first and values for the other
+variables subsequently.
+The given array has to be of correct size and memory has to be allocated beforehand.
 """
-function trixi_get_cell_averages end
+function trixi_load_cell_averages end
 
-Base.@ccallable function trixi_get_cell_averages(data::Ptr{Cdouble}, simstate_handle::Cint)::Cvoid
+Base.@ccallable function trixi_load_cell_averages(data::Ptr{Cdouble}, simstate_handle::Cint)::Cvoid
     simstate = load_simstate(simstate_handle)
-    trixi_get_cell_averages_jl(data, simstate)
+    trixi_load_cell_averages_jl(data, simstate)
     return nothing
 end
 
-trixi_get_cell_averages_cfptr() = @cfunction(trixi_get_cell_averages, Cvoid, (Ptr{Cdouble}, Cint,))
+trixi_load_cell_averages_cfptr() = @cfunction(trixi_load_cell_averages, Cvoid, (Ptr{Cdouble}, Cint,))
