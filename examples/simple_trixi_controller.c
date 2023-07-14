@@ -31,6 +31,10 @@ void init_mpi_external ( int argc, char *argv[] ) {
     int nranks;
     ret = MPI_Comm_size(comm, &nranks);
     printf("[EXT] MPI size: return %d, size %d\n", ret, nranks);
+
+    ret = MPI_Comm_set_errhandler(comm, MPI_ERRORS_RETURN);
+    printf("[EXT] MPI errhandler: return %d\n", ret);
+
 }
 
 
