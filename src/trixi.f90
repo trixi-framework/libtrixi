@@ -127,6 +127,55 @@ module LibTrixi
       use, intrinsic :: iso_c_binding, only: c_char
       character(kind=c_char), dimension(*), intent(in) :: code
     end subroutine
+
+    !>
+    !! @fn LibTrixi::trixi_version_major::trixi_version_major()
+    !!
+    !! @brief Return major version number of libtrixi.
+    !!
+    !! @return Major version number as integer.
+    !!
+    !! @see @ref trixi_version_major_api_c "trixi_version_major (C API)"
+    integer(c_int) function trixi_version_major() bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int
+    end function
+
+    !>
+    !! @fn LibTrixi::trixi_version_minor::trixi_version_minor()
+    !!
+    !! @brief Return minor version number of libtrixi.
+    !!
+    !! @return Minor version number as integer.
+    !!
+    !! @see @ref trixi_version_minor_api_c "trixi_version_minor (C API)"
+    integer(c_int) function trixi_version_minor() bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int
+    end function
+
+    !>
+    !! @fn LibTrixi::trixi_version_patch::trixi_version_patch()
+    !!
+    !! @brief Return patch version number of libtrixi.
+    !!
+    !! @return Patch version number as integer.
+    !!
+    !! @see @ref trixi_version_patch_api_c "trixi_version_patch (C API)"
+    integer(c_int) function trixi_version_patch() bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int
+    end function
+
+    !>
+    !! @fn LibTrixi::trixi_version_c::trixi_version_c()
+    !!
+    !! @brief Return full version string of libtrixi (C char pointer version).
+    !!
+    !! @return Full version string as C char pointer.
+    !!
+    !! @see @ref trixi_version       "trixi_version (Fortran convenience version)"
+    !! @see @ref trixi_version_api_c "trixi_version (C API)"
+    type(c_ptr) function trixi_version_c() bind(c, name='trixi_version')
+      use, intrinsic :: iso_c_binding, only: c_ptr
+    end function
   end interface
 
   contains
@@ -205,6 +254,35 @@ module LibTrixi
 
     call julia_eval_string_c(trim(adjustl(code)) // c_null_char)
   end subroutine
+
+  !>
+  !! @brief Return full version string of libtrixi (Fortran convenience version).
+  !!
+  !! @return Full version string as Fortran allocatable string.
+  !!
+  !! @see @ref trixi_version_c::trixi_version_c
+  !!           "trixi_version_c (C char pointer version)"
+  !! @see @ref trixi_version_api_c
+  !!           "trixi_version (C API)"
+  function trixi_version()
+    use, intrinsic :: iso_c_binding, only: c_char, c_null_char, c_f_pointer
+    character(len=:), allocatable :: trixi_version
+    character(len=128, kind=c_char), pointer :: buffer
+    integer :: length, i
+
+    ! Associate buffer with C pointer
+    call c_f_pointer(trixi_version_c(), buffer)
+
+    ! Determine the actual length of the version string
+    length = 0
+    do i = 1,128
+      if ( buffer(i:i) == c_null_char ) exit
+      length = length + 1
+    end do
+
+    ! Store relevant part in return value
+    trixi_version = buffer(1:(length + 1))
+  end function
 end module
 
 !>

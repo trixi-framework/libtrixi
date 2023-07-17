@@ -50,6 +50,9 @@ int main ( int argc, char *argv[] ) {
         return 2;
     }
 
+    // Print version information
+    printf("libtrixi version: %s\n", trixi_version());
+
     // Initialize MPI
     printf("\n*** Trixi controller ***   Initialize MPI\n");
     init_mpi_external(argc, argv);

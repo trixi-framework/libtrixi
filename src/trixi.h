@@ -14,6 +14,11 @@ void trixi_step(int handle);
 void trixi_finalize_simulation(int handle);
 void trixi_finalize();
 
+int trixi_version_major();
+int trixi_version_minor();
+int trixi_version_patch();
+const char* trixi_version();
+
 void julia_eval_string(const char * code);
 
 /**
