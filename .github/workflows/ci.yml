@@ -85,16 +85,16 @@ jobs:
       - name: Install HDF5
         run: |
           sudo apt-get install -y libhdf5-openmpi-dev
-      - name: Install p4est
+      - name: Install t8code
         run: |
-          P4EST_RELEASE=2.8.5
-          mkdir p4est-local
-          cd p4est-local
-          wget https://p4est.github.io/release/p4est-${P4EST_RELEASE}.tar.gz
-          tar xf p4est-${P4EST_RELEASE}.tar.gz
+          T8CODE_RELEASE=1.4.1
+          mkdir t8code-local
+          cd t8code-local
+          wget https://github.com/DLR-AMR/t8code/releases/download/v${T8CODE_RELEASE}/t8-${T8CODE_RELEASE}.tar.gz
+          tar xf t8-${T8CODE_RELEASE}.tar.gz
           mkdir build
           cd build
-          CC=mpicc CXX=mpicxx FC=mpif90 F77=mpif77 ../p4est-${P4EST_RELEASE}/configure \
+          CC=mpicc CXX=mpicxx ../t8-${T8CODE_RELEASE}/configure \
               --prefix=$PWD/../prefix --enable-mpi
           make -j 2
           make install
@@ -136,7 +136,7 @@ jobs:
           cd libtrixi-julia
           ../install/bin/libtrixi-init-julia .. \
               --hdf5-library /usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so \
-              --p4est-library ../p4est-local/prefix/lib/libp4est.so \
+              --t8code-library ../t8code-local/prefix/lib/libt8.so \
               --julia-depot ~/.julia \
               --force
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl .
