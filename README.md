@@ -18,7 +18,7 @@ Nevertheless, basic functionality is already implemented and actively tested.**
 
 Currently, libtrixi is only developed and tested for Linux.
 Furthermore, a local installation of `MPI`,
-[`p4est`](https://github.com/cburstedde/p4est) (see steps 5-7 in its README), and
+[`t8code`](https://github.com/DLR-AMR/t8code), and
 [`Julia`](https://julialang.org/downloads/platform/) is required.
 
 ### Get the sources
@@ -82,7 +82,7 @@ available at `<install_directory>/bin`) to do the rest for you. A minimal exampl
 mkdir libtrixi-julia
 cd libtrixi-julia
 <install_directory>/bin/libtrixi-init-julia \
-    --p4est-library <p4est_install_directory>/lib/libp4est.so
+    --t8code-library <t8code_install_directory>/lib/libt8.so
     <install_directory>
 ```
 Use `libtrixi-init-julia -h` to get help.
