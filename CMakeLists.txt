@@ -70,7 +70,7 @@ set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR})
 target_include_directories( ${PROJECT_NAME} PRIVATE src ${MPI_C_INCLUDE_DIRS} ${JULIA_INCLUDE_DIRS} )
 
 # Libraries to link
-target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} ${MPI_C_LIB_NAMES})
+target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} MPI::MPI_C)
 
 # Set appropriate compile flags
 target_compile_options( ${PROJECT_NAME} PUBLIC "-fPIC" )
