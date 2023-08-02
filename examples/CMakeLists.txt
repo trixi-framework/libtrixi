@@ -25,13 +25,13 @@ foreach ( EXAMPLE ${EXAMPLES} )
     # set libraries to link
     target_link_libraries(
         ${TARGET_NAME}
-        PRIVATE ${MPI_${EXAMPLE_LANG}_LIBRARIES} ${PROJECT_NAME} ${PROJECT_NAME}_tls
+        PRIVATE MPI::MPI_${EXAMPLE_LANG} ${PROJECT_NAME} ${PROJECT_NAME}_tls
     )
 
     # set include directories
     target_include_directories(
         ${TARGET_NAME}
-        PRIVATE ${CMAKE_SOURCE_DIR}/src ${MPI_${EXAMPLE_LANG}_INCLUDE_DIRS}
+        PRIVATE ${CMAKE_SOURCE_DIR}/src
     )
 
     # set runtime path for installed binaries
