@@ -10,6 +10,7 @@ MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"
 
 [compat]
 julia = "1.8"
+MPI = "0.20.13"
 OrdinaryDiffEq = "6.53.2"
 Trixi = "0.5.29"
 
