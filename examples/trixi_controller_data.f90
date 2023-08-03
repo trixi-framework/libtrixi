@@ -1,13 +1,14 @@
 program simple_trixi_controller_f
   use LibTrixi
   use, intrinsic :: iso_fortran_env, only: error_unit
-  use, intrinsic :: iso_c_binding, only: c_int, c_null_char, c_double, c_loc
+  use, intrinsic :: iso_c_binding, only: c_int, c_double
 
   implicit none
 
   integer(c_int) :: handle, nelements, nvariables, i
   character(len=256) :: argument
-  real(c_double), allocatable, target :: data(:)
+  integer, parameter :: dp = selected_real_kind(12)
+  real(dp), dimension(:), pointer :: data
   real(c_double) :: gas_constant
 
 
@@ -57,7 +58,7 @@ program simple_trixi_controller_f
   allocate ( data(0:nelements*nvariables) )
 
   ! get averaged cell values for each variable
-  call trixi_load_cell_averages(c_loc(data), handle);
+  call trixi_load_cell_averages(data, handle);
 
   ! compute temperature
   gas_constant = 0.287;
