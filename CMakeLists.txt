@@ -1,8 +1,24 @@
-# Specify the minimum version.
-cmake_minimum_required ( VERSION 3.0 )
+# Specify the minimum version (3.9 required for regex submatches).
+cmake_minimum_required ( VERSION 3.9 )
+
+## Get project version
+# Reconfigure if VERSION file has changed
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/VERSION")
+# Read file
+file(READ "${CMAKE_SOURCE_DIR}/VERSION" version_string)
+# Parse string
+if (${version_string} MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)([+-][A-Za-z0-9_-]+)?")
+  set(LIBTRIXI_VERSION ${CMAKE_MATCH_0})
+  set(LIBTRIXI_VERSION_MAJOR ${CMAKE_MATCH_1})
+  set(LIBTRIXI_VERSION_MINOR ${CMAKE_MATCH_2})
+  set(LIBTRIXI_VERSION_PATCH ${CMAKE_MATCH_3})
+else()
+  message(FATAL_ERROR "Unable to parse version from string")
+endif()
 
 # Specify the project info.
-project ( trixi VERSION 0.1.0 DESCRIPTION "Interface library for using Trixi.jl from C/C++/Fortran" )
+project ( trixi VERSION ${LIBTRIXI_VERSION_MAJOR}.${LIBTRIXI_VERSION_MINOR}.${LIBTRIXI_VERSION_PATCH}
+          DESCRIPTION "Interface library for using Trixi.jl from C/C++/Fortran" )
 
 # Enable C and Fortran
 enable_language(C Fortran)
@@ -28,6 +44,7 @@ find_package( MPI REQUIRED )
 # Library target
 add_library ( ${PROJECT_NAME} SHARED
     src/trixi.c
+    src/trixi_version.c
     src/trixi.h
     src/trixi.f90
 )
@@ -50,13 +67,20 @@ set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR})
 
 
 # Include directories
-target_include_directories( ${PROJECT_NAME} PRIVATE src ${MPI_C_INCLUDE_DIRS} ${JULIA_INCLUDE_DIRS} )
+target_include_directories( ${PROJECT_NAME} PRIVATE src ${JULIA_INCLUDE_DIRS} )
 
 # Libraries to link
-target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} ${MPI_C_LIB_NAMES})
+target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} MPI::MPI_C )
 
 # Set appropriate compile flags
 target_compile_options( ${PROJECT_NAME} PUBLIC "-fPIC" )
+
+# Pass version information
+target_compile_definitions( ${PROJECT_NAME} PRIVATE
+                            LIBTRIXI_VERSION=\"${LIBTRIXI_VERSION}\"
+                            LIBTRIXI_VERSION_MAJOR=${LIBTRIXI_VERSION_MAJOR}
+                            LIBTRIXI_VERSION_MINOR=${LIBTRIXI_VERSION_MINOR}
+                            LIBTRIXI_VERSION_PATCH=${LIBTRIXI_VERSION_PATCH})
 
 
 # Add auxiliary *object* library to support fast thread-local storage (TLS)

@@ -31,6 +31,10 @@ void init_mpi_external ( int argc, char *argv[] ) {
     int nranks;
     ret = MPI_Comm_size(comm, &nranks);
     printf("[EXT] MPI size: return %d, size %d\n", ret, nranks);
+
+    ret = MPI_Comm_set_errhandler(comm, MPI_ERRORS_RETURN);
+    printf("[EXT] MPI errhandler: return %d\n", ret);
+
 }
 
 
@@ -45,6 +49,9 @@ int main ( int argc, char *argv[] ) {
         fprintf(stderr, "usage: %s PROJECT_DIR LIBELIXIR_PATH\n", argv[0]);
         return 2;
     }
+
+    // Print version information
+    printf("libtrixi version: %s\n", trixi_version());
 
     // Initialize MPI
     printf("\n*** Trixi controller ***   Initialize MPI\n");

@@ -3,6 +3,7 @@ module LibTrixi
 using OrdinaryDiffEq: OrdinaryDiffEq, step!, check_error, DiscreteCallback
 using Trixi: Trixi, summary_callback, mesh_equations_solver_cache, nelements, nvariables,
              wrap_array, eachelement, cons2prim, get_node_vars, eachnode
+using MPI: MPI, run_init_hooks, set_default_error_handler_return
 
 export trixi_initialize_simulation,
        trixi_initialize_simulation_cfptr,
@@ -48,6 +49,17 @@ function show_debug_output()
         return true
     else
         return false
+    end
+end
+
+function __init__()
+    # MPI could have been initialized by an external application.
+    # In this situation MPI.jl's MPI.Init is not called and leaves some package-internal
+    # settings uninitialized. Recover those here.
+    MPI.run_init_hooks()
+    # Also make sure MPI returns errors, at least in debug mode
+    if show_debug_output()
+        MPI.set_default_error_handler_return()
     end
 end
 

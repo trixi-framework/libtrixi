@@ -6,6 +6,12 @@
  * @{
 */
 
+// Information
+int trixi_version_major();
+int trixi_version_minor();
+int trixi_version_patch();
+const char* trixi_version();
+
 // Setup
 void trixi_initialize(const char * project_directory, const char * depot_path);
 int trixi_initialize_simulation(const char * libelixir);
@@ -26,6 +32,7 @@ void trixi_load_cell_averages(double * data, int handle);
 
 // Misc
 double trixi_calculate_dt(int handle);
+
 void julia_eval_string(const char * code);
 
 /**
