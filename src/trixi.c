@@ -111,18 +111,6 @@ void trixi_initialize(const char * project_directory, const char * depot_path) {
         print_and_die("null pointer", LOC);
       }
     }
-
-    // TODO: Workaround for issue with MPI.jl: A required MPI key value is not initialized
-    //       in case MPI has already been initialized before. With libtrixi MPI could have
-    //       been initialized by an external application. Check if MPI is initialized but
-    //       the key value not. In this case run the init hooks manually.
-    //       This would better be fixed using some functionality of MPI.jl
-    const char * call_MPI_run_init_hook =
-      "using MPI;\n"
-      "if MPI.Initialized() && MPI.JULIA_TYPE_PTR_ATTR[]==0;\n"
-      "  MPI.run_init_hooks();\n"
-      "end\n";
-    checked_eval_string(call_MPI_run_init_hook, LOC);
 }
 
 
