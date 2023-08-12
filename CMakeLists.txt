@@ -74,6 +74,7 @@ target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} MPI::MPI_C )
 
 # Set appropriate compile flags
 target_compile_options( ${PROJECT_NAME} PUBLIC "-fPIC" )
+target_compile_options( ${PROJECT_NAME} PRIVATE -Wall -Wextra -Werror)
 
 # Pass version information
 target_compile_definitions( ${PROJECT_NAME} PRIVATE

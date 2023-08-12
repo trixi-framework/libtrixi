@@ -40,6 +40,9 @@ foreach ( EXAMPLE ${EXAMPLES} )
         PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib"
     )
 
+    # enable warnings
+    target_compile_options( ${TARGET_NAME} PRIVATE -Wall -Wextra -Werror )
+
     # add to installation
     install( TARGETS ${TARGET_NAME} )
 
