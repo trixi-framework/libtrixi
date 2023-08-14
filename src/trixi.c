@@ -31,6 +31,8 @@ enum {
   TRIXI_FTPR_NELEMENTS,
   TRIXI_FTPR_NVARIABLES,
   TRIXI_FTPR_LOAD_CELL_AVERAGES,
+  TRIXI_FTPR_VERSION_JULIA,
+  TRIXI_FTPR_VERSION_JULIA_EXTENDED,
 
   // The last one is for the array size
   TRIXI_NUM_FPTRS
@@ -40,15 +42,17 @@ static void* trixi_function_pointers[TRIXI_NUM_FPTRS];
 // List of function names to obtain C function pointer from Julia
 // OBS! If any name is longer than 250 characters, adjust buffer sizes below
 static const char* trixi_function_pointer_names[] = {
-  [TRIXI_FTPR_INITIALIZE_SIMULATION] = "trixi_initialize_simulation_cfptr",
-  [TRIXI_FTPR_CALCULATE_DT]          = "trixi_calculate_dt_cfptr",
-  [TRIXI_FTPR_IS_FINISHED]           = "trixi_is_finished_cfptr",
-  [TRIXI_FTPR_STEP]                  = "trixi_step_cfptr",
-  [TRIXI_FTPR_FINALIZE_SIMULATION]   = "trixi_finalize_simulation_cfptr",
-  [TRIXI_FTPR_NDIMS]                 = "trixi_ndims_cfptr",
-  [TRIXI_FTPR_NELEMENTS]             = "trixi_nelements_cfptr",
-  [TRIXI_FTPR_NVARIABLES]            = "trixi_nvariables_cfptr",
-  [TRIXI_FTPR_LOAD_CELL_AVERAGES]    = "trixi_load_cell_averages_cfptr",
+  [TRIXI_FTPR_INITIALIZE_SIMULATION]  = "trixi_initialize_simulation_cfptr",
+  [TRIXI_FTPR_CALCULATE_DT]           = "trixi_calculate_dt_cfptr",
+  [TRIXI_FTPR_IS_FINISHED]            = "trixi_is_finished_cfptr",
+  [TRIXI_FTPR_STEP]                   = "trixi_step_cfptr",
+  [TRIXI_FTPR_FINALIZE_SIMULATION]    = "trixi_finalize_simulation_cfptr",
+  [TRIXI_FTPR_NDIMS]                  = "trixi_ndims_cfptr",
+  [TRIXI_FTPR_NELEMENTS]              = "trixi_nelements_cfptr",
+  [TRIXI_FTPR_NVARIABLES]             = "trixi_nvariables_cfptr",
+  [TRIXI_FTPR_LOAD_CELL_AVERAGES]     = "trixi_load_cell_averages_cfptr",
+  [TRIXI_FTPR_VERSION_JULIA]          = "trixi_version_julia_cfptr",
+  [TRIXI_FTPR_VERSION_JULIA_EXTENDED] = "trixi_version_julia_extended_cfptr"
 };
 
 // Default depot path *relative* to the project directory
@@ -79,12 +83,8 @@ void trixi_initialize(const char * project_directory, const char * depot_path) {
     jl_init();
 
     // Construct activation command
-    const char * activate_regular = "using Pkg;\n"
-                                    "Pkg.activate(\"%s\"; io=devnull);\n";
-    const char * activate_debug = "using Pkg;\n"
-                                  "Pkg.activate(\"%s\");\n"
-                                  "Pkg.status();\n";
-    const char * activate = show_debug_output() ? activate_debug : activate_regular;
+    const char * activate = "using Pkg;\n"
+                            "Pkg.activate(\"%s\"; io=devnull);\n";
     if ( strlen(activate) + strlen(project_directory) + 1 > 1024 ) {
       print_and_die("buffer size not sufficient for activation command", LOC);
     }
@@ -118,6 +118,11 @@ void trixi_initialize(const char * project_directory, const char * depot_path) {
                 trixi_function_pointer_names[i]);
         print_and_die("null pointer", LOC);
       }
+    }
+
+    // Show version info
+    if (show_debug_output()) {
+      printf("\nLoaded julia packages:\n%s\n\n", trixi_version_julia());
     }
 }
 
@@ -320,6 +325,59 @@ void trixi_load_cell_averages(double * data, int handle) {
 
     // Call function
     load_cell_averages(data, handle);
+}
+
+
+/**
+ * @anchor trixi_version_julia_api_c
+ *
+ * @brief Return name and version of loaded julia packages LibTrixi directly depends on.
+ *
+ * The return value is a read-only pointer to a NULL-terminated string with the name and
+ * version information of the loaded julia packages, seperated by newlines.
+ *
+ * The returned pointer is to static memory and must not be used to change the contents of
+ * the version string. Multiple calls to the function will return the same address.
+ *
+ * This function is thread-safe. It must be run after `trixi_initialize` has been called.
+ *
+ * @return Pointer to a read-only, NULL-terminated character array with the names and
+ *         versions of loaded Julia packages.
+ */
+const char* trixi_version_julia() {
+
+    // Get function pointer
+    const char* (*version_julia)() = trixi_function_pointers[TRIXI_FTPR_VERSION_JULIA];
+
+    // Call function
+    return version_julia();
+}
+
+
+/**
+ * @anchor trixi_version_julia_extended_api_c
+ *
+ * @brief Return name and version of all loaded julia packages.
+ *
+ * The return value is a read-only pointer to a NULL-terminated string with the name and
+ * version information of all loaded julia packages, including implicit dependencies,
+ * eperated by newlines.
+ *
+ * The returned pointer is to static memory and must not be used to change the contents of
+ * the version string. Multiple calls to the function will return the same address.
+ *
+ * This function is thread-safe. It must be run after `trixi_initialize` has been called.
+ *
+ * @return Pointer to a read-only, NULL-terminated character array with the names and
+ *         versions of all loaded julia packages.
+ */
+const char* trixi_version_julia_extended() {
+
+    // Get function pointer
+    const char* (*version_julia_extended)() = trixi_function_pointers[TRIXI_FTPR_VERSION_JULIA_EXTENDED];
+
+    // Call function
+    return version_julia_extended();
 }
 
 
