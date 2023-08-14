@@ -2,7 +2,7 @@ module LibTrixi
 
 using OrdinaryDiffEq: OrdinaryDiffEq, step!, check_error, DiscreteCallback
 using Trixi: Trixi, summary_callback, mesh_equations_solver_cache, nelements, nvariables,
-             wrap_array, eachelement, cons2prim, get_node_vars, eachnode
+             nnodes, wrap_array, eachelement, cons2prim, get_node_vars, eachnode
 using MPI: MPI, run_init_hooks, set_default_error_handler_return
 
 export trixi_initialize_simulation,
