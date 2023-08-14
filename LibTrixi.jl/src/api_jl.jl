@@ -65,15 +65,12 @@ function trixi_nvariables_jl(simstate)
     return nvariables(equations)
 end
 
-function trixi_load_cell_averages_jl(data_, simstate)
+function trixi_load_cell_averages_jl(data, simstate)
     mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
     n_elements = nelements(solver, cache)
     n_variables = nvariables(equations)
     n_nodes = nnodes(solver)
     n_dims = ndims(mesh)
-
-    # convert C to julia
-    data = unsafe_wrap(Array, data_, n_elements*n_variables)
 
     u_ode = simstate.integrator.u
     u = wrap_array(u_ode, mesh, equations, solver, cache)
