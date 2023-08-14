@@ -108,9 +108,9 @@ function trixi_load_cell_averages_jl(data, simstate)
 end
 
 function trixi_version_julia_jl()
-    return _version_info
+    return _version_info[]
 end
 
 function trixi_version_julia_extended_jl()
-    return _version_info_extended
+    return _version_info_extended[]
 end
