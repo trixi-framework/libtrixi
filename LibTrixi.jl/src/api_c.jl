@@ -177,7 +177,7 @@ trixi_nvariables_cfptr() = @cfunction(trixi_nvariables, Cint, (Cint,))
 
 
 """
-    trixi_load_cell_averages(simstate_handle::Cint)::Cint
+    trixi_load_cell_averages(data::Ptr{Cdouble}, simstate_handle::Cint)::Cvoid
 
 Return cell averaged values
 
