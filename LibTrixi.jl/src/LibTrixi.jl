@@ -67,7 +67,7 @@ function show_debug_output()
 end
 
 
-function assemble_version_info(;filter_expr = x -> x)
+function assemble_version_info(; filter_expr = identity)
     packages = Pkg.dependencies() |> values |> collect |> filter_expr
     versions = String[]
     for p in sort(packages, by=x->x.name)
