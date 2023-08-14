@@ -334,7 +334,7 @@ void trixi_load_cell_averages(double * data, int handle) {
  * @brief Return name and version of loaded julia packages LibTrixi directly depends on.
  *
  * The return value is a read-only pointer to a NULL-terminated string with the name and
- * version information of the loaded julia packages, seperated by newlines.
+ * version information of the loaded julia packages, separated by newlines.
  *
  * The returned pointer is to static memory and must not be used to change the contents of
  * the version string. Multiple calls to the function will return the same address.
@@ -361,7 +361,7 @@ const char* trixi_version_julia() {
  *
  * The return value is a read-only pointer to a NULL-terminated string with the name and
  * version information of all loaded julia packages, including implicit dependencies,
- * eperated by newlines.
+ * separated by newlines.
  *
  * The returned pointer is to static memory and must not be used to change the contents of
  * the version string. Multiple calls to the function will return the same address.
