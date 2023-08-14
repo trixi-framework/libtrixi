@@ -55,7 +55,7 @@ program simple_trixi_controller_f
   write(*, '(a)') ""
 
   ! allocate memory
-  allocate ( data(0:nelements*nvariables) )
+  allocate ( data(nelements*nvariables) )
 
   ! get averaged cell values for each variable
   call trixi_load_cell_averages(data, handle);
@@ -63,7 +63,7 @@ program simple_trixi_controller_f
   ! compute temperature
   gas_constant = 0.287;
 
-  do i = 0,nelements-1
+  do i = 1,nelements
     print "('T[cell  ', i4, '] = ', e14.8)", i, data(i+3*nelements)/(gas_constant*data(i))
   end do
 
