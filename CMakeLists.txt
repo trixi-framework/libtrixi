@@ -6,12 +6,12 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_SOURCE_D
 # Get project version from LibTrixi.jl
 file(READ "${CMAKE_SOURCE_DIR}/LibTrixi.jl/Project.toml" libtrixi_project_toml)
 # Parse string
-if (${libtrixi_project_toml} MATCHES "version = \"(([0-9]+)\\.([0-9]+)\\.([0-9]+)[+-]([A-Za-z0-9_-]+)?)\"")
+if (${libtrixi_project_toml} MATCHES "version = \"(([0-9]+)\\.([0-9]+)\\.([0-9]+)([+-]([A-Za-z0-9_-]+))?)\"")
   set(LIBTRIXI_VERSION ${CMAKE_MATCH_1})
   set(LIBTRIXI_VERSION_MAJOR ${CMAKE_MATCH_2})
   set(LIBTRIXI_VERSION_MINOR ${CMAKE_MATCH_3})
   set(LIBTRIXI_VERSION_PATCH ${CMAKE_MATCH_4})
-  set(LIBTRIXI_VERSION_PRERELEASE ${CMAKE_MATCH_5})
+  set(LIBTRIXI_VERSION_PRERELEASE ${CMAKE_MATCH_6})
 else()
   message(FATAL_ERROR "Unable to parse version from LibTrixi.jl/Project.toml")
 endif()
