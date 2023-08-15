@@ -1,19 +1,19 @@
 # Specify the minimum version (3.9 required for regex submatches).
 cmake_minimum_required ( VERSION 3.9 )
 
-## Get project version
-# Reconfigure if VERSION file has changed
-set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/VERSION")
-# Read file
-file(READ "${CMAKE_SOURCE_DIR}/VERSION" version_string)
+# Reconfigure if Project.toml has changed
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/LibTrixi.jl/Project.toml")
+# Get project version from LibTrixi.jl
+file(READ "${CMAKE_SOURCE_DIR}/LibTrixi.jl/Project.toml" libtrixi_project_toml)
 # Parse string
-if (${version_string} MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)([+-][A-Za-z0-9_-]+)?")
-  set(LIBTRIXI_VERSION ${CMAKE_MATCH_0})
-  set(LIBTRIXI_VERSION_MAJOR ${CMAKE_MATCH_1})
-  set(LIBTRIXI_VERSION_MINOR ${CMAKE_MATCH_2})
-  set(LIBTRIXI_VERSION_PATCH ${CMAKE_MATCH_3})
+if (${libtrixi_project_toml} MATCHES "version = \"(([0-9]+)\\.([0-9]+)\\.([0-9]+)([+-]([A-Za-z0-9_-]+))?)\"")
+  set(LIBTRIXI_VERSION ${CMAKE_MATCH_1})
+  set(LIBTRIXI_VERSION_MAJOR ${CMAKE_MATCH_2})
+  set(LIBTRIXI_VERSION_MINOR ${CMAKE_MATCH_3})
+  set(LIBTRIXI_VERSION_PATCH ${CMAKE_MATCH_4})
+  set(LIBTRIXI_VERSION_PRERELEASE ${CMAKE_MATCH_6})
 else()
-  message(FATAL_ERROR "Unable to parse version from string")
+  message(FATAL_ERROR "Unable to parse version from LibTrixi.jl/Project.toml")
 endif()
 
 # Specify the project info.
@@ -44,7 +44,6 @@ find_package( MPI REQUIRED )
 # Library target
 add_library ( ${PROJECT_NAME} SHARED
     src/trixi.c
-    src/trixi_version.c
     src/trixi.h
     src/trixi.f90
 )
@@ -76,12 +75,6 @@ target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} MPI::MPI_C )
 target_compile_options( ${PROJECT_NAME} PUBLIC "-fPIC" )
 target_compile_options( ${PROJECT_NAME} PRIVATE -Wall -Wextra -Werror)
 
-# Pass version information
-target_compile_definitions( ${PROJECT_NAME} PRIVATE
-                            LIBTRIXI_VERSION=\"${LIBTRIXI_VERSION}\"
-                            LIBTRIXI_VERSION_MAJOR=${LIBTRIXI_VERSION_MAJOR}
-                            LIBTRIXI_VERSION_MINOR=${LIBTRIXI_VERSION_MINOR}
-                            LIBTRIXI_VERSION_PATCH=${LIBTRIXI_VERSION_PATCH})
 
 
 # Add auxiliary *object* library to support fast thread-local storage (TLS)
