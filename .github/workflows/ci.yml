@@ -168,6 +168,7 @@ jobs:
       - name: Run julia tests with coverage
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
+          cd libtrixi-julia
           JULIA_DEPOT_PATH=~/.julia \
               julia --code-coverage=user --code-coverage=@.. --project=. ../test/runtests.jl
         env:
