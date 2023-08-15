@@ -106,27 +106,3 @@ function trixi_load_cell_averages_jl(data, simstate)
 
     return nothing
 end
-
-function trixi_version_major_jl()
-    return VersionNumber(_version_libtrixi[]).major
-end
-
-function trixi_version_minor_jl()
-    return VersionNumber(_version_libtrixi[]).minor
-end
-
-function trixi_version_patch_jl()
-    return VersionNumber(_version_libtrixi[]).patch
-end
-
-function trixi_version_jl()
-    return _version_libtrixi[]
-end
-
-function trixi_version_julia_jl()
-    return _version_info[]
-end
-
-function trixi_version_julia_extended_jl()
-    return _version_info_extended[]
-end

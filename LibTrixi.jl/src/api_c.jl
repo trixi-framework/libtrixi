@@ -213,7 +213,7 @@ This function is thread-safe. It must be run after `trixi_initialize` has been c
 function trixi_version_major end
 
 Base.@ccallable function trixi_version_major()::Cint
-    return trixi_version_major_jl()
+    return VersionNumber(_version_libtrixi[]).major
 end
 
 trixi_version_major_cfptr() = @cfunction(trixi_version_major, Cint, ())
@@ -229,7 +229,7 @@ This function is thread-safe. It must be run after `trixi_initialize` has been c
 function trixi_version_minor end
 
 Base.@ccallable function trixi_version_minor()::Cint
-    return trixi_version_minor_jl()
+    return VersionNumber(_version_libtrixi[]).minor
 end
 
 trixi_version_minor_cfptr() = @cfunction(trixi_version_minor, Cint, ())
@@ -245,7 +245,7 @@ This function is thread-safe. It must be run after `trixi_initialize` has been c
 function trixi_version_patch end
 
 Base.@ccallable function trixi_version_patch()::Cint
-    return trixi_version_patch_jl()
+    return VersionNumber(_version_libtrixi[]).patch
 end
 
 trixi_version_patch_cfptr() = @cfunction(trixi_version_patch, Cint, ())

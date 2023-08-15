@@ -1,10 +1,12 @@
 # Specify the minimum version (3.9 required for regex submatches).
 cmake_minimum_required ( VERSION 3.9 )
 
+# Reconfigure if Project.toml has changed
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/LibTrixi.jl/Project.toml")
 # Get project version from LibTrixi.jl
 file(READ "${CMAKE_SOURCE_DIR}/LibTrixi.jl/Project.toml" libtrixi_project_toml)
 # Parse string
-if (${libtrixi_project_toml} MATCHES "version = \"(([0-9]+)\\.([0-9]+)\\.([0-9]+)([+-][A-Za-z0-9_-]+)?)\"")
+if (${libtrixi_project_toml} MATCHES "version = \"(([0-9]+)\\.([0-9]+)\\.([0-9]+)[+-]([A-Za-z0-9_-]+)?)\"")
   set(LIBTRIXI_VERSION ${CMAKE_MATCH_1})
   set(LIBTRIXI_VERSION_MAJOR ${CMAKE_MATCH_2})
   set(LIBTRIXI_VERSION_MINOR ${CMAKE_MATCH_3})
