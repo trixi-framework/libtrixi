@@ -90,7 +90,7 @@ function assemble_version_info(; filter_expr = identity)
             push!(versions, p.name * " " * string(p.version))
         end
     end
-    push!(versions, "Julia " * string(VERSION))
+    push!(versions, "julia " * string(VERSION))
     join(versions, "\n")
 end
 
