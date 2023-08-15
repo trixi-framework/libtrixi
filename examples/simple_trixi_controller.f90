@@ -27,7 +27,8 @@ program simple_trixi_controller_f
   call trixi_initialize(argument)
 
   ! Print version information
-  write(*, '(a, a)') "libtrixi version: ", trixi_version()
+  write(*, '(a, i1, a, i1, a, i1, a, a)') "libtrixi version: ", trixi_version_major(), &
+        ".", trixi_version_minor(), ".", trixi_version_patch(), " ", trixi_version()
 
   ! Set up the Trixi simulation
   ! We get a handle to use subsequently
