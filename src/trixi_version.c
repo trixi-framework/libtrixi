@@ -1,3 +1,5 @@
+#include "trixi.h"
+
 /**
  * @anchor trixi_version_major_api_c
  *
@@ -8,7 +10,12 @@
  * @return Major version of libtrixi.
  */
 int trixi_version_major() {
-  return LIBTRIXI_VERSION_MAJOR;
+
+    // Get function pointer
+    int (*version_major)() = trixi_function_pointers[TRIXI_FTPR_VERSION_MAJOR];
+
+    // Call function
+    return version_major();
 }
 
 /**
@@ -21,7 +28,12 @@ int trixi_version_major() {
  * @return Minor version of libtrixi.
  */
 int trixi_version_minor() {
-  return LIBTRIXI_VERSION_MINOR;
+
+    // Get function pointer
+    int (*version_minor)() = trixi_function_pointers[TRIXI_FTPR_VERSION_MINOR];
+
+    // Call function
+    return version_minor();
 }
 
 /**
@@ -34,7 +46,12 @@ int trixi_version_minor() {
  * @return Patch version of libtrixi.
  */
 int trixi_version_patch() {
-  return LIBTRIXI_VERSION_PATCH;
+
+    // Get function pointer
+    int (*version_patch)() = trixi_function_pointers[TRIXI_FTPR_VERSION_PATCH];
+
+    // Call function
+    return version_patch();
 }
 
 /**
@@ -51,8 +68,14 @@ int trixi_version_patch() {
  *
  * This function is thread-safe and may be run before `trixi_initialize` has been called.
  *
- * @return Pointer to a read-only, NULL-terminated character array with the full version of libtrixi.
+ * @return Pointer to a read-only, NULL-terminated character array with the full version of
+ *         libtrixi.
  */
 const char* trixi_version() {
-  return LIBTRIXI_VERSION;
+
+    // Get function pointer
+    const char* (*version)() = trixi_function_pointers[TRIXI_FTPR_VERSION];
+
+    // Call function
+    return version();
 }

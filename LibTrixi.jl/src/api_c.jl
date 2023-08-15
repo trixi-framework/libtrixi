@@ -204,6 +204,77 @@ trixi_load_cell_averages_cfptr() = @cfunction(trixi_load_cell_averages, Cvoid, (
 
 
 """
+    trixi_version_major()::Cint
+
+Return major version number of libtrixi.
+
+This function is thread-safe. It must be run after `trixi_initialize` has been called.
+"""
+function trixi_version_major end
+
+Base.@ccallable function trixi_version_major()::Cint
+    return trixi_version_major_jl()
+end
+
+trixi_version_major_cfptr() = @cfunction(trixi_version_major, Cint, ())
+
+
+"""
+    trixi_version_minor()::Cint
+
+Return minor version number of libtrixi.
+
+This function is thread-safe. It must be run after `trixi_initialize` has been called.
+"""
+function trixi_version_minor end
+
+Base.@ccallable function trixi_version_minor()::Cint
+    return trixi_version_minor_jl()
+end
+
+trixi_version_minor_cfptr() = @cfunction(trixi_version_minor, Cint, ())
+
+
+"""
+    trixi_version_patch()::Cint
+
+Return patch version number of libtrixi.
+
+This function is thread-safe. It must be run after `trixi_initialize` has been called.
+"""
+function trixi_version_patch end
+
+Base.@ccallable function trixi_version_patch()::Cint
+    return trixi_version_patch_jl()
+end
+
+trixi_version_patch_cfptr() = @cfunction(trixi_version_patch, Cint, ())
+
+
+"""
+    trixi_version()::Cstring
+
+Return full version string of libtrixi.
+
+The return value is a read-only pointer to a NULL-terminated string with the version
+information. This may include not just MAJOR.MINOR.PATCH but possibly also additional
+build or development version information.
+
+The returned pointer is to static memory and must not be used to change the contents of
+the version string. Multiple calls to the function will return the same address.
+
+This function is thread-safe. It must be run after `trixi_initialize` has been called.
+"""
+function trixi_version end
+
+Base.@ccallable function trixi_version()::Cstring
+    return pointer(_version_libtrixi[])
+end
+
+trixi_version_cfptr() = @cfunction(trixi_version, Cstring, ())
+
+
+"""
     trixi_version_julia()::Cstring
 
 Return name and version of loaded julia packages LibTrixi directly depends on.

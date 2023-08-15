@@ -33,6 +33,18 @@ export trixi_nvariables,
 export trixi_load_cell_averages,
        trixi_load_cell_averages_cfptr,
        trixi_load_cell_averages_jl
+export trixi_version,
+       trixi_version_cfptr,
+       trixi_version_jl
+export trixi_version_major,
+       trixi_version_major_cfptr,
+       trixi_version_major_jl
+export trixi_version_minor,
+       trixi_version_minor_cfptr,
+       trixi_version_minor_jl
+export trixi_version_patch,
+       trixi_version_patch_cfptr,
+       trixi_version_patch_jl
 export trixi_version_julia,
        trixi_version_julia_cfptr,
        trixi_version_julia_jl
@@ -46,6 +58,7 @@ export SimulationState, store_simstate, load_simstate, delete_simstate!
 # global storage of name and version information of loaded packages
 const _version_info = Ref("")
 const _version_info_extended = Ref("")
+const _version_libtrixi = Ref("")
 
 
 include("simulationstate.jl")
@@ -95,6 +108,8 @@ function __init__()
     # assemble packages information
     _version_info[] = assemble_version_info(filter_expr = filter(p -> p.is_direct_dep))
     _version_info_extended[] = assemble_version_info()
+    libtrixi_string = assemble_version_info(filter_expr = filter(p -> p.name == "LibTrixi"))
+    _version_libtrixi[] = split(split(libtrixi_string, "\n")[1], " ")[2]
 end
 
 end # module LibTrixi

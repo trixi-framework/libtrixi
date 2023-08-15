@@ -20,28 +20,17 @@ static int show_debug_output();
 // Auxiliary function to update JULIA_DEPOT_PATH environment variable
 static void update_depot_path(const char * project_directory, const char * depot_path);
 
-// Store function pointers to avoid overhead of `jl_eval_string`
-enum {
-  TRIXI_FTPR_INITIALIZE_SIMULATION,
-  TRIXI_FTPR_CALCULATE_DT,
-  TRIXI_FTPR_IS_FINISHED,
-  TRIXI_FTPR_STEP,
-  TRIXI_FTPR_FINALIZE_SIMULATION,
-  TRIXI_FTPR_NDIMS,
-  TRIXI_FTPR_NELEMENTS,
-  TRIXI_FTPR_NVARIABLES,
-  TRIXI_FTPR_LOAD_CELL_AVERAGES,
-  TRIXI_FTPR_VERSION_JULIA,
-  TRIXI_FTPR_VERSION_JULIA_EXTENDED,
+// Default depot path *relative* to the project directory
+// OBS! If you change the value here, you should also update the default value of
+// `LIBTRIXI_JULIA_DEPOT` in `utils/libtrixi-init-julia` accordingly
+static const char* default_depot_path = "julia-depot";
 
-  // The last one is for the array size
-  TRIXI_NUM_FPTRS
-};
-static void* trixi_function_pointers[TRIXI_NUM_FPTRS];
+// List of function pointers, stored below
+void* trixi_function_pointers[TRIXI_NUM_FPTRS];
 
 // List of function names to obtain C function pointer from Julia
 // OBS! If any name is longer than 250 characters, adjust buffer sizes below
-static const char* trixi_function_pointer_names[] = {
+const char* trixi_function_pointer_names[] = {
   [TRIXI_FTPR_INITIALIZE_SIMULATION]  = "trixi_initialize_simulation_cfptr",
   [TRIXI_FTPR_CALCULATE_DT]           = "trixi_calculate_dt_cfptr",
   [TRIXI_FTPR_IS_FINISHED]            = "trixi_is_finished_cfptr",
@@ -51,14 +40,13 @@ static const char* trixi_function_pointer_names[] = {
   [TRIXI_FTPR_NELEMENTS]              = "trixi_nelements_cfptr",
   [TRIXI_FTPR_NVARIABLES]             = "trixi_nvariables_cfptr",
   [TRIXI_FTPR_LOAD_CELL_AVERAGES]     = "trixi_load_cell_averages_cfptr",
+  [TRIXI_FTPR_VERSION]                = "trixi_version_cfptr",
+  [TRIXI_FTPR_VERSION_MAJOR]          = "trixi_version_major_cfptr",
+  [TRIXI_FTPR_VERSION_MINOR]          = "trixi_version_minor_cfptr",
+  [TRIXI_FTPR_VERSION_PATCH]          = "trixi_version_patch_cfptr",
   [TRIXI_FTPR_VERSION_JULIA]          = "trixi_version_julia_cfptr",
   [TRIXI_FTPR_VERSION_JULIA_EXTENDED] = "trixi_version_julia_extended_cfptr"
 };
-
-// Default depot path *relative* to the project directory
-// OBS! If you change the value here, you should also update the default value of
-// `LIBTRIXI_JULIA_DEPOT` in `utils/libtrixi-init-julia` accordingly
-static const char* default_depot_path = "julia-depot";
 
 
 /**
@@ -121,8 +109,9 @@ void trixi_initialize(const char * project_directory, const char * depot_path) {
     }
 
     // Show version info
+    printf("\nLibTrixi %s\n\n", trixi_version());
     if (show_debug_output()) {
-      printf("\nLoaded julia packages:\n%s\n\n", trixi_version_julia());
+      printf("Loaded julia packages:\n%s\n\n", trixi_version_julia());
     }
 }
 
