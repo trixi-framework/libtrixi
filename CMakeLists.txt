@@ -15,7 +15,7 @@ else()
 endif()
 
 # Specify the project info.
-project ( trixi VERSION ${LIBTRIXI_VERSION}
+project ( trixi VERSION ${LIBTRIXI_VERSION_MAJOR}.${LIBTRIXI_VERSION_MINOR}.${LIBTRIXI_VERSION_PATCH}
           DESCRIPTION "Interface library for using Trixi.jl from C/C++/Fortran" )
 
 # Enable C and Fortran
@@ -50,10 +50,10 @@ add_library ( ${PROJECT_NAME} SHARED
 target_include_directories ( ${PROJECT_NAME} PRIVATE src )
 
 # Version info
-set_target_properties ( ${PROJECT_NAME} PROPERTIES VERSION ${LIBTRIXI_VERSION} )
+set_target_properties ( ${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION} )
 
 # Version info for the shared object
-set_target_properties ( ${PROJECT_NAME} PROPERTIES SOVERSION ${LIBTRIXI_VERSION_MAJOR} )
+set_target_properties ( ${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR} )
 
 # Include directories, public for actual users
 set_target_properties ( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER src/trixi.h )
