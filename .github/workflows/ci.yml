@@ -165,6 +165,13 @@ jobs:
               ../build/examples/trixi_controller_data_f . libelixir_p4est2d_dgsem_euler_sedov.jl
         env:
           LIBTRIXI_DEBUG: all
+      - name: Run julia tests with coverage
+        if: ${{ matrix.test_type == 'coverage' }}
+        run: |
+          JULIA_DEPOT_PATH=~/.julia \
+              julia --code-coverage=user --code-coverage=@.. --project=. ../test/runtests.jl
+        env:
+          LIBTRIXI_DEBUG: all
       - name: Run memory checks with Valgrind
         if: ${{ matrix.test_type == 'valgrind' }}
         run: |
