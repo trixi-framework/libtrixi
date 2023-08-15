@@ -3,19 +3,18 @@ module TestInterface
 using Test
 using LibTrixi
 
-#=
+
 @testset verbose=true showtiming=true "Version information" begin
 
-    libtrixi_version = trixi_version()
+    libtrixi_version = VersionNumber(unsafe_string(trixi_version()))
     @test libtrixi_version.major == trixi_version_major()
     @test libtrixi_version.minor == trixi_version_minor()
     @test libtrixi_version.patch == trixi_version_patch()
 
-    @test occursin("OrdinaryDiffEq", trixi_version_julia())
-    @test occursin("StartUpDG", trixi_version_julia_extended())
-    libtrixi_juli
+    @test occursin("OrdinaryDiffEq", unsafe_string(trixi_version_julia()))
+    @test occursin("StartUpDG", unsafe_string(trixi_version_julia_extended()))
 end
-=#
+
 
 libelixir = joinpath(dirname(pathof(LibTrixi)),
                      "../examples/libelixir_tree1d_dgsem_advection_basic.jl")
