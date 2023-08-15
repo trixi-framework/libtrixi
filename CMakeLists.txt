@@ -1,8 +1,21 @@
 # Specify the minimum version (3.9 required for regex submatches).
 cmake_minimum_required ( VERSION 3.9 )
 
+# Get project version from LibTrixi.jl
+file(READ "${CMAKE_SOURCE_DIR}/LibTrixi.jl/Project.toml" libtrixi_project_toml)
+# Parse string
+if (${libtrixi_project_toml} MATCHES "version = \"(([0-9]+)\\.([0-9]+)\\.([0-9]+)([+-][A-Za-z0-9_-]+)?)\"")
+  set(LIBTRIXI_VERSION ${CMAKE_MATCH_1})
+  set(LIBTRIXI_VERSION_MAJOR ${CMAKE_MATCH_2})
+  set(LIBTRIXI_VERSION_MINOR ${CMAKE_MATCH_3})
+  set(LIBTRIXI_VERSION_PATCH ${CMAKE_MATCH_4})
+  set(LIBTRIXI_VERSION_PRERELEASE ${CMAKE_MATCH_5})
+else()
+  message(FATAL_ERROR "Unable to parse version from LibTrixi.jl/Project.toml")
+endif()
+
 # Specify the project info.
-project ( trixi VERSION 0.1.0
+project ( trixi VERSION ${LIBTRIXI_VERSION}
           DESCRIPTION "Interface library for using Trixi.jl from C/C++/Fortran" )
 
 # Enable C and Fortran
@@ -37,10 +50,10 @@ add_library ( ${PROJECT_NAME} SHARED
 target_include_directories ( ${PROJECT_NAME} PRIVATE src )
 
 # Version info
-set_target_properties ( ${PROJECT_NAME} PROPERTIES VERSION 0.1.0 )
+set_target_properties ( ${PROJECT_NAME} PROPERTIES VERSION ${LIBTRIXI_VERSION} )
 
 # Version info for the shared object
-set_target_properties ( ${PROJECT_NAME} PROPERTIES SOVERSION 0 )
+set_target_properties ( ${PROJECT_NAME} PROPERTIES SOVERSION ${LIBTRIXI_VERSION_MAJOR} )
 
 # Include directories, public for actual users
 set_target_properties ( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER src/trixi.h )
