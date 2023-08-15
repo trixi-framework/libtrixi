@@ -11,6 +11,8 @@ int trixi_version_major();
 int trixi_version_minor();
 int trixi_version_patch();
 const char* trixi_version();
+const char* trixi_version_julia();
+const char* trixi_version_julia_extended();
 
 // Setup
 void trixi_initialize(const char * project_directory, const char * depot_path);

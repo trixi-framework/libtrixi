@@ -201,3 +201,119 @@ Base.@ccallable function trixi_load_cell_averages(data::Ptr{Cdouble}, simstate_h
 end
 
 trixi_load_cell_averages_cfptr() = @cfunction(trixi_load_cell_averages, Cvoid, (Ptr{Cdouble}, Cint,))
+
+
+"""
+    trixi_version_major()::Cint
+
+Return major version number of libtrixi.
+
+This function is thread-safe. It must be run after `trixi_initialize` has been called.
+"""
+function trixi_version_major end
+
+Base.@ccallable function trixi_version_major()::Cint
+    return VersionNumber(_version_libtrixi[]).major
+end
+
+trixi_version_major_cfptr() = @cfunction(trixi_version_major, Cint, ())
+
+
+"""
+    trixi_version_minor()::Cint
+
+Return minor version number of libtrixi.
+
+This function is thread-safe. It must be run after `trixi_initialize` has been called.
+"""
+function trixi_version_minor end
+
+Base.@ccallable function trixi_version_minor()::Cint
+    return VersionNumber(_version_libtrixi[]).minor
+end
+
+trixi_version_minor_cfptr() = @cfunction(trixi_version_minor, Cint, ())
+
+
+"""
+    trixi_version_patch()::Cint
+
+Return patch version number of libtrixi.
+
+This function is thread-safe. It must be run after `trixi_initialize` has been called.
+"""
+function trixi_version_patch end
+
+Base.@ccallable function trixi_version_patch()::Cint
+    return VersionNumber(_version_libtrixi[]).patch
+end
+
+trixi_version_patch_cfptr() = @cfunction(trixi_version_patch, Cint, ())
+
+
+"""
+    trixi_version()::Cstring
+
+Return full version string of libtrixi.
+
+The return value is a read-only pointer to a NULL-terminated string with the version
+information. This may include not just MAJOR.MINOR.PATCH but possibly also additional
+build or development version information.
+
+The returned pointer is to static memory and must not be used to change the contents of
+the version string. Multiple calls to the function will return the same address.
+
+This function is thread-safe. It must be run after `trixi_initialize` has been called.
+"""
+function trixi_version end
+
+Base.@ccallable function trixi_version()::Cstring
+    return pointer(_version_libtrixi[])
+end
+
+trixi_version_cfptr() = @cfunction(trixi_version, Cstring, ())
+
+
+"""
+    trixi_version_julia()::Cstring
+
+Return name and version of loaded julia packages LibTrixi directly depends on.
+
+The return value is a read-only pointer to a NULL-terminated string with the name and
+version information of the loaded julia packages, separated by newlines.
+
+The returned pointer is to static memory and must not be used to change the contents of
+the version string. Multiple calls to the function will return the same address.
+
+This function is thread-safe. It must be run after `trixi_initialize` has been called.
+"""
+function trixi_version_julia end
+
+Base.@ccallable function trixi_version_julia()::Cstring
+    return pointer(_version_info[])
+end
+
+trixi_version_julia_cfptr() = @cfunction(trixi_version_julia, Cstring, ())
+
+
+"""
+    trixi_version_julia_extended()::Cstring
+
+Return name and version of all loaded julia packages.
+
+The return value is a read-only pointer to a NULL-terminated string with the name and
+version information of all loaded julia packages, including implicit dependencies,
+separated by newlines.
+
+The returned pointer is to static memory and must not be used to change the contents of
+the version string. Multiple calls to the function will return the same address.
+
+This function is thread-safe. It must be run after `trixi_initialize` has been called.
+"""
+function trixi_version_julia_extended end
+
+Base.@ccallable function trixi_version_julia_extended()::Cstring
+    return pointer(_version_info_extended[])
+end
+
+trixi_version_julia_extended_cfptr() = @cfunction(trixi_version_julia_extended, Cstring, ())
