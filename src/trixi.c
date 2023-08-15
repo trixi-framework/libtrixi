@@ -129,7 +129,7 @@ void trixi_initialize(const char * project_directory, const char * depot_path) {
     }
 
     // Show version info
-    printf("\nLibTrixi %s\n\n", trixi_version());
+    printf("\nlibtrixi %s\n\n", trixi_version());
     if (show_debug_output()) {
       printf("Loaded Julia packages:\n%s\n\n", trixi_version_julia());
     }
