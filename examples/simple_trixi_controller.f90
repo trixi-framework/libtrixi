@@ -22,12 +22,12 @@ program simple_trixi_controller_f
     stop 1
   end if
 
-  ! Print version information
-  write(*, '(a, a)') "libtrixi version: ", trixi_version()
-
   ! Initialize Trixi
   call get_command_argument(1, argument)
   call trixi_initialize(argument)
+
+  ! Print version information
+  write(*, '(a, a)') "libtrixi version: ", trixi_version()
 
   ! Set up the Trixi simulation
   ! We get a handle to use subsequently
