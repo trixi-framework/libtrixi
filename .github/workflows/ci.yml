@@ -171,11 +171,6 @@ jobs:
         with:
           coverage: true
           project: ./LibTrixi.jl
-        #   julia-args:
-        #   prefix:
-        # run: |
-        #   cd libtrixi-julia
-        #   julia --code-coverage=user --code-coverage=@.. --project=. ../test/runtests.jl
         env:
           JULIA_DEPOT_PATH: ~/.julia
           LIBTRIXI_DEBUG: all
