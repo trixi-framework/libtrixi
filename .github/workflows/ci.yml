@@ -167,19 +167,19 @@ jobs:
           LIBTRIXI_DEBUG: all
       - name: Run julia tests with coverage
         if: ${{ matrix.test_type == 'coverage' }}
-        uses: julia-actions/julia-runtest@v1
-        with:
-          coverage: true
-          project: ./libtrixi-julia
-          #julia-args:
-          #prefix:
+        # julia-runtest calls Pkg.test(), so it assumes the project is LibTrixi.jl
+        # uses: julia-actions/julia-runtest@v1
+        # with:
+        #   coverage: true
+        #   project: ./libtrixi-julia
+        #   julia-args:
+        #   prefix:
+        run: |
+          cd libtrixi-julia
+          julia --code-coverage=user --code-coverage=@.. --project=. ../test/runtests.jl
         env:
           JULIA_DEPOT_PATH: ~/.julia
           LIBTRIXI_DEBUG: all
-        #run: |
-        #  cd libtrixi-julia
-        #  JULIA_DEPOT_PATH=~/.julia \
-        #      julia --code-coverage=user --code-coverage=@.. --project=. ../test/runtests.jl
       - name: Run memory checks with Valgrind
         if: ${{ matrix.test_type == 'valgrind' }}
         run: |
