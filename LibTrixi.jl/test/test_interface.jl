@@ -33,6 +33,9 @@ simstate_jl = trixi_initialize_simulation_jl(libelixir)
 
     # simstates are not the same
     @test LibTrixi.simstates[handle] != simstate_jl
+
+    # using a non-existent handle
+    @test_throws MethodError trixi_is_finished(42)
 end
 
 
@@ -53,6 +56,33 @@ end
     @test trixi_is_finished(handle) == 0
     @test !trixi_is_finished_jl(simstate_jl)
 end
+
+
+@testset verbose=true showtiming=true "Data access" begin
+
+    # compare number of dimensions
+    ndims_c = trixi_ndims(handle)
+    ndims_jl = trixi_ndims_jl(simstate_jl)
+    @test ndims_c == ndims_jl
+
+    # compare number of elements
+    nelements_c = trixi_nelements(handle)
+    nelements_jl = trixi_nelements_jl(simstate_jl)
+    @test nelements_c == nelements_jl
+
+    # compare number of variables
+    nvariables_c = trixi_nvariables(handle)
+    nvariables_jl = trixi_nvariables_jl(simstate_jl)
+    @test nvariables_c == nvariables_jl
+
+    # compare cell averaged values
+    data_c = zeros(nvariables_c * nelements_c)
+    trixi_load_cell_averages(pointer(data_c), handle)
+    data_jl = zeros(nvariables_jl * nelements_jl)
+    trixi_load_cell_averages_jl(data_jl, simstate_jl)
+    @test data_c == data_jl
+end
+
 
 @testset verbose=true showtiming=true "Finalization" begin
 
