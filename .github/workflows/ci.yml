@@ -208,7 +208,7 @@ jobs:
       - uses: codecov/codecov-action@v3
         if: ${{ matrix.test_type == 'coverage' }}
         with:
-          files: ./libtrixi-julia/lcov.info ./lcov.info
+          files: ./libtrixi-julia/lcov.info,./lcov.info
           flags: unittests
           name: codecov-umbrella
       - name: Coveralls
@@ -216,7 +216,8 @@ jobs:
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          files: ./libtrixi-julia/lcov.info ./lcov.info
+          path-to-lcov: ./libtrixi-julia/lcov.info ./lcov.info
+          #files: ./libtrixi-julia/lcov.info ./lcov.info
       # Enable tmate debugging of manually-triggered workflows if the input option was provided
       - name: Setup tmate session for debugging
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled && always() }}
