@@ -6,7 +6,11 @@
  * @{
 */
 
-// Information
+// Setup
+void trixi_initialize(const char * project_directory, const char * depot_path);
+void trixi_finalize();
+
+// Version information
 int trixi_version_major();
 int trixi_version_minor();
 int trixi_version_patch();
@@ -14,28 +18,18 @@ const char* trixi_version();
 const char* trixi_version_julia();
 const char* trixi_version_julia_extended();
 
-// Setup
-void trixi_initialize(const char * project_directory, const char * depot_path);
+// Simulation control
 int trixi_initialize_simulation(const char * libelixir);
 void trixi_finalize_simulation(int handle);
-void trixi_finalize();
-
-// Flow control
 int trixi_is_finished(int handle);
 void trixi_step(int handle);
 
-// Basic querying
-int trixi_ndims(int handle);         // Return number of spatial dimensions
-int trixi_nelements(int handle);     // Return number of elements (cells)
-int trixi_nvariables(int handle);    // Return number of (conservative) variables
-
-// Data
-void trixi_load_cell_averages(double * data, int handle);
-
-// Misc
+// Simulation data
+int trixi_ndims(int handle);
+int trixi_nelements(int handle);
+int trixi_nvariables(int handle);
 double trixi_calculate_dt(int handle);
-
-void julia_eval_string(const char * code);
+void trixi_load_cell_averages(double * data, int handle);
 
 /**
  * @}
