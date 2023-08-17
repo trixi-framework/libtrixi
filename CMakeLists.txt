@@ -34,11 +34,19 @@ list ( APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/" )
 # Find Julia
 find_package( Julia REQUIRED )
 
-
-
 # Find MPI
 find_package( MPI REQUIRED )
 
+# Find google test on demand
+option( TESTING "Build tests using google test" )
+if( TESTING )
+    find_package( GTest REQUIRED )
+    if ( NOT DEFINED JULIA_PROJECT_PATH )
+        message( WARNING "JULIA_PROJECT_PATH not set, tests will not work.")
+    else()
+        set( JULIA_PROJECT_PATH ${JULIA_PROJECT_PATH} CACHE PATH "Path to julia project.")
+    endif()
+endif()
 
 
 # Library target
@@ -86,6 +94,10 @@ target_include_directories( ${PROJECT_NAME}_tls PRIVATE ${JULIA_INCLUDE_DIRS} )
 # Add examples
 add_subdirectory( examples )
 
+# Add test on demand
+if( TESTING )
+    add_subdirectory( test )
+endif()
 
 
 # Install configuration
