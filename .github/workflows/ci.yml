@@ -85,6 +85,9 @@ jobs:
       - name: Install HDF5
         run: |
           sudo apt-get install -y libhdf5-openmpi-dev
+      - name: Install gtest
+        run: |
+          sudo apt-get install -y googletest
       - name: Install t8code
         run: |
           T8CODE_RELEASE=1.4.1
