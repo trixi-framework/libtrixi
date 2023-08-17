@@ -1,23 +1,24 @@
 #include <gtest/gtest.h>
 
-extern "C" int trixi_version_major();
-extern "C" int trixi_version_minor();
-extern "C" int trixi_version_patch();
-extern "C" const char* trixi_version();
-extern "C" const char* trixi_version_julia();
-extern "C" const char* trixi_version_julia_extended();
-extern "C" void trixi_initialize(const char * project_directory, const char * depot_path);
-extern "C" int trixi_initialize_simulation(const char * libelixir);
-extern "C" void trixi_finalize_simulation(int handle);
-extern "C" void trixi_finalize();
-extern "C" int trixi_is_finished(int handle);
-extern "C" void trixi_step(int handle);
-extern "C" double trixi_calculate_dt(int handle);
-extern "C" int trixi_ndims(int handle);
-extern "C" int trixi_nelements(int handle);
-extern "C" int trixi_nvariables(int handle);
-extern "C" void trixi_load_cell_averages(double * data, int handle);
-
+extern "C" {
+    int trixi_version_major();
+    int trixi_version_minor();
+    int trixi_version_patch();
+    const char* trixi_version();
+    const char* trixi_version_julia();
+    const char* trixi_version_julia_extended();
+    void trixi_initialize(const char * project_directory, const char * depot_path);
+    int trixi_initialize_simulation(const char * libelixir);
+    void trixi_finalize_simulation(int handle);
+    void trixi_finalize();
+    int trixi_is_finished(int handle);
+    void trixi_step(int handle);
+    double trixi_calculate_dt(int handle);
+    int trixi_ndims(int handle);
+    int trixi_nelements(int handle);
+    int trixi_nvariables(int handle);
+    void trixi_load_cell_averages(double * data, int handle);
+}
 
 // Julia project path defined via cmake
 const char * julia_project_path = JULIA_PROJECT_PATH;
