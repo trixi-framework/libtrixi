@@ -110,10 +110,9 @@ jobs:
           mkdir build
           cd build
           cmake .. -DCMAKE_INSTALL_PREFIX=../install \
-                   -DCMAKE_C_FLAGS="-cpp --coverage -O0" \
-                   -DCMAKE_Fortran_FLAGS="-cpp --coverage -O0" \
-                   -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
-                   -DCMAKE_SHARED_LINKER_FLAGS="--coverage"
+                   -DCMAKE_BUILD_TYPE=Debug \
+                   -DTESTING=ON -DJULIA_PROJECT_PATH=../libtrixi-julia \
+                   -DCOVERAGE=ON
       - name: Build
         run: |
           cd build
@@ -165,6 +164,14 @@ jobs:
               ../build/examples/trixi_controller_data_f . libelixir_p4est2d_dgsem_euler_sedov.jl
         env:
           LIBTRIXI_DEBUG: all
+      - name: Run CTest/gtest tests
+        if: ${{ matrix.test_type == 'coverage' }}
+        run: |
+          cd build/test
+          ctest
+        env:
+          LIBTRIXI_DEBUG: all
+          JULIA_DEPOT_PATH: ~/.julia
       - name: Run memory checks with Valgrind
         if: ${{ matrix.test_type == 'valgrind' }}
         run: |
