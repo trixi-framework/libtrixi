@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
 extern "C" {
-    int trixi_version_major();
-    int trixi_version_minor();
-    int trixi_version_patch();
-    const char* trixi_version();
+    int trixi_version_library_major();
+    int trixi_version_library_minor();
+    int trixi_version_library_patch();
+    const char* trixi_version_library();
     const char* trixi_version_julia();
     const char* trixi_version_julia_extended();
     void trixi_initialize(const char * project_directory, const char * depot_path);
@@ -34,9 +34,9 @@ TEST(CInterfaceTest, VersionInfo) {
     trixi_initialize( julia_project_path, NULL );
 
     // Check libtrixi version information
-    int major = trixi_version_major();
-    int minor = trixi_version_minor();
-    int patch = trixi_version_patch();
+    int major = trixi_version_library_major();
+    int minor = trixi_version_library_minor();
+    int patch = trixi_version_library_patch();
     std::string version_string("");
     version_string.append(std::to_string(major));
     version_string.append(".");
@@ -44,7 +44,7 @@ TEST(CInterfaceTest, VersionInfo) {
     version_string.append(".");
     version_string.append(std::to_string(patch));
     
-    EXPECT_STREQ(version_string.c_str(), trixi_version());
+    EXPECT_STREQ(version_string.c_str(), trixi_version_library());
 
     // Check julia packages version information
     std::string version_string_julia(trixi_version_julia());
