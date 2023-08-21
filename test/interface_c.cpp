@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 extern "C" {
+    void store_function_pointers(int num_fptrs, const char * fptr_names[], void * fptrs[]);
     int trixi_version_library_major();
     int trixi_version_library_minor();
     int trixi_version_library_patch();
@@ -71,6 +72,26 @@ TEST(CInterfaceTest, JuliaCode) {
     // Execute erroneous Julia code
     // NOTE: output before exit is somehow not captured here
     EXPECT_DEATH(trixi_eval_julia("printline(\"Hello from Julia!\")"), "");
+
+    // Finalize Trixi
+    trixi_initialize( julia_project_path, NULL );
+}
+
+
+TEST(CInterfaceTest, FunctionPointers) {
+
+    // Initialize Trixi
+    trixi_initialize( julia_project_path, NULL );
+
+    const int num_fptrs = 2;
+    void* fptrs[num_fptrs];
+    const char* fptr_names[num_fptrs] = {"trixi_step_cfptr", "does_not_exist"};
+
+    // get function pointer for valid name
+    store_function_pointers(1, fptr_names, fptrs);
+
+    // try to get function pointer for invalid name
+    EXPECT_DEATH(store_function_pointers(num_fptrs, fptr_names, fptrs), "");
 
     // Finalize Trixi
     trixi_initialize( julia_project_path, NULL );
