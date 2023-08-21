@@ -59,7 +59,15 @@ TEST(AuxiliaryTest, DepotPath) {
     // unset depot path environment variable
     unsetenv(depot_envvar);
 
-    // be evil
+    // be evil: use probably non-existing project path
+    const char * garbage_path = "/no/where";
+    EXPECT_DEATH( update_depot_path( garbage_path, NULL ),
+                  "could not resolve depot path");
+
+    // unset depot path environment variable
+    unsetenv(depot_envvar);
+
+    // be evil: use too long project path
     const char * garbage = "this_string_is_just_way_toooooooooooooooooooo_long"
                            "this_string_is_just_way_toooooooooooooooooooo_long"
                            "this_string_is_just_way_toooooooooooooooooooo_long"

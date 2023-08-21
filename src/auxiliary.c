@@ -38,7 +38,10 @@ void update_depot_path(const char * project_directory, const char * depot_path) 
 
         // Construct absolute path
         char absolute_path[PATH_MAX];
-        realpath(path, absolute_path);
+        char * ret = realpath(path, absolute_path);
+        if (ret == NULL) {
+            print_and_die("could not resolve depot path", LOC);
+        }
 
         // Set environment variable
         setenv("JULIA_DEPOT_PATH", absolute_path, 1);
