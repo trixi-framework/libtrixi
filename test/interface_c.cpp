@@ -30,6 +30,34 @@ const char * libelixir_path =
   "../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl";
 
 
+TEST(CInterfaceTest, JuliaProject) {
+
+    // be evil
+    const char * garbage = "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long"
+                           "this_string_is_just_way_toooooooooooooooooooo_long";
+    EXPECT_DEATH( trixi_initialize( garbage, NULL ),
+                  "buffer size not sufficient for activation command");
+}
+
+
 TEST(CInterfaceTest, VersionInfo) {
 
     // Initialize Trixi
