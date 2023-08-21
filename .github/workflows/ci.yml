@@ -88,6 +88,9 @@ jobs:
       - name: Install gtest
         run: |
           sudo apt-get install -y libgtest-dev
+      - name: Install gcov
+        run: |
+          sudo apt-get install -y lcov gcovr
       - name: Install t8code
         run: |
           T8CODE_RELEASE=1.4.1
@@ -146,7 +149,6 @@ jobs:
       - name: Prepare coverage reporting
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
-          sudo apt-get install -y lcov
           cd libtrixi-julia
           lcov --directory ../build --zerocounters
       - name: Run regular function tests
