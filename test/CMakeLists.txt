@@ -3,6 +3,7 @@ enable_testing()
 include( GoogleTest )
 
 set ( TESTS
+      auxiliary.cpp
       interface_c.cpp )
 
 
