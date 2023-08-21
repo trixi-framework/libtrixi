@@ -47,3 +47,6 @@ foreach ( TEST ${TESTS} )
     gtest_discover_tests( ${TARGET_NAME} )
 
 endforeach()
+
+setup_target_for_coverage_gcovr_html( NAME coverage
+                                      EXCLUDE "./test" )
