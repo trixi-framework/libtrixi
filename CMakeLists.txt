@@ -48,13 +48,6 @@ if( TESTING )
     endif()
 endif()
 
-# Enable generation of coverage data on demand
-option( COVERAGE "Generate coverage data" )
-if ( COVERAGE )
-    include( CodeCoverage )
-    append_coverage_compiler_flags()
-endif()
-
 
 
 # Library target

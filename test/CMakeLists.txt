@@ -40,13 +40,7 @@ foreach ( TEST ${TESTS} )
     target_compile_definitions( ${TARGET_NAME} PRIVATE 
                                 JULIA_PROJECT_PATH=\"${JULIA_PROJECT_PATH}\" )
 
-    # TODO: add to installation?
-    #install( TARGETS ${TARGET_NAME} )
-
     # discover tests
     gtest_discover_tests( ${TARGET_NAME} )
 
 endforeach()
-
-setup_target_for_coverage_gcovr_html( NAME coverage
-                                      EXCLUDE "./test" )

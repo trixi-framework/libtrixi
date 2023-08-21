@@ -88,9 +88,6 @@ jobs:
       - name: Install gtest
         run: |
           sudo apt-get install -y libgtest-dev
-      - name: Install gcov
-        run: |
-          sudo apt-get install -y lcov gcovr
       - name: Install t8code
         run: |
           T8CODE_RELEASE=1.4.1
@@ -117,8 +114,11 @@ jobs:
           cd build
           cmake .. -DCMAKE_INSTALL_PREFIX=../install \
                    -DCMAKE_BUILD_TYPE=Debug \
-                   -DTESTING=ON -DJULIA_PROJECT_PATH=../libtrixi-julia \
-                   -DCOVERAGE=ON
+                   -DCMAKE_C_FLAGS="-cpp --coverage -O0" \
+                   -DCMAKE_Fortran_FLAGS="-cpp --coverage -O0" \
+                   -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
+                   -DCMAKE_SHARED_LINKER_FLAGS="--coverage"
+                   -DTESTING=ON -DJULIA_PROJECT_PATH=../libtrixi-julia
       - name: Build
         run: |
           cd build
@@ -149,6 +149,7 @@ jobs:
       - name: Prepare coverage reporting
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
+          sudo apt-get install -y lcov
           cd libtrixi-julia
           lcov --directory ../build --zerocounters
       - name: Run regular function tests
