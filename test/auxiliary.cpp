@@ -37,14 +37,13 @@ TEST(AuxiliaryTest, DebugOutput) {
 TEST(AuxiliaryTest, DepotPath) {
 
     const char * depot_envvar = "JULIA_DEPOT_PATH";
-    const char * custom_depot_path = "/tmp/julia-depot";
 
     // unset depot path environment variable
     unsetenv(depot_envvar);
 
     // let it be set explicitly and check
-    update_depot_path( julia_project_path, custom_depot_path );
-    EXPECT_STREQ( getenv(depot_envvar), custom_depot_path );
+    update_depot_path( julia_project_path, julia_project_path );
+    EXPECT_STREQ( getenv(depot_envvar), julia_project_path );
 
     // unset depot path environment variable
     unsetenv(depot_envvar);
