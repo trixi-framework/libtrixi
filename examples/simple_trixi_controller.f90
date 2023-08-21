@@ -35,6 +35,10 @@ program simple_trixi_controller_f
   write(*, '(a)') trixi_version_julia_extended()
   write(*, '(a)') ""
 
+  ! Execute julia code
+  write(*, '(a)') "Execute julia code"
+  call trixi_eval_julia('println("3! = ", factorial(3))');
+
   ! Set up the Trixi simulation
   ! We get a handle to use subsequently
   call get_command_argument(2, argument)
