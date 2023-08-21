@@ -43,16 +43,11 @@ find_package( MPI REQUIRED )
 
 # Library target
 add_library ( ${PROJECT_NAME} SHARED
-    src/trixi.h
-    src/function_pointers.h
-    src/function_pointers.c
+    src/api.c
+    src/api.f90
     src/auxiliary.h
     src/auxiliary.c
-    src/control.c
-    src/data.c
-    src/setup.c
-    src/version.c
-    src/trixi.f90
+    src/trixi.h
 )
 
 # Include directories, private
