@@ -53,7 +53,7 @@ TEST(CInterfaceTest, JuliaProject) {
                            "this_string_is_just_way_toooooooooooooooooooo_long"
                            "this_string_is_just_way_toooooooooooooooooooo_long"
                            "this_string_is_just_way_toooooooooooooooooooo_long";
-    EXPECT_DEATH( trixi_initialize( garbage, NULL ),
+    EXPECT_DEATH( trixi_initialize( garbage, "/tmp" ),
                   "buffer size not sufficient for activation command");
 }
 
