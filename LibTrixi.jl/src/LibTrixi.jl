@@ -33,18 +33,18 @@ export trixi_nvariables,
 export trixi_load_cell_averages,
        trixi_load_cell_averages_cfptr,
        trixi_load_cell_averages_jl
-export trixi_version,
-       trixi_version_cfptr,
-       trixi_version_jl
-export trixi_version_major,
-       trixi_version_major_cfptr,
-       trixi_version_major_jl
-export trixi_version_minor,
-       trixi_version_minor_cfptr,
-       trixi_version_minor_jl
-export trixi_version_patch,
-       trixi_version_patch_cfptr,
-       trixi_version_patch_jl
+export trixi_version_library,
+       trixi_version_library_cfptr,
+       trixi_version_library_jl
+export trixi_version_library_major,
+       trixi_version_library_major_cfptr,
+       trixi_version_library_major_jl
+export trixi_version_library_minor,
+       trixi_version_library_minor_cfptr,
+       trixi_version_library_minor_jl
+export trixi_version_library_patch,
+       trixi_version_library_patch_cfptr,
+       trixi_version_library_patch_jl
 export trixi_version_julia,
        trixi_version_julia_cfptr,
        trixi_version_julia_jl

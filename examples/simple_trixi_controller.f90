@@ -27,8 +27,17 @@ program simple_trixi_controller_f
   call trixi_initialize(argument)
 
   ! Print version information
-  write(*, '(a, i1, a, i1, a, i1, a, a)') "libtrixi version: ", trixi_version_major(), &
-        ".", trixi_version_minor(), ".", trixi_version_patch(), " ", trixi_version()
+  write(*, '(a, i1, a, i1, a, i1, a, a)') "libtrixi version: ", &
+        trixi_version_library_major(), ".", trixi_version_library_minor(), ".", &
+        trixi_version_library_patch(), " ", trixi_version_library()
+  write(*, '(a)') ""
+  write(*, '(a)') "All loaded julia packages"
+  write(*, '(a)') trixi_version_julia_extended()
+  write(*, '(a)') ""
+
+  ! Execute julia code
+  write(*, '(a)') "Execute julia code"
+  call trixi_eval_julia('println("3! = ", factorial(3))');
 
   ! Set up the Trixi simulation
   ! We get a handle to use subsequently

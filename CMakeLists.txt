@@ -43,9 +43,11 @@ find_package( MPI REQUIRED )
 
 # Library target
 add_library ( ${PROJECT_NAME} SHARED
-    src/trixi.c
+    src/api.c
+    src/api.f90
+    src/auxiliary.h
+    src/auxiliary.c
     src/trixi.h
-    src/trixi.f90
 )
 
 # Include directories, private
@@ -79,7 +81,7 @@ target_compile_options( ${PROJECT_NAME} PRIVATE -Wall -Wextra -Werror)
 
 # Add auxiliary *object* library to support fast thread-local storage (TLS)
 add_library ( ${PROJECT_NAME}_tls OBJECT
-    src/trixi_tls.c
+    src/tls.c
 )
 target_include_directories( ${PROJECT_NAME}_tls PRIVATE ${JULIA_INCLUDE_DIRS} )
 
