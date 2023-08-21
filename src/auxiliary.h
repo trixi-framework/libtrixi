@@ -13,11 +13,11 @@ void print_and_die(const char* message, const char* func, const char* file, int 
 // Function to determine debug level
 int show_debug_output();
 
-// Function to evaluate julia REPL string with exception handling
+// Function to evaluate Julia REPL string with exception handling
 jl_value_t* checked_eval_string(const char* code, const char* func, const char* file,
                                 int lineno);
 
-// Function to get and store function pointers from julia to c functions
+// Function to get and store function pointers from Julia to C functions
 void store_function_pointers(int num_fptrs, const char * fptr_names[], void * fptrs[]);
 
 #endif // AUXILIARY_H_

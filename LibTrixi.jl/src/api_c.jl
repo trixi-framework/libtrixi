@@ -76,10 +76,10 @@ trixi_version_library_cfptr() = @cfunction(trixi_version_library, Cstring, ())
 """
     trixi_version_julia()::Cstring
 
-Return name and version of loaded julia packages LibTrixi directly depends on.
+Return name and version of loaded Julia packages LibTrixi directly depends on.
 
 The return value is a read-only pointer to a NULL-terminated string with the name and
-version information of the loaded julia packages, separated by newlines.
+version information of the loaded Julia packages, separated by newlines.
 
 The returned pointer is to static memory and must not be used to change the contents of
 the version string. Multiple calls to the function will return the same address.
@@ -98,10 +98,10 @@ trixi_version_julia_cfptr() = @cfunction(trixi_version_julia, Cstring, ())
 """
     trixi_version_julia_extended()::Cstring
 
-Return name and version of all loaded julia packages.
+Return name and version of all loaded Julia packages.
 
 The return value is a read-only pointer to a NULL-terminated string with the name and
-version information of all loaded julia packages, including implicit dependencies,
+version information of all loaded Julia packages, including implicit dependencies,
 separated by newlines.
 
 The returned pointer is to static memory and must not be used to change the contents of
@@ -329,7 +329,7 @@ Base.@ccallable function trixi_load_cell_averages(data::Ptr{Cdouble},
                                                   simstate_handle::Cint)::Cvoid
     simstate = load_simstate(simstate_handle)
 
-    # convert C to julia array
+    # convert C to Julia array
     size = trixi_nvariables_jl(simstate) * trixi_nelements_jl(simstate)
     data_jl = unsafe_wrap(Array, data, size)
 

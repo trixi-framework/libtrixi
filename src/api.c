@@ -86,7 +86,7 @@ void trixi_initialize(const char * project_directory, const char * depot_path) {
     char buffer[1024];
     snprintf(buffer, 1024, activate, project_directory);
 
-    // Activate julia environment
+    // Activate Julia environment
     checked_eval_string(buffer, LOC);
 
     // Load LibTrixi module
@@ -222,10 +222,10 @@ const char* trixi_version_library() {
 /**
  * @anchor trixi_version_julia_api_c
  *
- * @brief Return name and version of loaded julia packages LibTrixi directly depends on.
+ * @brief Return name and version of loaded Julia packages LibTrixi directly depends on.
  *
  * The return value is a read-only pointer to a NULL-terminated string with the name and
- * version information of the loaded julia packages, separated by newlines.
+ * version information of the loaded Julia packages, separated by newlines.
  *
  * The returned pointer is to static memory and must not be used to change the contents of
  * the version string. Multiple calls to the function will return the same address.
@@ -248,10 +248,10 @@ const char* trixi_version_julia() {
 /**
  * @anchor trixi_version_julia_extended_api_c
  *
- * @brief Return name and version of all loaded julia packages.
+ * @brief Return name and version of all loaded Julia packages.
  *
  * The return value is a read-only pointer to a NULL-terminated string with the name and
- * version information of all loaded julia packages, including implicit dependencies,
+ * version information of all loaded Julia packages, including implicit dependencies,
  * separated by newlines.
  *
  * The returned pointer is to static memory and must not be used to change the contents of
@@ -260,7 +260,7 @@ const char* trixi_version_julia() {
  * This function is thread-safe. It must be run after `trixi_initialize` has been called.
  *
  * @return Pointer to a read-only, NULL-terminated character array with the names and
- *         versions of all loaded julia packages.
+ *         versions of all loaded Julia packages.
  */
 const char* trixi_version_julia_extended() {
 

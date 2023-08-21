@@ -97,7 +97,7 @@ jl_value_t* checked_eval_string(const char* code, const char* func, const char* 
 }
 
 
-// Function to get and store function pointers from julia to c functions
+// Function to get and store function pointers from Julia to C functions
 void store_function_pointers(int num_fptrs, const char * fptr_names[], void * fptrs[]) {
 
     char julia_command[256];
