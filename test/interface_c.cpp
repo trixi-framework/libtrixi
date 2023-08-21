@@ -18,6 +18,7 @@ extern "C" {
     int trixi_nelements(int handle);
     int trixi_nvariables(int handle);
     void trixi_load_cell_averages(double * data, int handle);
+    void trixi_eval_julia(const char * code);
 }
 
 // Julia project path defined via cmake
@@ -56,6 +57,25 @@ TEST(CInterfaceTest, VersionInfo) {
     // Finalize Trixi
     trixi_initialize( julia_project_path, NULL );
 }
+
+
+TEST(CInterfaceTest, JuliaCode) {
+
+    // Initialize Trixi
+    trixi_initialize( julia_project_path, NULL );
+
+    // Execute correct Julia code
+    // NOTE: capturing stdout somehow does not work
+    trixi_eval_julia("println(\"Hello from Julia!\")");
+
+    // Execute erroneous Julia code
+    // NOTE: output before exit is somehow not captured here
+    EXPECT_DEATH(trixi_eval_julia("printline(\"Hello from Julia!\")"), "");
+
+    // Finalize Trixi
+    trixi_initialize( julia_project_path, NULL );
+}
+
 
 TEST(CInterfaceTest, SimulationRun) {
 
