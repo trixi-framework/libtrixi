@@ -35,7 +35,7 @@ simstate_jl = trixi_initialize_simulation_jl(libelixir)
     @test LibTrixi.simstates[handle] != simstate_jl
 
     # using a non-existent handle
-    @test_throws MethodError trixi_is_finished(42)
+    @test_throws ErrorException trixi_is_finished(Int32(42))
 end
 
 
