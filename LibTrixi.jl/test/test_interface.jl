@@ -6,10 +6,10 @@ using LibTrixi
 
 @testset verbose=true showtiming=true "Version information" begin
 
-    libtrixi_version = VersionNumber(unsafe_string(trixi_version()))
-    @test libtrixi_version.major == trixi_version_major()
-    @test libtrixi_version.minor == trixi_version_minor()
-    @test libtrixi_version.patch == trixi_version_patch()
+    libtrixi_version = VersionNumber(unsafe_string(trixi_version_library()))
+    @test libtrixi_version.major == trixi_version_library_major()
+    @test libtrixi_version.minor == trixi_version_library_minor()
+    @test libtrixi_version.patch == trixi_version_library_patch()
 
     @test occursin("OrdinaryDiffEq", unsafe_string(trixi_version_julia()))
     @test occursin("StartUpDG", unsafe_string(trixi_version_julia_extended()))
