@@ -94,6 +94,9 @@ end
 
     # handle is now invalid
     @test_throws ErrorException trixi_is_finished(handle)
+
+    # simulation cannot be finalized a second time
+    @test_throws ErrorException trixi_finalize_simulation(handle)
 end
 
 end # module
