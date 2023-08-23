@@ -202,11 +202,14 @@ to use the C and Fortran APIs of libtrixi, and can be found in the
 [`examples/`](examples/) folder.
 
 If you just want to test the Julia part of libtrixi, i.e., LibTrixi.jl, you can also run
-everything from Julia. From the repository root, execute
+everything from Julia.
+
 ```shell
-JULIA_DEPOT_PATH=$PWD/libtrixi-julia/julia-depot \
+JULIA_DEPOT_PATH=<julia-depot_directory> \
+LIBTRIXI_DEBUG=all \
     julia --project=<libtrixi-julia_directory>
-    <install_directory>/share/libtrixi/LibTrixi.jl/examples/simple_trixi_controller.jl
+    <install_directory>/bin/simple_trixi_controller.jl
+    <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
 ```
 
 Note: Most auxiliary output is hidden unless the environment variable `LIBTRIXI_DEBUG` is
