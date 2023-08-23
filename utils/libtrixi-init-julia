@@ -92,7 +92,7 @@ if [ -z "$LIBTRIXI_JULIA_EXEC" ]; then
 fi
 if [ -z "$LIBTRIXI_JULIA_DEPOT" ]; then
   # OBS! If you change this value here, you should also update the default value for
-  # `default_depot_path` in `src/trixi.c` accordingly
+  # `default_depot_path` in `src/auxiliary.c` accordingly
   LIBTRIXI_JULIA_DEPOT=julia-depot
 fi
 while [[ $# -gt 0 ]]; do
