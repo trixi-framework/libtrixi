@@ -49,3 +49,6 @@ foreach ( EXAMPLE ${EXAMPLES} )
     install( TARGETS ${TARGET_NAME} )
 
 endforeach()
+
+# install the julia controller example as well
+install( PROGRAMS simple_trixi_controller.jl TYPE BIN )
