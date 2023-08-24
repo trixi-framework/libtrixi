@@ -12,8 +12,8 @@ usage: libtrixi-init-julia [-h] [-f]
                            PREFIX_OR_REPO
 
 Set up all necessary project files in the current working directory and set appropriate
-Julia preferences for using the system-installed MPI and p4est libraries. Furthermore, this
-will install all dependencies in a local Julia depot folder (unless changed with the
+Julia preferences for using the system-installed MPI and t8code libraries. Furthermore,
+this will install all dependencies in a local Julia depot folder (unless changed with the
 '--julia-depot' flag).
 
 The following files/folders will be created (or updated, if the '-f' flag is given):
