@@ -208,7 +208,7 @@ everything from Julia.
 JULIA_DEPOT_PATH=<julia-depot_directory> \
 LIBTRIXI_DEBUG=all \
     julia --project=<libtrixi-julia_directory>
-    <install_directory>/bin/simple_trixi_controller.jl
+    <install_directory>/share/libtrixi/examples/simple_trixi_controller.jl
     <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
 ```
 

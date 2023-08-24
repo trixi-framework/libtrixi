@@ -51,4 +51,4 @@ foreach ( EXAMPLE ${EXAMPLES} )
 endforeach()
 
 # install the julia controller example as well
-install( PROGRAMS simple_trixi_controller.jl TYPE BIN )
+install( PROGRAMS simple_trixi_controller.jl DESTINATION share/libtrixi/examples/ )
