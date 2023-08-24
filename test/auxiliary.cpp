@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-
 extern "C" {
     int show_debug_output();
     void update_depot_path(const char * project_directory, const char * depot_path);

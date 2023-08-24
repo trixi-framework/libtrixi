@@ -31,12 +31,12 @@ program simple_trixi_controller_f
         trixi_version_library_major(), ".", trixi_version_library_minor(), ".", &
         trixi_version_library_patch(), " ", trixi_version_library()
   write(*, '(a)') ""
-  write(*, '(a)') "All loaded julia packages"
+  write(*, '(a)') "All loaded Julia packages"
   write(*, '(a)') trixi_version_julia_extended()
   write(*, '(a)') ""
 
-  ! Execute julia code
-  write(*, '(a)') "Execute julia code"
+  ! Execute Julia code
+  write(*, '(a)') "Execute Julia code"
   call trixi_eval_julia('println("3! = ", factorial(3))');
 
   ! Set up the Trixi simulation

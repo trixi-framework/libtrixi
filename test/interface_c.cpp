@@ -1,25 +1,9 @@
 #include <gtest/gtest.h>
 
 extern "C" {
+    #include "../src/trixi.h"
+
     void store_function_pointers(int num_fptrs, const char * fptr_names[], void * fptrs[]);
-    int trixi_version_library_major();
-    int trixi_version_library_minor();
-    int trixi_version_library_patch();
-    const char* trixi_version_library();
-    const char* trixi_version_julia();
-    const char* trixi_version_julia_extended();
-    void trixi_initialize(const char * project_directory, const char * depot_path);
-    int trixi_initialize_simulation(const char * libelixir);
-    void trixi_finalize_simulation(int handle);
-    void trixi_finalize();
-    int trixi_is_finished(int handle);
-    void trixi_step(int handle);
-    double trixi_calculate_dt(int handle);
-    int trixi_ndims(int handle);
-    int trixi_nelements(int handle);
-    int trixi_nvariables(int handle);
-    void trixi_load_cell_averages(double * data, int handle);
-    void trixi_eval_julia(const char * code);
 }
 
 // Julia project path defined via cmake
@@ -60,7 +44,7 @@ TEST(CInterfaceTest, JuliaProject) {
 
 TEST(CInterfaceTest, VersionInfo) {
 
-    // Initialize Trixi
+    // Initialize libtrixi
     trixi_initialize( julia_project_path, NULL );
 
     // Check libtrixi version information
@@ -76,21 +60,21 @@ TEST(CInterfaceTest, VersionInfo) {
     
     EXPECT_STREQ(version_string.c_str(), trixi_version_library());
 
-    // Check julia packages version information
+    // Check Julia packages version information
     std::string version_string_julia(trixi_version_julia());
     EXPECT_NE(version_string_julia.find("OrdinaryDiffEq"), std::string::npos);
 
     std::string version_string_julia_ext(trixi_version_julia_extended());
     EXPECT_NE(version_string_julia_ext.find("StartUpDG"), std::string::npos);
 
-    // Finalize Trixi
+    // Finalize libtrixi
     trixi_initialize( julia_project_path, NULL );
 }
 
 
 TEST(CInterfaceTest, JuliaCode) {
 
-    // Initialize Trixi
+    // Initialize libtrixi
     trixi_initialize( julia_project_path, NULL );
 
     // Execute correct Julia code
@@ -101,14 +85,14 @@ TEST(CInterfaceTest, JuliaCode) {
     // NOTE: output before exit is somehow not captured here
     EXPECT_DEATH(trixi_eval_julia("printline(\"Hello from Julia!\")"), "");
 
-    // Finalize Trixi
+    // Finalize libtrixi
     trixi_initialize( julia_project_path, NULL );
 }
 
 
 TEST(CInterfaceTest, FunctionPointers) {
 
-    // Initialize Trixi
+    // Initialize libtrixi
     trixi_initialize( julia_project_path, NULL );
 
     const int num_fptrs = 2;
@@ -121,14 +105,14 @@ TEST(CInterfaceTest, FunctionPointers) {
     // try to get function pointer for invalid name
     EXPECT_DEATH(store_function_pointers(num_fptrs, fptr_names, fptrs), "");
 
-    // Finalize Trixi
+    // Finalize libtrixi
     trixi_initialize( julia_project_path, NULL );
 }
 
 
 TEST(CInterfaceTest, SimulationRun) {
 
-    // Initialize Trixi
+    // Initialize libtrixi
     trixi_initialize( julia_project_path, NULL );
 
     // Set up the Trixi simulation, get a handle
@@ -177,6 +161,6 @@ TEST(CInterfaceTest, SimulationRun) {
     EXPECT_DEATH(trixi_is_finished(handle),
                  "the provided handle was not found in the stored simulation states: 1");
 
-    // Finalize Trixi
+    // Finalize libtrixi
     trixi_finalize();
 }

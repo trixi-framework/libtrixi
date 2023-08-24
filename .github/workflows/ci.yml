@@ -118,7 +118,7 @@ jobs:
                    -DCMAKE_Fortran_FLAGS="-cpp --coverage -O0" \
                    -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
                    -DCMAKE_SHARED_LINKER_FLAGS="--coverage" \
-                   -DTESTING=ON -DJULIA_PROJECT_PATH=../libtrixi-julia
+                   -DENABLE_TESTING=ON -DJULIA_PROJECT_PATH=../libtrixi-julia
       - name: Build
         run: |
           cd build
