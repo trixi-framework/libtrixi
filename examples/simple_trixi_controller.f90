@@ -13,13 +13,13 @@ program simple_trixi_controller_f
     write(error_unit, '(a)') "ERROR: missing arguments: PROJECT_DIR LIBELIXIR_PATH"
     write(error_unit, '(a)') ""
     write(error_unit, '(3a)') "usage: ", trim(argument), " PROJECT_DIR LIBELIXIR_PATH"
-    stop 1
+    call exit(2)
   else if (command_argument_count() < 2) then
     call get_command_argument(0, argument)
     write(error_unit, '(a)') "ERROR: missing argument: LIBELIXIR_PATH"
     write(error_unit, '(a)') ""
     write(error_unit, '(3a)') "usage: ", trim(argument), " PROJECT_DIR LIBELIXIR_PATH"
-    stop 1
+    call exit(2)
   end if
 
   ! Initialize Trixi
