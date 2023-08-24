@@ -2,20 +2,25 @@
 # Simulation control                                                                       #
 ############################################################################################
 
-function trixi_initialize_simulation_jl(filename)
+function trixi_initialize_simulation_jl(modname, filename)
     # Load elixir with simulation setup
-    Base.include(Main, abspath(filename))
+    println("*** Base.include with module ", modname)
+    Base.include(modname, abspath(filename))
 
     # Initialize simulation state
     # Note: we need `invokelatest` here since the function is dynamically upon `include`
     # Note: `invokelatest` is not exported until Julia v1.9, thus we call it through `Base`
-    simstate = Base.invokelatest(Main.init_simstate)
+    simstate = Base.invokelatest(modname.init_simstate)
 
     if show_debug_output()
         println("Simulation state initialized")
     end
 
     return simstate
+end
+
+function trixi_initialize_simulation_jl(filename)
+    trixi_initialize_simulation_jl(Main, filename)
 end
 
 
