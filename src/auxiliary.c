@@ -38,7 +38,7 @@ void update_depot_path(const char * project_directory, const char * depot_path) 
 
         // Construct absolute path
         char absolute_path[PATH_MAX];
-        char * ret = realpath(path, absolute_path);
+        const char * ret = realpath(path, absolute_path);
         if (ret == NULL) {
             print_and_die("could not resolve depot path", LOC);
         }
