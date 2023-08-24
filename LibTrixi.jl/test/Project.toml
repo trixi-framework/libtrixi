@@ -1,23 +1,5 @@
 [deps]
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
-Trixi = "a7f1ee26-1774-49b1-8366-f1abc58fbfcb"
-MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"
-Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Trixi = "a7f1ee26-1774-49b1-8366-f1abc58fbfcb"
 
-[compat]
-julia = "1.8"
-MPI = "0.20.13"
-OrdinaryDiffEq = "6.53.2"
-Trixi = "0.5.29"
-Pkg = "1.8"
-
-[preferences.OrdinaryDiffEq]
-PrecompileAutoSpecialize = false
-PrecompileAutoSwitch = false
-PrecompileDefaultSpecialize = true
-PrecompileFunctionWrapperSpecialize = false
-PrecompileLowStorage = true
-PrecompileNoSpecialize = false
-PrecompileNonStiff = true
-PrecompileStiff = false
