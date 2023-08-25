@@ -4,7 +4,8 @@ include( GoogleTest )
 
 set ( TESTS
       auxiliary.cpp
-      interface_c.cpp )
+      interface_c.cpp
+      simulation.cpp )
 
 
 foreach ( TEST ${TESTS} )
@@ -44,3 +45,12 @@ foreach ( TEST ${TESTS} )
     gtest_discover_tests( ${TARGET_NAME} )
 
 endforeach()
+
+set_property(TARGET simulation
+             PROPERTY CROSSCOMPILING_EMULATOR
+             ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 2
+            )
+
+# manually add MPI test
+gtest_add_tests( TARGET simulation
+                 TEST_PREFIX "mpi_" )
