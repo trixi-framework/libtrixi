@@ -12,6 +12,7 @@ using LibTrixi
     @test libtrixi_version.patch == trixi_version_library_patch()
 
     @test occursin("OrdinaryDiffEq", unsafe_string(trixi_version_julia()))
+    @test occursin("Trixi", unsafe_string(trixi_version_julia()))
     @test occursin("StartUpDG", unsafe_string(trixi_version_julia_extended()))
 end
 

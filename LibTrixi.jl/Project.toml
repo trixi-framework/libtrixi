@@ -9,6 +9,7 @@ Trixi = "a7f1ee26-1774-49b1-8366-f1abc58fbfcb"
 MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
+# NOTE: entries should be kept in sync with those in test/Project.toml
 [compat]
 julia = "1.8"
 MPI = "0.20.13"
