@@ -37,16 +37,21 @@ find_package( Julia REQUIRED )
 # Find MPI
 find_package( MPI REQUIRED )
 
-# Find google test on demand
-option( ENABLE_TESTING "Build tests using Google Test" )
+# Find Google Test and test-drive on demand
+option( ENABLE_TESTING "Build tests using Google Test (C) and test-drive (Fortan)" )
 if( ENABLE_TESTING )
-    find_package( GTest REQUIRED )
     if ( NOT DEFINED JULIA_PROJECT_PATH )
         message( FATAL_ERROR "JULIA_PROJECT_PATH not set, tests will not work.")
-    else()
+    endif()
     set( JULIA_PROJECT_PATH ${JULIA_PROJECT_PATH} CACHE PATH
                             "Path to Julia project (typically 'libtrixi-julia').")
-    endif()
+
+    find_package( GTest REQUIRED )
+
+    set ( TEST_DRIVE_FIND_METHOD fetch )
+    # no effect
+    # option ( TEST_DRIVE_BUILD_TESTING OFF )
+    find_package( test-drive REQUIRED )
 endif()
 
 
