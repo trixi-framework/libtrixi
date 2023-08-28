@@ -91,7 +91,11 @@ In your code, pass the path to the `libtrixi-julia` directory to `trixi_initiali
 see the code of the examples. If you did not modify the default value for the Julia depot
 when calling `libtrixi-init-julia`, libtrixi will find it automatically.
 Otherwise, when running a program that uses libtrixi, you need to make sure to set the
-`JULIA_DEPOT_PATH` environment variable to point to the `<julia-depot>` folder reported. 
+`JULIA_DEPOT_PATH` environment variable to point to the `<julia-depot>` folder reported.
+
+If you intend to use additional Julia packages, besides `Trixi` and `OrdinaryDiffEq`, you
+will have to add them to your Julia project (i.e. use
+`julia --project=<libtrixi-julia_directory>` and `import Pkg; Pkg.add(<package>)`).
 
 ### Testing
 

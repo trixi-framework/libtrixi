@@ -173,6 +173,14 @@ jobs:
               ../build/examples/trixi_controller_data_f . libelixir_p4est2d_dgsem_euler_sedov.jl
         env:
           LIBTRIXI_DEBUG: all
+      - name: Run Julia tests
+        uses: julia-actions/julia-runtest@v1
+        with:
+          coverage: ${{ matrix.test_type == 'coverage' }}
+          project: ./LibTrixi.jl
+        env:
+          JULIA_DEPOT_PATH: ~/.julia
+          LIBTRIXI_DEBUG: all
       - name: Check error handling of examples
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
@@ -221,23 +229,28 @@ jobs:
               ../build/examples/trixi_controller_data_c . libelixir_p4est2d_dgsem_euler_sedov.jl
           JULIA_DEPOT_PATH=~/.julia \
               ../build/examples/trixi_controller_data_f . libelixir_p4est2d_dgsem_euler_sedov.jl
-      - name: Process coverage data
+      - name: Process C coverage data
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
           cd libtrixi-julia
           lcov --directory ../build  --capture --output-file lcov.info
+      - name: Process Julia coverage data
+        if: ${{ matrix.test_type == 'coverage' }}
+        uses: julia-actions/julia-processcoverage@v1
+        with:
+          directories: LibTrixi.jl/src
       - uses: codecov/codecov-action@v3
         if: ${{ matrix.test_type == 'coverage' }}
         with:
-          files: ./libtrixi-julia/lcov.info
+          files: ./libtrixi-julia/lcov.info,./lcov.info
           flags: unittests
           name: codecov-umbrella
       - name: Coveralls
         if: ${{ matrix.test_type == 'coverage' }}
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./libtrixi-julia/lcov.info
+          files: ./libtrixi-julia/lcov.info ./lcov.info
       # Enable tmate debugging of manually-triggered workflows if the input option was provided
       - name: Setup tmate session for debugging
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled && always() }}
