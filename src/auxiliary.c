@@ -1,3 +1,7 @@
+// Include first since it includes julia.h, for which we do not want to mess with the
+// macro definitions
+#include "auxiliary.h"
+
 // Enable support for `setenv`
 #ifdef _POSIX_C_SOURCE
 #undef _POSIX_C_SOURCE
@@ -12,8 +16,6 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "auxiliary.h"
 
 
 // Default depot path *relative* to the project directory
