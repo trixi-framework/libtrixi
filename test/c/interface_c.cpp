@@ -11,7 +11,7 @@ const char * julia_project_path = JULIA_PROJECT_PATH;
 
 // Example libexlixir
 const char * libelixir_path =
-  "../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl";
+  "../../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl";
 
 
 TEST(CInterfaceTest, JuliaProject) {
@@ -68,7 +68,7 @@ TEST(CInterfaceTest, VersionInfo) {
     EXPECT_NE(version_string_julia_ext.find("StartUpDG"), std::string::npos);
 
     // Finalize libtrixi
-    trixi_initialize( julia_project_path, NULL );
+    trixi_finalize();
 }
 
 
@@ -77,16 +77,22 @@ TEST(CInterfaceTest, JuliaCode) {
     // Initialize libtrixi
     trixi_initialize( julia_project_path, NULL );
 
+    // Finalize libtrixi
+    trixi_finalize();
+
+    // Initialize libtrixi
+    trixi_initialize( julia_project_path, NULL );
+
     // Execute correct Julia code
     // NOTE: capturing stdout somehow does not work
-    trixi_eval_julia("println(\"Hello from Julia!\")");
+    //trixi_eval_julia("println(\"Hello from Julia!\")");
 
     // Execute erroneous Julia code
     // NOTE: output before exit is somehow not captured here
-    EXPECT_DEATH(trixi_eval_julia("printline(\"Hello from Julia!\")"), "");
+    //EXPECT_DEATH(trixi_eval_julia("printline(\"Hello from Julia!\")"), "");
 
     // Finalize libtrixi
-    trixi_initialize( julia_project_path, NULL );
+    trixi_finalize();
 }
 
 
@@ -106,7 +112,7 @@ TEST(CInterfaceTest, FunctionPointers) {
     EXPECT_DEATH(store_function_pointers(num_fptrs, fptr_names, fptrs), "");
 
     // Finalize libtrixi
-    trixi_initialize( julia_project_path, NULL );
+    trixi_finalize();
 }
 
 

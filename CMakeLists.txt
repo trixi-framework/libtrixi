@@ -100,7 +100,8 @@ add_subdirectory( examples )
 
 # Add test on demand
 if( ENABLE_TESTING )
-    add_subdirectory( test )
+    enable_testing()
+    add_subdirectory( test/c )
 endif()
 
 

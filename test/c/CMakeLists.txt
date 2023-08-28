@@ -1,5 +1,3 @@
-enable_testing()
-
 include( GoogleTest )
 
 set ( TESTS
@@ -25,12 +23,6 @@ foreach ( TEST ${TESTS} )
     target_include_directories(
         ${TARGET_NAME}
         PRIVATE ${CMAKE_SOURCE_DIR}/src
-    )
-
-    # set runtime path for installed binaries
-    set_target_properties(
-        ${TARGET_NAME}
-        PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib"
     )
 
     # enable warnings
