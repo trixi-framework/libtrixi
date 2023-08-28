@@ -86,6 +86,10 @@ target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} MPI::MPI_C )
 # Set appropriate compile flags
 target_compile_options( ${PROJECT_NAME} PUBLIC "-fPIC" )
 target_compile_options( ${PROJECT_NAME} PRIVATE -Wall -Wextra -Werror)
+# Require C11 standard for C files
+target_compile_options( ${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-std=c11>)
+# Require Fortran 2018 standard for Fortran files
+target_compile_options( ${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:Fortran>:-std=f2018>)
 
 
 

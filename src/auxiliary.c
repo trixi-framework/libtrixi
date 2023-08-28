@@ -1,3 +1,14 @@
+// Enable support for `setenv`
+#ifdef _POSIX_C_SOURCE
+#undef _POSIX_C_SOURCE
+#endif
+#define _POSIX_C_SOURCE 200112L
+
+// Enable support for `realpath`
+#ifndef _DEFAULT_SOURCE
+#define _DEFAULT_SOURCE
+#endif
+
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
