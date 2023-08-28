@@ -173,7 +173,7 @@ jobs:
               ../build/examples/trixi_controller_data_f . libelixir_p4est2d_dgsem_euler_sedov.jl
         env:
           LIBTRIXI_DEBUG: all
-      - name: Run julia tests with coverage
+      - name: Run Julia tests
         uses: julia-actions/julia-runtest@v1
         with:
           coverage: ${{ matrix.test_type == 'coverage' }}
