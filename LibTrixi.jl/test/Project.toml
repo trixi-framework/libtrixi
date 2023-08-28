@@ -1,21 +1,12 @@
-name = "LibTrixi"
-uuid = "7e097bd5-a775-4bc1-90b6-ad92bd7220c1"
-authors = ["Michael Schlottke-Lakemper <michael@sloede.com>", "Benedict Geihe <bgeihe@uni-koeln.de>"]
-version = "0.1.0"
-
 [deps]
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Trixi = "a7f1ee26-1774-49b1-8366-f1abc58fbfcb"
-MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"
-Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
-# NOTE: entries should be kept in sync with those in test/Project.toml
+# NOTE entries should be kept in sync with those in ../Project.toml
 [compat]
-julia = "1.8"
-MPI = "0.20.13"
 OrdinaryDiffEq = "6.53.2"
 Trixi = "0.5.29"
-Pkg = "1.8"
 
 [preferences.OrdinaryDiffEq]
 PrecompileAutoSpecialize = false
