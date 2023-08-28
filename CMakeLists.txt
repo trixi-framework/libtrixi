@@ -38,7 +38,7 @@ find_package( Julia REQUIRED )
 find_package( MPI REQUIRED )
 
 # Find Google Test and test-drive on demand
-option( ENABLE_TESTING "Build tests using Google Test (C) and test-drive (Fortan)" )
+option( ENABLE_TESTING "Build tests using Google Test (C) and test-drive (Fortran)" )
 if( ENABLE_TESTING )
     if ( NOT DEFINED JULIA_PROJECT_PATH )
         message( FATAL_ERROR "JULIA_PROJECT_PATH not set, tests will not work.")
