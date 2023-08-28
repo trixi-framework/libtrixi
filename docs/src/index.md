@@ -20,6 +20,8 @@ Currently, libtrixi is only developed and tested for Linux.
 Furthermore, a local installation of `MPI`,
 [`t8code`](https://github.com/DLR-AMR/t8code), and
 [`Julia`](https://julialang.org/downloads/platform/) is required.
+Furthermore, a C11-compatible C compiler and a Fortran 2018-compatible Fortran compiler are
+necessary to build the C library and its Fortran bindings.
 
 ### Get the sources
 
