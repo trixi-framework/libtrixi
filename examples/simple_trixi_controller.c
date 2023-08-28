@@ -62,10 +62,10 @@ int main ( int argc, char *argv[] ) {
     printf("libtrixi version: %d.%d.%d %s\n",
         trixi_version_library_major(), trixi_version_library_minor(),
         trixi_version_library_patch(), trixi_version_library());
-    printf("\nAll loaded julia packages:\n%s\n", trixi_version_julia_extended());
+    printf("\nAll loaded Julia packages:\n%s\n", trixi_version_julia_extended());
 
-    // Execute julia code
-    printf("\nExecute julia code\n");
+    // Execute Julia code
+    printf("\nExecute Julia code\n");
     trixi_eval_julia("println(\"3! = \", factorial(3))");
 
     // Set up the Trixi simulation
