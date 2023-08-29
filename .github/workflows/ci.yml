@@ -18,6 +18,11 @@ on:
         required: false
         default: "false"
 
+env:
+  # Modify this variable to change the t8code release version - do NOT hardcode the version
+  # anywhere else!
+  T8CODE_RELEASE: 1.4.1
+
 jobs:
   test:
     if: !contains(github.event.head_commit.message, 'skip ci')
@@ -53,6 +58,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Enable Julia cache
+        uses: julia-actions/cache@v1
+      - name: Enable t8code cache
+        id: cache-t8code
+        uses: actions/cache@v3
+        with:
+          path: ./t8code-local
+          key: ${{ matrix.os }}-${{ matrix.arch }}-${{ env.T8CODE_RELEASE }}
       - name: Install Julia
         uses: julia-actions/setup-julia@v1
         with:
@@ -60,20 +73,13 @@ jobs:
           arch: ${{ matrix.arch }}
       - name: Show Julia version information
         run: julia -e 'using InteractiveUtils; versioninfo(verbose=true)'
-      - name: Use Julia cache
-        uses: julia-actions/cache@v1
-      - name: Install MPI
+      - name: Install dependencies available as Ubuntu packages
+        # MPI, HDF5, Google Test
         run: |
-          sudo apt-get install -y openmpi-bin libopenmpi-dev
-      - name: Install HDF5
-        run: |
-          sudo apt-get install -y libhdf5-openmpi-dev
-      - name: Install gtest
-        run: |
-          sudo apt-get install -y libgtest-dev
+          sudo apt-get install -y openmpi-bin libopenmpi-dev libhdf5-openmpi-dev libgtest-dev
       - name: Install t8code
+        if: steps.cache-t8code.outputs.cache-hit != 'true'
         run: |
-          T8CODE_RELEASE=1.4.1
           mkdir t8code-local
           cd t8code-local
           wget https://github.com/DLR-AMR/t8code/releases/download/v${T8CODE_RELEASE}/t8-${T8CODE_RELEASE}.tar.gz
