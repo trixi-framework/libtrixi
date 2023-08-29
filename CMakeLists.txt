@@ -49,8 +49,7 @@ if( ENABLE_TESTING )
     find_package( GTest REQUIRED )
 
     set ( TEST_DRIVE_FIND_METHOD fetch )
-    # no effect
-    # option ( TEST_DRIVE_BUILD_TESTING OFF )
+    # option TEST_DRIVE_BUILD_TESTING is hard-coded to ON
     find_package( test-drive REQUIRED )
 endif()
 
@@ -111,7 +110,7 @@ add_subdirectory( examples )
 if( ENABLE_TESTING )
     enable_testing()
     add_subdirectory( test/c )
-    #add_subdirectory( test/fortran )
+    add_subdirectory( test/fortran )
 endif()
 
 

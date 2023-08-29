@@ -77,19 +77,13 @@ TEST(CInterfaceTest, JuliaCode) {
     // Initialize libtrixi
     trixi_initialize( julia_project_path, NULL );
 
-    // Finalize libtrixi
-    trixi_finalize();
-
-    // Initialize libtrixi
-    trixi_initialize( julia_project_path, NULL );
-
     // Execute correct Julia code
     // NOTE: capturing stdout somehow does not work
-    //trixi_eval_julia("println(\"Hello from Julia!\")");
+    trixi_eval_julia("println(\"Hello from Julia!\")");
 
     // Execute erroneous Julia code
     // NOTE: output before exit is somehow not captured here
-    //EXPECT_DEATH(trixi_eval_julia("printline(\"Hello from Julia!\")"), "");
+    EXPECT_DEATH(trixi_eval_julia("printline(\"Hello from Julia!\")"), "");
 
     // Finalize libtrixi
     trixi_finalize();
