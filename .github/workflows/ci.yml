@@ -32,7 +32,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Linux
           - os: ubuntu-latest
             arch: x64
             shell: bash
@@ -90,13 +89,13 @@ jobs:
               --prefix=$PWD/../prefix --enable-mpi
           make -j 2
           make install
-      - name: Configure (regular)
+      - name: Configure (test_type == 'regular')
         if: ${{ matrix.test_type == 'regular' }}
         run: |
           mkdir build
           cd build
           cmake .. -DCMAKE_INSTALL_PREFIX=../install
-      - name: Configure (coverage)
+      - name: Configure (test_type == 'coverage')
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
           mkdir build
@@ -138,14 +137,13 @@ jobs:
               --force
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl .
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl .
-      - name: Prepare coverage reporting
+      - name: Prepare coverage reporting (test_type == 'coverage')
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
           sudo apt-get install -y lcov
           cd libtrixi-julia
           lcov --directory ../build --zerocounters
-      - name: Run regular function tests
-        if: ${{ matrix.test_type == 'regular' }} || ${{ matrix.test_type == 'coverage' }}
+      - name: Run examples
         run: |
           cd libtrixi-julia
           JULIA_DEPOT_PATH=~/.julia \
@@ -218,7 +216,7 @@ jobs:
               ../build/examples/trixi_controller_data_c . libelixir_p4est2d_dgsem_euler_sedov.jl
           JULIA_DEPOT_PATH=~/.julia \
               ../build/examples/trixi_controller_data_f . libelixir_p4est2d_dgsem_euler_sedov.jl
-      - name: Process C coverage data
+      - name: Process C/Fortran coverage data
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
           cd libtrixi-julia
@@ -228,13 +226,14 @@ jobs:
         uses: julia-actions/julia-processcoverage@v1
         with:
           directories: LibTrixi.jl/src
-      - uses: codecov/codecov-action@v3
+      - name: Upload coverage data (Codecov)
+        uses: codecov/codecov-action@v3
         if: ${{ matrix.test_type == 'coverage' }}
         with:
           files: ./libtrixi-julia/lcov.info,./lcov.info
           flags: unittests
           name: codecov-umbrella
-      - name: Coveralls
+      - name: Upload coverage data (Coveralls)
         if: ${{ matrix.test_type == 'coverage' }}
         uses: coverallsapp/github-action@main
         with:
