@@ -26,71 +26,60 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          # Linux
-          - os: ubuntu-latest
-            arch: x64
-            shell: bash
-            test_type: regular
-            julia_version: 1.9
-          - os: ubuntu-latest
-            arch: x64
-            shell: bash
-            test_type: coverage
-            julia_version: 1.9
-          # - os: ubuntu-latest
-          #   arch: x64
-          #   shell: bash
-          #   test_type: valgrind
-          #   julia_version: 1.9
-          # macOS
-          # - os: macos-latest
-          #   arch: x64
-          #   shell: bash
-          #   test_type: regular
-          #   julia_version: 1.9
-          # Windows
-          # - os: windows-latest
-          #   arch: x64
-          #   shell: 'msys2 {0}'
-          #   test_type: regular
-          #   julia_version: 1.9
-    # Set default shell as suggested here: https://github.community/t/setting-default-shell-or-other-step-metadata-conditionally-in-workflows/154055
-    defaults:
-      run:
-        shell: ${{ matrix.shell }}
+        os:
+          - ubuntu-latest
+        test_type:
+          - regular
+          - coverage
+        arch:
+          - x64
+        julia_version:
+          - '1.9'
+        t8code_version:
+          - '1.4.1'
     env:
       # Necessary for HDF5 to play nice with Julia
       LD_PRELOAD: /lib/x86_64-linux-gnu/libcurl.so.4
+      # Necessary such that libtrixi will not use its own default for the depot path
+      JULIA_DEPOT_PATH: ~/.julia
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - uses: msys2/setup-msys2@v2
-        if: ${{ matrix.os == 'windows-latest' }}
+
+      - name: Enable Julia cache
+        uses: julia-actions/cache@v1
+
+      - name: Enable t8code cache
+        id: cache-t8code
+        uses: actions/cache@v3
         with:
-          update: true
-          install: git base-devel mingw-w64-x86_64-toolchain
+          path: ./t8code-local
+          key: ${{ matrix.os }}-${{ matrix.arch }}-${{ env.T8CODE_RELEASE }}
+
       - name: Install Julia
         uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia_version }}
           arch: ${{ matrix.arch }}
+
       - name: Show Julia version information
         run: julia -e 'using InteractiveUtils; versioninfo(verbose=true)'
-      - name: Use Julia cache
-        uses: julia-actions/cache@v1
-      - name: Install MPI
+
+      - name: Install dependencies available with `apt-get`
+        # - MPI
+        # - HDF5
+        # - Google Test
+        # - Coverage (lcov)
         run: |
-          sudo apt-get install -y openmpi-bin libopenmpi-dev
-      - name: Install HDF5
-        run: |
-          sudo apt-get install -y libhdf5-openmpi-dev
-      - name: Install gtest
-        run: |
-          sudo apt-get install -y libgtest-dev
+          sudo apt-get install -y openmpi-bin libopenmpi-dev \
+                                  libhdf5-openmpi-dev \
+                                  libgtest-dev \
+                                  lcov
+
       - name: Install t8code
+        if: steps.cache-t8code.outputs.cache-hit != 'true'
         run: |
-          T8CODE_RELEASE=1.4.1
+          T8CODE_RELEASE=${{ matrix.t8code_version }}
           mkdir t8code-local
           cd t8code-local
           wget https://github.com/DLR-AMR/t8code/releases/download/v${T8CODE_RELEASE}/t8-${T8CODE_RELEASE}.tar.gz
@@ -101,13 +90,17 @@ jobs:
               --prefix=$PWD/../prefix --enable-mpi
           make -j 2
           make install
-      - name: Configure (regular)
+
+      - name: Configure (test_type == 'regular')
         if: ${{ matrix.test_type == 'regular' }}
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_INSTALL_PREFIX=../install
-      - name: Configure (coverage)
+          cmake .. -DCMAKE_INSTALL_PREFIX=../install \
+                   -DCMAKE_BUILD_TYPE=Release \
+                   -DENABLE_TESTING=ON -DJULIA_PROJECT_PATH=../libtrixi-julia
+
+      - name: Configure (test_type == 'coverage')
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
           mkdir build
@@ -119,19 +112,23 @@ jobs:
                    -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
                    -DCMAKE_SHARED_LINKER_FLAGS="--coverage" \
                    -DENABLE_TESTING=ON -DJULIA_PROJECT_PATH=../libtrixi-julia
+
       - name: Build
         run: |
           cd build
           make -j 2
+
       - name: Install
         run: |
           cd build
           make install
+
       - name: Test building with an external Makefile
         if: ${{ matrix.test_type == 'regular' }}
         run: |
           cd examples
           make -f MakefileExternal LIBTRIXI_PREFIX=$PWD/../install
+
       - name: Initialize project directory
         # Note that we set the Julia depot to `~/.julia` *ONLY* to make use of the
         # julia-actions/cache above (which unfortunately hardcoded the `~/.julia`
@@ -149,50 +146,37 @@ jobs:
               --force
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl .
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl .
+
       - name: Prepare coverage reporting
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
-          sudo apt-get install -y lcov
           cd libtrixi-julia
           lcov --directory ../build --zerocounters
-      - name: Run regular function tests
-        if: ${{ matrix.test_type == 'regular' }} || ${{ matrix.test_type == 'coverage' }}
+
+      - name: Run examples
         run: |
           cd libtrixi-julia
-          JULIA_DEPOT_PATH=~/.julia \
-              ../build/examples/simple_trixi_controller_c . libelixir_tree1d_dgsem_advection_basic.jl
-          JULIA_DEPOT_PATH=~/.julia \
-              ../build/examples/simple_trixi_controller_f . libelixir_tree1d_dgsem_advection_basic.jl
-          JULIA_DEPOT_PATH=~/.julia \
-              ../build/examples/simple_trixi_controller_c . libelixir_p4est2d_dgsem_euler_sedov.jl
-          JULIA_DEPOT_PATH=~/.julia \
-              ../build/examples/simple_trixi_controller_f . libelixir_p4est2d_dgsem_euler_sedov.jl
-          JULIA_DEPOT_PATH=~/.julia \
-              ../build/examples/trixi_controller_data_c . libelixir_p4est2d_dgsem_euler_sedov.jl
-          JULIA_DEPOT_PATH=~/.julia \
-              ../build/examples/trixi_controller_data_f . libelixir_p4est2d_dgsem_euler_sedov.jl
+          ../build/examples/simple_trixi_controller_c . libelixir_tree1d_dgsem_advection_basic.jl
+          ../build/examples/simple_trixi_controller_f . libelixir_tree1d_dgsem_advection_basic.jl
+          ../build/examples/simple_trixi_controller_c . libelixir_p4est2d_dgsem_euler_sedov.jl
+          ../build/examples/simple_trixi_controller_f . libelixir_p4est2d_dgsem_euler_sedov.jl
+          ../build/examples/trixi_controller_data_c . libelixir_p4est2d_dgsem_euler_sedov.jl
+          ../build/examples/trixi_controller_data_f . libelixir_p4est2d_dgsem_euler_sedov.jl
         env:
           LIBTRIXI_DEBUG: all
-      - name: Run Julia tests
-        uses: julia-actions/julia-runtest@v1
-        with:
-          coverage: ${{ matrix.test_type == 'coverage' }}
-          project: ./LibTrixi.jl
-        env:
-          JULIA_DEPOT_PATH: ~/.julia
-          LIBTRIXI_DEBUG: all
+
       - name: Check error handling of examples
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
           cd libtrixi-julia
           set +e  # disable early exit on non-zero exit code
-          for command in "../build/examples/simple_trixi_controller_c" \
+          for command in "../build/examples/simple_trixi_controller_c"   \
                          "../build/examples/simple_trixi_controller_c ." \
-                         "../build/examples/simple_trixi_controller_f" \
+                         "../build/examples/simple_trixi_controller_f"   \
                          "../build/examples/simple_trixi_controller_f ." \
-                         "../build/examples/trixi_controller_data_c" \
-                         "../build/examples/trixi_controller_data_c ." \
-                         "../build/examples/trixi_controller_data_f" \
+                         "../build/examples/trixi_controller_data_c"     \
+                         "../build/examples/trixi_controller_data_c ."   \
+                         "../build/examples/trixi_controller_data_f"     \
                          "../build/examples/trixi_controller_data_f ."
             do
               $command
@@ -203,54 +187,49 @@ jobs:
             done
         env:
           LIBTRIXI_DEBUG: all
-          JULIA_DEPOT_PATH: ~/.julia
-      - name: Run CTest/gtest tests
-        if: ${{ matrix.test_type == 'coverage' }}
+
+      - name: Run Julia tests
+        uses: julia-actions/julia-runtest@v1
+        with:
+          coverage: ${{ matrix.test_type == 'coverage' }}
+          project: ./LibTrixi.jl
+        env:
+          LIBTRIXI_DEBUG: all
+
+      - name: Run C/Fortran tests
         run: |
           cd build/test
           ctest -V
         env:
           LIBTRIXI_DEBUG: all
-          JULIA_DEPOT_PATH: ~/.julia
-      - name: Run memory checks with Valgrind
-        if: ${{ matrix.test_type == 'valgrind' }}
-        run: |
-          sudo apt-get install -y valgrind
-          cd libtrixi-julia
-          JULIA_DEPOT_PATH=~/.julia valgrind --error-exitcode=1 -s \
-              ../build/examples/simple_trixi_controller_c . libelixir_tree1d_dgsem_advection_basic.jl
-          JULIA_DEPOT_PATH=~/.julia valgrind --error-exitcode=1 -s \
-              ../build/examples/simple_trixi_controller_f . libelixir_tree1d_dgsem_advection_basic.jl
-          JULIA_DEPOT_PATH=~/.julia valgrind --error-exitcode=1 -s \
-              ../build/examples/simple_trixi_controller_c . libelixir_p4est2d_dgsem_euler_sedov.jl
-          JULIA_DEPOT_PATH=~/.julia valgrind --error-exitcode=1 -s \
-              ../build/examples/simple_trixi_controller_f . libelixir_p4est2d_dgsem_euler_sedov.jl
-          JULIA_DEPOT_PATH=~/.julia \
-              ../build/examples/trixi_controller_data_c . libelixir_p4est2d_dgsem_euler_sedov.jl
-          JULIA_DEPOT_PATH=~/.julia \
-              ../build/examples/trixi_controller_data_f . libelixir_p4est2d_dgsem_euler_sedov.jl
-      - name: Process C coverage data
-        if: ${{ matrix.test_type == 'coverage' }}
-        run: |
-          cd libtrixi-julia
-          lcov --directory ../build  --capture --output-file lcov.info
+
       - name: Process Julia coverage data
         if: ${{ matrix.test_type == 'coverage' }}
         uses: julia-actions/julia-processcoverage@v1
         with:
           directories: LibTrixi.jl/src
-      - uses: codecov/codecov-action@v3
+
+      - name: Process C/Fortran coverage data
+        if: ${{ matrix.test_type == 'coverage' }}
+        run: |
+          cd libtrixi-julia
+          lcov --directory ../build  --capture --output-file lcov.info
+
+      - name: Upload coverage data (Codecov)
+        uses: codecov/codecov-action@v3
         if: ${{ matrix.test_type == 'coverage' }}
         with:
           files: ./libtrixi-julia/lcov.info,./lcov.info
           flags: unittests
           name: codecov-umbrella
-      - name: Coveralls
+
+      - name: Upload coverage data (Coveralls)
         if: ${{ matrix.test_type == 'coverage' }}
         uses: coverallsapp/github-action@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           files: ./libtrixi-julia/lcov.info ./lcov.info
+
       # Enable tmate debugging of manually-triggered workflows if the input option was provided
       - name: Setup tmate session for debugging
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled && always() }}
