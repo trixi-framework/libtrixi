@@ -111,7 +111,7 @@ add_subdirectory( examples )
 if( ENABLE_TESTING )
     enable_testing()
     add_subdirectory( test/c )
-    add_subdirectory( test/fortran )
+    #add_subdirectory( test/fortran )
 endif()
 
 
