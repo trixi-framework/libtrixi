@@ -49,12 +49,6 @@ jobs:
           #   shell: bash
           #   test_type: regular
           #   julia_version: 1.9
-          # Windows
-          # - os: windows-latest
-          #   arch: x64
-          #   shell: 'msys2 {0}'
-          #   test_type: regular
-          #   julia_version: 1.9
     # Set default shell as suggested here: https://github.community/t/setting-default-shell-or-other-step-metadata-conditionally-in-workflows/154055
     defaults:
       run:
@@ -65,11 +59,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - uses: msys2/setup-msys2@v2
-        if: ${{ matrix.os == 'windows-latest' }}
-        with:
-          update: true
-          install: git base-devel mingw-w64-x86_64-toolchain
       - name: Install Julia
         uses: julia-actions/setup-julia@v1
         with:
