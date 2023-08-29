@@ -63,7 +63,7 @@ jobs:
       - name: Show Julia version information
         run: julia -e 'using InteractiveUtils; versioninfo(verbose=true)'
 
-      - name: Install dependencies available as Ubuntu packages
+      - name: Install dependencies available with `apt-get`
         # - MPI
         # - HDF5
         # - Google Test
@@ -174,13 +174,13 @@ jobs:
         run: |
           cd libtrixi-julia
           set +e  # disable early exit on non-zero exit code
-          for command in "../build/examples/simple_trixi_controller_c" \
+          for command in "../build/examples/simple_trixi_controller_c"   \
                          "../build/examples/simple_trixi_controller_c ." \
-                         "../build/examples/simple_trixi_controller_f" \
+                         "../build/examples/simple_trixi_controller_f"   \
                          "../build/examples/simple_trixi_controller_f ." \
-                         "../build/examples/trixi_controller_data_c" \
-                         "../build/examples/trixi_controller_data_c ." \
-                         "../build/examples/trixi_controller_data_f" \
+                         "../build/examples/trixi_controller_data_c"     \
+                         "../build/examples/trixi_controller_data_c ."   \
+                         "../build/examples/trixi_controller_data_f"     \
                          "../build/examples/trixi_controller_data_f ."
             do
               $command
