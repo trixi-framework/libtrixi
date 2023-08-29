@@ -64,9 +64,15 @@ jobs:
         run: julia -e 'using InteractiveUtils; versioninfo(verbose=true)'
 
       - name: Install dependencies available as Ubuntu packages
-        # MPI, HDF5, Google Test
+        # - MPI
+        # - HDF5
+        # - Google Test
+        # - Coverage (lcov)
         run: |
-          sudo apt-get install -y openmpi-bin libopenmpi-dev libhdf5-openmpi-dev libgtest-dev
+          sudo apt-get install -y openmpi-bin libopenmpi-dev \
+                                  libhdf5-openmpi-dev \
+                                  libgtest-dev \
+                                  lcov
 
       - name: Install t8code
         if: steps.cache-t8code.outputs.cache-hit != 'true'
@@ -142,7 +148,6 @@ jobs:
       - name: Prepare coverage reporting
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
-          sudo apt-get install -y lcov
           cd libtrixi-julia
           lcov --directory ../build --zerocounters
 
