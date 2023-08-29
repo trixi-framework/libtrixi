@@ -88,7 +88,9 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_INSTALL_PREFIX=../install
+          cmake .. -DCMAKE_INSTALL_PREFIX=../install \
+                   -DCMAKE_BUILD_TYPE=Release \
+                   -DENABLE_TESTING=ON -DJULIA_PROJECT_PATH=../libtrixi-julia
 
       - name: Configure (test_type == 'coverage')
         if: ${{ matrix.test_type == 'coverage' }}
@@ -195,8 +197,7 @@ jobs:
           JULIA_DEPOT_PATH: ~/.julia
           LIBTRIXI_DEBUG: all
 
-      - name: Run CTest/gtest tests
-        if: ${{ matrix.test_type == 'coverage' }}
+      - name: Run C/Fortran tests
         run: |
           cd build/test
           ctest -V
