@@ -18,11 +18,6 @@ on:
         required: false
         default: "false"
 
-env:
-  # Modify this variable to change the t8code release version - do NOT hardcode the version
-  # anywhere else!
-  T8CODE_RELEASE: 1.4.1
-
 jobs:
   test:
     if: !contains(github.event.head_commit.message, 'skip ci')
@@ -31,15 +26,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: ubuntu-latest
-            arch: x64
-            test_type: regular
-            julia_version: 1.9
-          - os: ubuntu-latest
-            arch: x64
-            test_type: coverage
-            julia_version: 1.9
+        os:
+          - ubuntu-latest
+        test_type:
+          - regular
+          - coverage
+        arch:
+          - x64
+        julia_version:
+          - '1.9'
+        t8code_version:
+          - '1.4.1'
     env:
       # Necessary for HDF5 to play nice with Julia
       LD_PRELOAD: /lib/x86_64-linux-gnu/libcurl.so.4
@@ -68,6 +65,7 @@ jobs:
       - name: Install t8code
         if: steps.cache-t8code.outputs.cache-hit != 'true'
         run: |
+          T8CODE_RELEASE=${{ matrix.t8code_version }}
           mkdir t8code-local
           cd t8code-local
           wget https://github.com/DLR-AMR/t8code/releases/download/v${T8CODE_RELEASE}/t8-${T8CODE_RELEASE}.tar.gz
