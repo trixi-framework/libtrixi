@@ -79,13 +79,12 @@ static int is_finalized = 0;
  * @param[in]  depot_path         Path to Julia depot path (optional; can be null pointer).
  */
 void trixi_initialize(const char * project_directory, const char * depot_path) {
-    // Prevent double initialization and initialization after finalization
+    // Prevent double initialization
     if (is_initialized) {
         print_and_die("trixi_initialize invoked multiple times", LOC);
     }
-    if (is_finalized) {
-        print_and_die("trixi_initialize invoked after trixi_finalize", LOC);
-    }
+    // Initialization after finalization is also erroneous, but finalization requires
+    // initialization, so this is already caught above.
 
     // Update JULIA_DEPOT_PATH environment variable before initializing Julia
     update_depot_path(project_directory, depot_path);
