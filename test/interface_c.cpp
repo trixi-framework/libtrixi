@@ -68,7 +68,7 @@ TEST(CInterfaceTest, VersionInfo) {
     EXPECT_NE(version_string_julia_ext.find("StartUpDG"), std::string::npos);
 
     // Finalize libtrixi
-    trixi_initialize( julia_project_path, NULL );
+    trixi_finalize();
 }
 
 
@@ -86,7 +86,7 @@ TEST(CInterfaceTest, JuliaCode) {
     EXPECT_DEATH(trixi_eval_julia("printline(\"Hello from Julia!\")"), "");
 
     // Finalize libtrixi
-    trixi_initialize( julia_project_path, NULL );
+    trixi_finalize();
 }
 
 
@@ -106,7 +106,7 @@ TEST(CInterfaceTest, FunctionPointers) {
     EXPECT_DEATH(store_function_pointers(num_fptrs, fptr_names, fptrs), "");
 
     // Finalize libtrixi
-    trixi_initialize( julia_project_path, NULL );
+    trixi_finalize();
 }
 
 

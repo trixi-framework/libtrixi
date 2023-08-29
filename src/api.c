@@ -50,6 +50,10 @@ static const char* trixi_function_pointer_names[] = {
     [TRIXI_FTPR_VERSION_JULIA_EXTENDED] = "trixi_version_julia_extended_cfptr"
 };
 
+// Track initialization/finalization status to prevent unhelpful errors
+static int is_initialized = 0;
+static int is_finalized = 0;
+
 
 
 /******************************************************************************************/
@@ -67,10 +71,22 @@ static const char* trixi_function_pointer_names[] = {
  * If `JULIA_DEPOT_PATH` is already set, do not touch it. Otherwise, set `JULIA_DEPOT_PATH`
  * to `project_directory` + `default_depot_path`
  * 
+ * This function must be called before most other libtrixi functions can be used.
+ * Libtrixi maybe only be initialized once; subsequent calls to `trixi_initialize` are
+ * erroneous.
+ * 
  * @param[in]  project_directory  Path to project directory.
  * @param[in]  depot_path         Path to Julia depot path (optional; can be null pointer).
  */
 void trixi_initialize(const char * project_directory, const char * depot_path) {
+    // Prevent double initialization and initialization after finalization
+    if (is_initialized) {
+        print_and_die("trixi_initialize invoked multiple times", LOC);
+    }
+    if (is_finalized) {
+        print_and_die("trixi_initialize invoked after trixi_finalize", LOC);
+    }
+
     // Update JULIA_DEPOT_PATH environment variable before initializing Julia
     update_depot_path(project_directory, depot_path);
 
@@ -104,15 +120,29 @@ void trixi_initialize(const char * project_directory, const char * depot_path) {
         printf("\nlibtrixi %s\n\n", trixi_version_library());
         printf("Loaded Julia packages:\n%s\n\n", trixi_version_julia());
     }
+
+    // Mark as initialized
+    is_initialized = 1;
 }
 
 
 /**
  * @anchor trixi_finalize_api_c
+ * 
+ * Clean up internal states. This function should be executed near the end of the process'
+ * lifetime. After the call to `trixi_finalize`, no other libtrixi functions may be called
+ * anymore, including `trixi_finalize` itself.
  *
  * @brief Finalize Julia runtime environment
  */
 void trixi_finalize() {
+    // Prevent finalization without initialization and double finalization
+    if (!is_initialized) {
+        print_and_die("trixi_initialize must be called before trixi_finalize", LOC);
+    }
+    if (is_finalized) {
+        print_and_die("trixi_finalize invoked multiple times", LOC);
+    }
 
     if (show_debug_output()) {
         printf("libtrixi: finalize\n");
@@ -124,6 +154,9 @@ void trixi_finalize() {
     }
 
     jl_atexit_hook(0);
+
+    // Mark as finalized
+    is_finalized = 1;
 }
 
 
