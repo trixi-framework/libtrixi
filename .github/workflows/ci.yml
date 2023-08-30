@@ -143,7 +143,7 @@ jobs:
               --hdf5-library /usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so \
               --t8code-library ../t8code-local/prefix/lib/libt8.so \
               --julia-depot ~/.julia \
-              --force --skip-precompile
+              --force
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl .
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl .
 
