@@ -158,6 +158,7 @@ jobs:
         with:
           coverage: ${{ matrix.test_type == 'coverage' }}
           project: ./LibTrixi.jl
+          check_bounds: 'auto'
         env:
           LIBTRIXI_DEBUG: all
 
