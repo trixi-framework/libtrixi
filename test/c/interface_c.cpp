@@ -11,7 +11,7 @@ const char * julia_project_path = JULIA_PROJECT_PATH;
 
 // Example libexlixir
 const char * libelixir_path =
-  "../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl";
+  "../../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl";
 
 
 TEST(CInterfaceTest, JuliaProject) {
@@ -39,6 +39,28 @@ TEST(CInterfaceTest, JuliaProject) {
                            "this_string_is_just_way_toooooooooooooooooooo_long";
     EXPECT_DEATH( trixi_initialize( garbage, "/tmp" ),
                   "buffer size not sufficient for activation command");
+
+    // do not finalize before initialization
+    EXPECT_DEATH( trixi_finalize(),
+                  "trixi_initialize must be called before trixi_finalize");
+
+    // Initialize libtrixi
+    trixi_initialize( julia_project_path, NULL );
+
+    // do not initialize twice
+    EXPECT_DEATH( trixi_initialize( julia_project_path, NULL ),
+                  "trixi_initialize invoked multiple times");
+
+    // Finalize libtrixi
+    trixi_finalize();
+
+    // do not finalize twice
+    EXPECT_DEATH( trixi_finalize(),
+                  "trixi_finalize invoked multiple times");
+
+    // do not initialize after finalization
+    EXPECT_DEATH( trixi_initialize( julia_project_path, NULL ),
+                  "trixi_initialize invoked multiple times");
 }
 
 
@@ -68,7 +90,7 @@ TEST(CInterfaceTest, VersionInfo) {
     EXPECT_NE(version_string_julia_ext.find("StartUpDG"), std::string::npos);
 
     // Finalize libtrixi
-    trixi_initialize( julia_project_path, NULL );
+    trixi_finalize();
 }
 
 
@@ -86,7 +108,7 @@ TEST(CInterfaceTest, JuliaCode) {
     EXPECT_DEATH(trixi_eval_julia("printline(\"Hello from Julia!\")"), "");
 
     // Finalize libtrixi
-    trixi_initialize( julia_project_path, NULL );
+    trixi_finalize();
 }
 
 
@@ -106,5 +128,5 @@ TEST(CInterfaceTest, FunctionPointers) {
     EXPECT_DEATH(store_function_pointers(num_fptrs, fptr_names, fptrs), "");
 
     // Finalize libtrixi
-    trixi_initialize( julia_project_path, NULL );
+    trixi_finalize();
 }

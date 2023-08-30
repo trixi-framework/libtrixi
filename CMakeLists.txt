@@ -37,16 +37,20 @@ find_package( Julia REQUIRED )
 # Find MPI
 find_package( MPI REQUIRED )
 
-# Find google test on demand
-option( ENABLE_TESTING "Build tests using Google Test" )
+# Find Google Test and test-drive on demand
+option( ENABLE_TESTING "Build tests using Google Test (C) and test-drive (Fortran)" )
 if( ENABLE_TESTING )
-    find_package( GTest REQUIRED )
     if ( NOT DEFINED JULIA_PROJECT_PATH )
         message( FATAL_ERROR "JULIA_PROJECT_PATH not set, tests will not work.")
-    else()
+    endif()
     set( JULIA_PROJECT_PATH ${JULIA_PROJECT_PATH} CACHE PATH
                             "Path to Julia project (typically 'libtrixi-julia').")
-    endif()
+
+    find_package( GTest REQUIRED )
+
+    set ( TEST_DRIVE_FIND_METHOD fetch )
+    # option TEST_DRIVE_BUILD_TESTING is hard-coded to ON
+    find_package( test-drive REQUIRED )
 endif()
 
 
@@ -86,6 +90,10 @@ target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} MPI::MPI_C )
 # Set appropriate compile flags
 target_compile_options( ${PROJECT_NAME} PUBLIC "-fPIC" )
 target_compile_options( ${PROJECT_NAME} PRIVATE -Wall -Wextra -Werror)
+# Require C11 standard with GNU extensions for C files
+target_compile_options( ${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-std=gnu11>)
+# Require Fortran 2018 standard for Fortran files
+target_compile_options( ${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:Fortran>:-std=f2018>)
 
 
 
@@ -100,7 +108,9 @@ add_subdirectory( examples )
 
 # Add test on demand
 if( ENABLE_TESTING )
-    add_subdirectory( test )
+    enable_testing()
+    add_subdirectory( test/c )
+    add_subdirectory( test/fortran )
 endif()
 
 

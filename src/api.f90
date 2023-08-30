@@ -25,6 +25,10 @@ module LibTrixi
     !! `JULIA_DEPOT_PATH` is already set, do not touch it. Otherwise, set
     !! `JULIA_DEPOT_PATH` to `project_directory` + `default_depot_path`.
     !!
+    !! This routine must be called before most other libtrixi routines can be used.
+    !! Libtrixi maybe only be initialized once; subsequent calls to `trixi_initialize` are
+    !! erroneous.
+    !!
     !! @param[in]  project_directory  Path to project directory (C char pointer)
     !! @param[in]  depot_path         Path to Julia depot path (optional, C char pointer)
     !!
@@ -40,6 +44,10 @@ module LibTrixi
     !! @fn LibTrixi::trixi_finalize::trixi_finalize()
     !!
     !! @brief Finalize Julia runtime environment.
+    !!
+    !! Clean up internal states. This routine should be executed near the end of the
+    !! process' lifetime. After the call to `trixi_finalize`, no other libtrixi routines may
+    !! be called anymore, including `trixi_finalize` itself.
     !!
     !! @see @ref trixi_finalize_api_c "trixi_finalize (C API)"
     subroutine trixi_finalize() bind(c)

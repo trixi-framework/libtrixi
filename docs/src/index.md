@@ -1,6 +1,7 @@
 # libtrixi
 
 [![Docs-dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://trixi-framework.github.io/libtrixi/dev)
+[![Build Status](https://github.com/trixi-framework/libtrixi/workflows/CI/badge.svg)](https://github.com/trixi-framework/libtrixi/actions?query=workflow%3ACI)
 [![Coveralls](https://coveralls.io/repos/github/trixi-framework/libtrixi/badge.svg)](https://coveralls.io/github/trixi-framework/libtrixi)
 [![Codecov](https://codecov.io/gh/trixi-framework/libtrixi/branch/main/graph/badge.svg)](https://codecov.io/gh/trixi-framework/libtrixi)
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg)](https://opensource.org/licenses/MIT)
@@ -20,6 +21,8 @@ Currently, libtrixi is only developed and tested for Linux.
 Furthermore, a local installation of `MPI`,
 [`t8code`](https://github.com/DLR-AMR/t8code), and
 [`Julia`](https://julialang.org/downloads/platform/) is required.
+Furthermore, a C11-compatible C compiler and a Fortran 2018-compatible Fortran compiler are
+necessary to build the C library and its Fortran bindings.
 
 ### Get the sources
 
