@@ -54,7 +54,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./t8code-local
-          key: ${{ matrix.os }}-${{ matrix.arch }}-${{ env.T8CODE_RELEASE }}
+          key: ${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.t8code_version }}
 
       - name: Install Julia
         uses: julia-actions/setup-julia@v1
@@ -153,15 +153,6 @@ jobs:
           cd libtrixi-julia
           lcov --directory ../build --zerocounters
 
-      - name: Run Julia tests
-        uses: julia-actions/julia-runtest@v1
-        with:
-          coverage: ${{ matrix.test_type == 'coverage' }}
-          project: ./LibTrixi.jl
-          check_bounds: 'auto'
-        env:
-          LIBTRIXI_DEBUG: all
-
       - name: Run examples
         run: |
           cd libtrixi-julia
@@ -175,7 +166,6 @@ jobs:
           LIBTRIXI_DEBUG: all
 
       - name: Check error handling of examples
-        if: ${{ matrix.test_type == 'coverage' }}
         run: |
           cd libtrixi-julia
           set +e  # disable early exit on non-zero exit code
@@ -194,6 +184,15 @@ jobs:
                 exit 1
               fi
             done
+        env:
+          LIBTRIXI_DEBUG: all
+
+      - name: Run Julia tests
+        uses: julia-actions/julia-runtest@v1
+        with:
+          coverage: ${{ matrix.test_type == 'coverage' }}
+          project: ./LibTrixi.jl
+          check_bounds: 'auto'
         env:
           LIBTRIXI_DEBUG: all
 
