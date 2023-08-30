@@ -143,7 +143,7 @@ jobs:
               --hdf5-library /usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so \
               --t8code-library ../t8code-local/prefix/lib/libt8.so \
               --julia-depot ~/.julia \
-              --force
+              --force --skip-precompile
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl .
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl .
 
@@ -152,6 +152,14 @@ jobs:
         run: |
           cd libtrixi-julia
           lcov --directory ../build --zerocounters
+
+      - name: Run Julia tests
+        uses: julia-actions/julia-runtest@v1
+        with:
+          coverage: ${{ matrix.test_type == 'coverage' }}
+          project: ./LibTrixi.jl
+        env:
+          LIBTRIXI_DEBUG: all
 
       - name: Run examples
         run: |
@@ -185,14 +193,6 @@ jobs:
                 exit 1
               fi
             done
-        env:
-          LIBTRIXI_DEBUG: all
-
-      - name: Run Julia tests
-        uses: julia-actions/julia-runtest@v1
-        with:
-          coverage: ${{ matrix.test_type == 'coverage' }}
-          project: ./LibTrixi.jl
         env:
           LIBTRIXI_DEBUG: all
 
