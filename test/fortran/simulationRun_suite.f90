@@ -52,7 +52,7 @@ module simulationRun_suite
     call check(error, ndims, 2)
 
     ! Check number of elements
-    nelements = trixi_nelements(handle)
+    nelements = trixi_nelements_local(handle)
     call check(error, nelements, 256)
 
     ! Check number of variables

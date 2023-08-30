@@ -345,7 +345,7 @@ Base.@ccallable function trixi_load_cell_averages(data::Ptr{Cdouble},
     simstate = load_simstate(simstate_handle)
 
     # convert C to Julia array
-    size = trixi_nvariables_jl(simstate) * trixi_nelements_jl(simstate)
+    size = trixi_nvariables_jl(simstate) * trixi_nelements_local_jl(simstate)
     data_jl = unsafe_wrap(Array, data, size)
 
     trixi_load_cell_averages_jl(data_jl, simstate)
