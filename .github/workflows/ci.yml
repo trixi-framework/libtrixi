@@ -214,7 +214,7 @@ jobs:
         run: |
           cd libtrixi-julia
           lcov --directory ../build  --capture \
-               --exclude "julia.h" --exclude "*test-drive-src*" --exclude "*/test/*" \
+               --exclude "*/julia.h" --exclude "*test-drive-src*" --exclude "*/test/*" \
                --output-file lcov.info
 
       - name: Upload coverage data (Codecov)
