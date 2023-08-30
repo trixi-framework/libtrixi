@@ -41,8 +41,8 @@ optional arguments:
                     will continue anyways.
 
     --skip-precompile
-                    Do not precompile Julia packages. This can be helpful, e.g., to prevent
-                    precompiling twice during CI testing.
+                    Do not precompile Julia packages. This can be helpful, e.g., when
+                    planning to add more packages manually.
 
     --julia-depot JULIA_DEPOT
                     Path to the Julia depot to be used, i.e., the folder where all Julia
