@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <mpi.h>
 
 extern "C" {
     #include "../src/trixi.h"
@@ -9,9 +10,24 @@ const char * julia_project_path = JULIA_PROJECT_PATH;
 
 // Example libexlixir
 const char * libelixir_path =
-  "../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl";
+  "../../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl";
 
 TEST(CInterfaceTest, SimulationRun) {
+
+    // Initialize MPI
+    int argc = 0;
+    char *** argv = NULL;
+    int provided_threadlevel;
+    int requested_threadlevel = MPI_THREAD_SERIALIZED;
+    MPI_Init_thread(&argc, argv, requested_threadlevel, &provided_threadlevel);
+
+    MPI_Comm comm = MPI_COMM_WORLD;
+
+    int rank;
+    MPI_Comm_rank(comm, &rank);
+
+    int nranks;
+    MPI_Comm_size(comm, &nranks);
 
     // Initialize libtrixi
     trixi_initialize( julia_project_path, NULL );
@@ -40,20 +56,37 @@ TEST(CInterfaceTest, SimulationRun) {
     EXPECT_EQ(ndims, 2);
 
     // Check number of elements
-    int nelements = trixi_nelements(handle);
-    EXPECT_EQ(nelements, 256);
+    int nelements_local = trixi_nelements_local(handle);
+    int nelements_global = trixi_nelements_global(handle);
+    EXPECT_EQ(nelements_local * nranks, nelements_global);
 
     // Check number of variables
     int nvariables = trixi_nvariables(handle);
     EXPECT_EQ(nvariables, 4);
 
     // Check cell averaged values
-    int size = nelements * nvariables;
+    int size = nelements_local * nvariables;
     std::vector<double> cell_averages(size);
     trixi_load_cell_averages(cell_averages.data(), handle);
-    EXPECT_DOUBLE_EQ(cell_averages[0],      1.0);
-    EXPECT_DOUBLE_EQ(cell_averages[928],    2.6605289164377273);
-    EXPECT_DOUBLE_EQ(cell_averages[size-1], 1e-5);
+    if (nranks == 1) {
+        EXPECT_DOUBLE_EQ(cell_averages[0],           1.0);
+        EXPECT_DOUBLE_EQ(cell_averages[size/2-1],   -3.0346140495876783e-22);
+        EXPECT_DOUBLE_EQ(cell_averages[size/2],      4.1457311447452736e-22);
+        EXPECT_DOUBLE_EQ(cell_averages[size-1],      1.0e-5);
+    }
+    else if (nranks == 2) {
+        if (rank == 0) {
+            EXPECT_DOUBLE_EQ(cell_averages[0],       1.0);
+            EXPECT_DOUBLE_EQ(cell_averages[size-1], -3.0346140495876783e-22);
+        }
+        else {
+            EXPECT_DOUBLE_EQ(cell_averages[0],       4.1457311447452736e-22);
+            EXPECT_DOUBLE_EQ(cell_averages[size-1],  1.0e-5);
+        }
+    }
+    else {
+        FAIL() << "Test cannot be run with " << nranks << " ranks.";
+    }
     
     // Finalize Trixi simulation
     trixi_finalize_simulation( handle );
@@ -64,4 +97,7 @@ TEST(CInterfaceTest, SimulationRun) {
 
     // Finalize libtrixi
     trixi_finalize();
+
+    // Finalize MPI
+    MPI_Finalize();
 }
