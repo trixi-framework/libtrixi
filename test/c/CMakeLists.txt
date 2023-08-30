@@ -17,7 +17,7 @@ foreach ( TEST ${TESTS} )
     # set libraries to link
     target_link_libraries(
         ${TARGET_NAME}
-        PRIVATE MPI::MPI_C ${PROJECT_NAME} ${PROJECT_NAME}_tls GTest::gtest_main
+        PRIVATE MPI::MPI_CXX ${PROJECT_NAME} ${PROJECT_NAME}_tls GTest::gtest_main
     )
 
     # set include directories
@@ -45,4 +45,4 @@ set_property(TARGET simulation
 
 # manually add MPI test
 gtest_add_tests( TARGET simulation
-                 TEST_PREFIX "mpi_" )
+                 TEST_SUFFIX "_MPI" )
