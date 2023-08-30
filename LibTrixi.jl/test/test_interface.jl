@@ -67,8 +67,8 @@ end
     @test ndims_c == ndims_jl
 
     # compare number of elements
-    nelements_c = trixi_nelements(handle)
-    nelements_jl = trixi_nelements_jl(simstate_jl)
+    nelements_c = trixi_nelements_local(handle)
+    nelements_jl = trixi_nelements_local_jl(simstate_jl)
     @test nelements_c == nelements_jl
 
     # compare number of variables

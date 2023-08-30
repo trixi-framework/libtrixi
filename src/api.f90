@@ -245,7 +245,7 @@ module LibTrixi
     !! @param[in]  handle  simulation handle
     !!
     !! @see @ref trixi_nelements_api_c "trixi_nelements (C API)"
-    integer(c_int) function trixi_nelements(handle) bind(c)
+    integer(c_int) function trixi_nelements_local(handle) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int
       integer(c_int), value, intent(in) :: handle
     end function

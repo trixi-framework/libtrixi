@@ -32,7 +32,7 @@ int main ( int argc, char *argv[] ) {
     }
 
     // get number of elements
-    int nelements = trixi_nelements( handle );
+    int nelements = trixi_nelements_local( handle );
     printf("\n*** Trixi controller ***   nelements %d\n", nelements);
 
     // get number of variables

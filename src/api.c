@@ -13,7 +13,8 @@ enum {
     TRIXI_FTPR_STEP,
     TRIXI_FTPR_FINALIZE_SIMULATION,
     TRIXI_FTPR_NDIMS,
-    TRIXI_FTPR_NELEMENTS,
+    TRIXI_FPTR_NELEMENTS_LOCAL,
+    TRIXI_FPTR_NELEMENTS_GLOBAL,
     TRIXI_FTPR_NVARIABLES,
     TRIXI_FTPR_LOAD_CELL_AVERAGES,
     TRIXI_FTPR_VERSION_LIBRARY,
@@ -39,7 +40,8 @@ static const char* trixi_function_pointer_names[] = {
     [TRIXI_FTPR_STEP]                   = "trixi_step_cfptr",
     [TRIXI_FTPR_FINALIZE_SIMULATION]    = "trixi_finalize_simulation_cfptr",
     [TRIXI_FTPR_NDIMS]                  = "trixi_ndims_cfptr",
-    [TRIXI_FTPR_NELEMENTS]              = "trixi_nelements_cfptr",
+    [TRIXI_FPTR_NELEMENTS_LOCAL]        = "trixi_nelements_local_cfptr",
+    [TRIXI_FPTR_NELEMENTS_GLOBAL]       = "trixi_nelements_global_cfptr",
     [TRIXI_FTPR_NVARIABLES]             = "trixi_nvariables_cfptr",
     [TRIXI_FTPR_LOAD_CELL_AVERAGES]     = "trixi_load_cell_averages_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY]        = "trixi_version_library_cfptr",
@@ -409,19 +411,44 @@ int trixi_ndims(int handle) {
 
 
 /**
- * @anchor trixi_nelements_api_c
+ * @anchor trixi_nelements_local_api_c
  *
- * @brief Return number of elements (cells)
+ * @brief Return number of local elements (cells).
+ *
+ * These usually differ from the global count when doing parallel computations.
  *
  * @param[in]  handle  simulation handle
+ *
+ * @see trixi_nelements_global_api_c
  */
-int trixi_nelements(int handle) {
+int trixi_nelements_local(int handle) {
 
     // Get function pointer
-    int (*nelements)(int) = trixi_function_pointers[TRIXI_FTPR_NELEMENTS];
+    int (*nelements_local)(int) = trixi_function_pointers[TRIXI_FPTR_NELEMENTS_LOCAL];
 
     // Call function
-    return nelements(handle);
+    return nelements_local(handle);
+}
+
+
+/**
+ * @anchor trixi_nelements_global_api_c
+ *
+ * @brief Return number of global elements (cells).
+ *
+ * These usually differ from the local count when doing parallel computations.
+ *
+ * @param[in]  handle  simulation handle
+ *
+ * @see trixi_nelements_local_api_c
+ */
+int trixi_nelements_global(int handle) {
+
+    // Get function pointer
+    int (*nelements_global)(int) = trixi_function_pointers[TRIXI_FPTR_NELEMENTS_GLOBAL];
+
+    // Call function
+    return nelements_global(handle);
 }
 
 

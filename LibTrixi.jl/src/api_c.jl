@@ -283,18 +283,33 @@ trixi_ndims_cfptr() = @cfunction(trixi_ndims, Cint, (Cint,))
 
 
 """
-    trixi_nelements(simstate_handle::Cint)::Cint
+    trixi_nelements_local(simstate_handle::Cint)::Cint
 
-Return number of elements (cells).
+Return number of local elements (cells).
 """
-function trixi_nelements end
+function trixi_nelements_local end
 
-Base.@ccallable function trixi_nelements(simstate_handle::Cint)::Cint
+Base.@ccallable function trixi_nelements_local(simstate_handle::Cint)::Cint
     simstate = load_simstate(simstate_handle)
-    return trixi_nelements_jl(simstate)
+    return trixi_nelements_local_jl(simstate)
 end
 
-trixi_nelements_cfptr() = @cfunction(trixi_nelements, Cint, (Cint,))
+trixi_nelements_local_cfptr() = @cfunction(trixi_nelements_local, Cint, (Cint,))
+
+
+"""
+    trixi_nelements_global(simstate_handle::Cint)::Cint
+
+Return number of global elements (cells).
+"""
+function trixi_nelements_global end
+
+Base.@ccallable function trixi_nelements_global(simstate_handle::Cint)::Cint
+    simstate = load_simstate(simstate_handle)
+    return trixi_nelements_global_jl(simstate)
+end
+
+trixi_nelements_global_cfptr() = @cfunction(trixi_nelements_global, Cint, (Cint,))
 
 
 """
