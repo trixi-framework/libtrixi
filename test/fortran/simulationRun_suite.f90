@@ -22,7 +22,7 @@ module simulationRun_suite
 
   subroutine test_simulationRun(error)
     type(error_type), allocatable, intent(out) :: error
-    integer :: handle, ndims, nelements, nvariables, size
+    integer :: handle, ndims, nelements, nelements_global, nvariables, size
     logical :: finished_status
     ! dp as defined in test-drive
     integer, parameter :: dp = selected_real_kind(15)
@@ -52,8 +52,11 @@ module simulationRun_suite
     call check(error, ndims, 2)
 
     ! Check number of elements
-    nelements = trixi_nelements_local(handle)
+    nelements = trixi_nelements(handle)
     call check(error, nelements, 256)
+
+    nelements_global = trixi_nelements_global(handle)
+    call check(error, nelements_global, 256)
 
     ! Check number of variables
     nvariables = trixi_nvariables(handle)
