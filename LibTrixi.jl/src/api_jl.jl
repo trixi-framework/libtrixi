@@ -76,6 +76,12 @@ function trixi_nelements_jl(simstate)
 end
 
 
+function trixi_nelements_global_jl(simstate)
+    _, _, solver, cache = mesh_equations_solver_cache(simstate.semi)
+    return nelementsglobal(solver, cache)
+end
+
+
 function trixi_nvariables_jl(simstate)
     _, equations, _, _ = mesh_equations_solver_cache(simstate.semi)
     return nvariables(equations)
