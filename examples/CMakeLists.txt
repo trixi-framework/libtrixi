@@ -2,7 +2,7 @@ set ( EXAMPLES
       simple_trixi_controller.c
       simple_trixi_controller.f90
       simple_t8code.c 
-      trixi_controller_data.c )
+      trixi_controller_data.f90 )
 
 
 foreach ( EXAMPLE ${EXAMPLES} )
@@ -27,13 +27,17 @@ foreach ( EXAMPLE ${EXAMPLES} )
     # set libraries to link
     target_link_libraries(
         ${TARGET_NAME}
-        PRIVATE ${MPI_${EXAMPLE_LANG}_LIBRARIES} ${PROJECT_NAME} ${PROJECT_NAME}_tls ${T8CODE_LIBRARIES}
+        PRIVATE MPI::MPI_${EXAMPLE_LANG}
+                ${PROJECT_NAME} ${PROJECT_NAME}_tls
+                ${T8CODE_LIBRARIES}
     )
 
     # set include directories
     target_include_directories(
         ${TARGET_NAME}
-        PRIVATE ${CMAKE_SOURCE_DIR}/src ${MPI_${EXAMPLE_LANG}_INCLUDE_DIRS} ${T8CODE_INCLUDE_DIR}
+        PRIVATE ${CMAKE_SOURCE_DIR}/src
+                ${MPI_${EXAMPLE_LANG}_INCLUDE_DIRS}
+                ${T8CODE_INCLUDE_DIR}
     )
 
     # set runtime path for installed binaries
@@ -42,7 +46,13 @@ foreach ( EXAMPLE ${EXAMPLES} )
         PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib"
     )
 
+    # enable warnings
+    target_compile_options( ${TARGET_NAME} PRIVATE -Wall -Wextra -Werror )
+
     # add to installation
     install( TARGETS ${TARGET_NAME} )
 
 endforeach()
+
+# install the julia controller example as well
+install( FILES simple_trixi_controller.jl DESTINATION share/libtrixi/examples/ )

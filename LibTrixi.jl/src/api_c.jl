@@ -1,3 +1,128 @@
+############################################################################################
+# Version information                                                                      #
+############################################################################################
+
+"""
+    trixi_version_library_major()::Cint
+
+Return major version number of libtrixi.
+
+This function is thread-safe. It must be run after `trixi_initialize` has been called.
+"""
+function trixi_version_library_major end
+
+Base.@ccallable function trixi_version_library_major()::Cint
+    return VersionNumber(_version_libtrixi[]).major
+end
+
+trixi_version_library_major_cfptr() = @cfunction(trixi_version_library_major, Cint, ())
+
+
+"""
+    trixi_version_library_minor()::Cint
+
+Return minor version number of libtrixi.
+
+This function is thread-safe. It must be run after `trixi_initialize` has been called.
+"""
+function trixi_version_library_minor end
+
+Base.@ccallable function trixi_version_library_minor()::Cint
+    return VersionNumber(_version_libtrixi[]).minor
+end
+
+trixi_version_library_minor_cfptr() = @cfunction(trixi_version_library_minor, Cint, ())
+
+
+"""
+    trixi_version_library_patch()::Cint
+
+Return patch version number of libtrixi.
+
+This function is thread-safe. It must be run after `trixi_initialize` has been called.
+"""
+function trixi_version_library_patch end
+
+Base.@ccallable function trixi_version_library_patch()::Cint
+    return VersionNumber(_version_libtrixi[]).patch
+end
+
+trixi_version_library_patch_cfptr() = @cfunction(trixi_version_library_patch, Cint, ())
+
+
+"""
+    trixi_version_library()::Cstring
+
+Return full version string of libtrixi.
+
+The return value is a read-only pointer to a NULL-terminated string with the version
+information. This may include not just MAJOR.MINOR.PATCH but possibly also additional
+build or development version information.
+
+The returned pointer is to static memory and must not be used to change the contents of
+the version string. Multiple calls to the function will return the same address.
+
+This function is thread-safe. It must be run after `trixi_initialize` has been called.
+"""
+function trixi_version_library end
+
+Base.@ccallable function trixi_version_library()::Cstring
+    return pointer(_version_libtrixi[])
+end
+
+trixi_version_library_cfptr() = @cfunction(trixi_version_library, Cstring, ())
+
+
+"""
+    trixi_version_julia()::Cstring
+
+Return name and version of loaded Julia packages LibTrixi directly depends on.
+
+The return value is a read-only pointer to a NULL-terminated string with the name and
+version information of the loaded Julia packages, separated by newlines.
+
+The returned pointer is to static memory and must not be used to change the contents of
+the version string. Multiple calls to the function will return the same address.
+
+This function is thread-safe. It must be run after `trixi_initialize` has been called.
+"""
+function trixi_version_julia end
+
+Base.@ccallable function trixi_version_julia()::Cstring
+    return pointer(_version_info[])
+end
+
+trixi_version_julia_cfptr() = @cfunction(trixi_version_julia, Cstring, ())
+
+
+"""
+    trixi_version_julia_extended()::Cstring
+
+Return name and version of all loaded Julia packages.
+
+The return value is a read-only pointer to a NULL-terminated string with the name and
+version information of all loaded Julia packages, including implicit dependencies,
+separated by newlines.
+
+The returned pointer is to static memory and must not be used to change the contents of
+the version string. Multiple calls to the function will return the same address.
+
+This function is thread-safe. It must be run after `trixi_initialize` has been called.
+"""
+function trixi_version_julia_extended end
+
+Base.@ccallable function trixi_version_julia_extended()::Cstring
+    return pointer(_version_info_extended[])
+end
+
+trixi_version_julia_extended_cfptr() = @cfunction(trixi_version_julia_extended, Cstring, ())
+
+
+
+############################################################################################
+# Simulation control                                                                       #
+############################################################################################
+
 """
     trixi_initialize_simulation(libelixir::Cstring)::Cint
     trixi_initialize_simulation(libelixir::AbstractString)::Cint
@@ -9,9 +134,9 @@ The libelixir has a similar purpose as a regular "elixir" in Trixi.jl, as it com
 defines a simulation setup in Julia code. A key difference (and thus the name libelixir) is
 that instead of running a simulation directly, it should define an argument-less function
 named `init_simstate()` that returns a [`SimulationState`](@ref) with the complete
-simulation setup. `trixi_initialize_simulation` will store the `SimulationState` object internally and
-allow one to use it in subsequent calls to libtrixi via the handle returned from this
-function.
+simulation setup. `trixi_initialize_simulation` will store the `SimulationState` object
+internally and allow one to use it in subsequent calls to libtrixi via the handle returned
+from this function.
 
 For convenience, when using LibTrixi.jl directly from Julia, one can also pass a regular
 `String` in the `libelixir` argument.
@@ -23,8 +148,8 @@ For convenience, when using LibTrixi.jl directly from Julia, one can also pass a
 
 !!! warning "Thread safety"
     **This function is not thread safe.** Since the libelixir file will be evaluated in the
-    `Main` module, calling `trixi_initialize_simulation` simultaneously from different threads can lead
-    to undefined behavior.
+    `Main` module, calling `trixi_initialize_simulation` simultaneously from different
+    threads can lead to undefined behavior.
 
 """
 function trixi_initialize_simulation end
@@ -41,7 +166,9 @@ Base.@ccallable function trixi_initialize_simulation(libelixir::Cstring)::Cint
     return simstate_handle
 end
 
-trixi_initialize_simulation_cfptr() = @cfunction(trixi_initialize_simulation, Cint, (Cstring,))
+trixi_initialize_simulation_cfptr() =
+    @cfunction(trixi_initialize_simulation, Cint, (Cstring,))
+
 
 # Convenience function when using this directly from Julia
 function trixi_initialize_simulation(libelixir::String)
@@ -51,8 +178,8 @@ function trixi_initialize_simulation(libelixir::String)
     # Make it a proper, NULL-terminated C-style char array
     push!(bytes, '\0')
 
-    # Call `trixi_initialize_simulation` above with a raw pointer to the bytes array, which needs to be
-    # protected from garbage collection
+    # Call `trixi_initialize_simulation` above with a raw pointer to the bytes array,
+    # which needs to be protected from garbage collection
     GC.@preserve bytes begin
         simstate_handle = trixi_initialize_simulation(Cstring(pointer(bytes)))
     end
@@ -60,8 +187,43 @@ function trixi_initialize_simulation(libelixir::String)
     return simstate_handle
 end
 
+
 """
-    trixi_finalize(simstate_handle::Cint)::Cvoid
+    trixi_is_finished(simstate_handle::Cint)::Cint
+
+Return `0` if the simulation time has not yet reached the final time, and `1` otherwise.
+"""
+function trixi_is_finished end
+
+Base.@ccallable function trixi_is_finished(simstate_handle::Cint)::Cint
+    simstate = load_simstate(simstate_handle)
+    is_finished = trixi_is_finished_jl(simstate)
+
+    return is_finished ? 1 : 0
+end
+
+trixi_is_finished_cfptr() = @cfunction(trixi_is_finished, Cint, (Cint,))
+
+
+"""
+    trixi_step(simstate_handle::Cint)::Cvoid
+
+Advance the simulation in time by one step.
+"""
+function trixi_step end
+
+Base.@ccallable function trixi_step(simstate_handle::Cint)::Cvoid
+    simstate = load_simstate(simstate_handle)
+    trixi_step_jl(simstate)
+
+    return nothing
+end
+
+trixi_step_cfptr() = @cfunction(trixi_step, Cvoid, (Cint,))
+
+
+"""
+    trixi_finalize_simulation(simstate_handle::Cint)::Cvoid
 
 Finalize a simulation and attempt to free the underlying memory.
 """
@@ -82,6 +244,12 @@ end
 
 trixi_finalize_simulation_cfptr() = @cfunction(trixi_finalize_simulation, Cvoid, (Cint,))
 
+
+
+############################################################################################
+# Simulation data                                                                          #
+############################################################################################
+
 """
     trixi_calculate_dt(simstate_handle::Cint)::Cdouble
 
@@ -98,58 +266,11 @@ end
 
 trixi_calculate_dt_cfptr() = @cfunction(trixi_calculate_dt, Cdouble, (Cint,))
 
-"""
-    trixi_is_finished(simstate_handle::Cint)::Cint
-
-Return `0` if the simulation time has not yet reached the final time, and `1` otherwise.
-"""
-function trixi_is_finished end
-
-Base.@ccallable function trixi_is_finished(simstate_handle::Cint)::Cint
-    simstate = load_simstate(simstate_handle)
-    is_finished = trixi_is_finished_jl(simstate)
-
-    return is_finished ? 1 : 0
-end
-
-trixi_is_finished_cfptr() = @cfunction(trixi_is_finished, Cint, (Cint,))
-
-"""
-    trixi_step(simstate_handle::Cint)::Cvoid
-
-Advance the simulation in time by one step.
-"""
-function trixi_step end
-
-Base.@ccallable function trixi_step(simstate_handle::Cint)::Cvoid
-    simstate = load_simstate(simstate_handle)
-    trixi_step_jl(simstate)
-
-    return nothing
-end
-
-trixi_step_cfptr() = @cfunction(trixi_step, Cvoid, (Cint,))
-
-
-"""
-    trixi_get_t8code_mesh(simstate_handle::Cint)::::Ptr{Trixi.t8_forest}
-
-Return t8code forest of the current T8codeMesh.
-"""
-function trixi_get_t8code_mesh end
-
-Base.@ccallable function trixi_get_t8code_mesh(simstate_handle::Cint)::Ptr{Trixi.t8_forest}
-    simstate = load_simstate(simstate_handle)
-    return trixi_get_t8code_mesh_jl(simstate)
-end
-
-trixi_get_t8code_mesh_cfptr() = @cfunction(trixi_get_t8code_mesh, Ptr{Trixi.t8_forest}, (Cint,))
-
 
 """
     trixi_ndims(simstate_handle::Cint)::Cint
 
-Return number of spatial dimensions
+Return number of spatial dimensions.
 """
 function trixi_ndims end
 
@@ -164,7 +285,7 @@ trixi_ndims_cfptr() = @cfunction(trixi_ndims, Cint, (Cint,))
 """
     trixi_nelements(simstate_handle::Cint)::Cint
 
-Return number of elements (cells)
+Return number of elements (cells).
 """
 function trixi_nelements end
 
@@ -179,7 +300,7 @@ trixi_nelements_cfptr() = @cfunction(trixi_nelements, Cint, (Cint,))
 """
     trixi_nvariables(simstate_handle::Cint)::Cint
 
-Return number of elements (cells)
+Return number of variables.
 """
 function trixi_nvariables end
 
@@ -192,16 +313,45 @@ trixi_nvariables_cfptr() = @cfunction(trixi_nvariables, Cint, (Cint,))
 
 
 """
-    trixi_get_cell_averages(simstate_handle::Cint)::Cint
+    trixi_load_cell_averages(data::Ptr{Cdouble}, simstate_handle::Cint)::Cvoid
 
-Return number of elements (cells)
+Return cell averaged solution state.
+
+Cell averaged values for each cell and each primitive variable are stored in a contiguous
+array, where cell values for the first variable appear first and values for the other
+variables subsequently (structure-of-arrays layout).
+
+The given array has to be of correct size and memory has to be allocated beforehand.
 """
-function trixi_get_cell_averages end
+function trixi_load_cell_averages end
 
-Base.@ccallable function trixi_get_cell_averages(data::Ptr{Cdouble}, simstate_handle::Cint)::Cvoid
+Base.@ccallable function trixi_load_cell_averages(data::Ptr{Cdouble},
+                                                  simstate_handle::Cint)::Cvoid
     simstate = load_simstate(simstate_handle)
-    trixi_get_cell_averages_jl(data, simstate)
+
+    # convert C to Julia array
+    size = trixi_nvariables_jl(simstate) * trixi_nelements_jl(simstate)
+    data_jl = unsafe_wrap(Array, data, size)
+
+    trixi_load_cell_averages_jl(data_jl, simstate)
     return nothing
 end
 
-trixi_get_cell_averages_cfptr() = @cfunction(trixi_get_cell_averages, Cvoid, (Ptr{Cdouble}, Cint,))
+trixi_load_cell_averages_cfptr() =
+    @cfunction(trixi_load_cell_averages, Cvoid, (Ptr{Cdouble}, Cint,))
+
+
+"""
+    trixi_get_t8code_mesh(simstate_handle::Cint)::::Ptr{Trixi.t8_forest}
+
+Return t8code forest of the current T8codeMesh.
+"""
+function trixi_get_t8code_mesh end
+
+Base.@ccallable function trixi_get_t8code_mesh(simstate_handle::Cint)::Ptr{Trixi.t8_forest}
+    simstate = load_simstate(simstate_handle)
+    return trixi_get_t8code_mesh_jl(simstate)
+end
+
+trixi_get_t8code_mesh_cfptr() =
+    @cfunction(trixi_get_t8code_mesh, Ptr{Trixi.t8_forest}, (Cint,))

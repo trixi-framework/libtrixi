@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <mpi.h>
 
 #include <trixi.h>
@@ -30,6 +31,10 @@ void init_mpi_external ( int argc, char *argv[] ) {
     int nranks;
     ret = MPI_Comm_size(comm, &nranks);
     printf("[EXT] MPI size: return %d, size %d\n", ret, nranks);
+
+    ret = MPI_Comm_set_errhandler(comm, MPI_ERRORS_RETURN);
+    printf("[EXT] MPI errhandler: return %d\n", ret);
+
 }
 
 
@@ -51,7 +56,17 @@ int main ( int argc, char *argv[] ) {
 
     // Initialize Trixi
     printf("\n*** Trixi controller ***   Initialize Trixi\n");
-    trixi_initialize( argv[1] );
+    trixi_initialize( argv[1], NULL );
+
+    // Print version information
+    printf("libtrixi version: %d.%d.%d %s\n",
+        trixi_version_library_major(), trixi_version_library_minor(),
+        trixi_version_library_patch(), trixi_version_library());
+    printf("\nAll loaded Julia packages:\n%s\n", trixi_version_julia_extended());
+
+    // Execute Julia code
+    printf("\nExecute Julia code\n");
+    trixi_eval_julia("println(\"3! = \", factorial(3))");
 
     // Set up the Trixi simulation
     // We get a handle to use subsequently

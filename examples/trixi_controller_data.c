@@ -17,7 +17,7 @@ int main ( int argc, char *argv[] ) {
 
     // Initialize Trixi
     printf("\n*** Trixi controller ***   Initialize Trixi\n");
-    trixi_initialize( argv[1] );
+    trixi_initialize( argv[1], NULL );
 
     // Set up the Trixi simulation
     // We get a handle to use subsequently
@@ -43,13 +43,12 @@ int main ( int argc, char *argv[] ) {
     double* data = malloc( sizeof(double) * nelements * nvariables );
 
     // get averaged cell values for each variable
-    trixi_get_cell_averages(data, handle);
+    trixi_load_cell_averages(data, handle);
 
     // compute temperature
     const double gas_constant = 0.287;
 
     for (int i = 0; i < nelements; ++i) {
-
         printf("T[cell %3d] = %f\n", i, data[i+3*nelements] / (gas_constant * data[i]) );
     }
 

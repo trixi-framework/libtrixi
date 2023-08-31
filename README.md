@@ -1,6 +1,7 @@
 # libtrixi
 
 [![Docs-dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://trixi-framework.github.io/libtrixi/dev)
+[![Build Status](https://github.com/trixi-framework/libtrixi/workflows/CI/badge.svg)](https://github.com/trixi-framework/libtrixi/actions?query=workflow%3ACI)
 [![Coveralls](https://coveralls.io/repos/github/trixi-framework/libtrixi/badge.svg)](https://coveralls.io/github/trixi-framework/libtrixi)
 [![Codecov](https://codecov.io/gh/trixi-framework/libtrixi/branch/main/graph/badge.svg)](https://codecov.io/gh/trixi-framework/libtrixi)
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg)](https://opensource.org/licenses/MIT)
@@ -8,7 +9,8 @@
 **Libtrixi** is an interface library for using
 [Trixi.jl](https://github.com/trixi-framework/Trixi.jl) from C/C++/Fortran.
 
-**Note: This project is in a very early stage and subject to changes without warning at any time.**
+**Note: This project is in an early stage and the API is still under development. 
+Nevertheless, basic functionality is already implemented and actively tested.**
 
 
 ## Getting started
@@ -17,8 +19,10 @@
 
 Currently, libtrixi is only developed and tested for Linux.
 Furthermore, a local installation of `MPI`,
-[`p4est`](https://github.com/cburstedde/p4est) (see steps 5-7 in its README), and
+[`t8code`](https://github.com/DLR-AMR/t8code), and
 [`Julia`](https://julialang.org/downloads/platform/) is required.
+Furthermore, a C11-compatible C compiler and a Fortran 2018-compatible Fortran compiler are
+necessary to build the C library and its Fortran bindings.
 
 ### Get the sources
 
@@ -81,15 +85,20 @@ available at `<install_directory>/bin`) to do the rest for you. A minimal exampl
 mkdir libtrixi-julia
 cd libtrixi-julia
 <install_directory>/bin/libtrixi-init-julia \
-    --p4est-library <p4est_install_directory>/lib/libp4est.so
+    --t8code-library <t8code_install_directory>/lib/libt8.so
     <install_directory>
 ```
-
 Use `libtrixi-init-julia -h` to get help.
-When running a program that uses libtrixi, make sure to set up the `JULIA_DEPOT_PATH`
-environment variable to point to the `<julia-depot>` folder reported. In your code, pass
-the path to the `libtrixi-julia` directory to `trixi_initialize`, see the code of the
-examples.
+
+In your code, pass the path to the `libtrixi-julia` directory to `trixi_initialize`,
+see the code of the examples. If you did not modify the default value for the Julia depot
+when calling `libtrixi-init-julia`, libtrixi will find it automatically.
+Otherwise, when running a program that uses libtrixi, you need to make sure to set the
+`JULIA_DEPOT_PATH` environment variable to point to the `<julia-depot>` folder reported.
+
+If you intend to use additional Julia packages, besides `Trixi` and `OrdinaryDiffEq`, you
+will have to add them to your Julia project (i.e. use
+`julia --project=<libtrixi-julia_directory>` and `import Pkg; Pkg.add(<package>)`).
 
 ### Testing
 
@@ -97,7 +106,6 @@ Go to some directory from where you want to run a Trixi simulation.
 
 ```shell
 LIBTRIXI_DEBUG=all \
-JULIA_DEPOT_PATH=<julia-depot> \
     <install_directory>/bin/simple_trixi_controller_c \
     <libtrixi-julia_directory> \
     <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
@@ -201,11 +209,14 @@ to use the C and Fortran APIs of libtrixi, and can be found in the
 [`examples/`](examples/) folder.
 
 If you just want to test the Julia part of libtrixi, i.e., LibTrixi.jl, you can also run
-everything from Julia. From the repository root, execute
+everything from Julia.
+
 ```shell
-JULIA_DEPOT_PATH=$PWD/libtrixi-julia/julia-depot \
+JULIA_DEPOT_PATH=<julia-depot_directory> \
+LIBTRIXI_DEBUG=all \
     julia --project=<libtrixi-julia_directory>
-    <install_directory>/share/libtrixi/LibTrixi.jl/examples/simple_trixi_controller.jl
+    <install_directory>/share/libtrixi/examples/simple_trixi_controller.jl
+    <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
 ```
 
 Note: Most auxiliary output is hidden unless the environment variable `LIBTRIXI_DEBUG` is
