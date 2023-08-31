@@ -71,6 +71,10 @@ end
     nelements_jl = trixi_nelements_jl(simstate_jl)
     @test nelements_c == nelements_jl
 
+    nelements_global_c = trixi_nelements_global(handle)
+    nelements_global_jl = trixi_nelements_global_jl(simstate_jl)
+    @test nelements_global_c == nelements_global_jl
+
     # compare number of variables
     nvariables_c = trixi_nvariables(handle)
     nvariables_jl = trixi_nvariables_jl(simstate_jl)
