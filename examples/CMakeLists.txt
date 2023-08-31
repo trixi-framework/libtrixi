@@ -2,6 +2,7 @@ set ( EXAMPLES
       simple_trixi_controller.c
       simple_trixi_controller.f90
       simple_t8code.c 
+      trixi_controller_data.c
       trixi_controller_data.f90 )
 
 
@@ -35,9 +36,7 @@ foreach ( EXAMPLE ${EXAMPLES} )
     # set include directories
     target_include_directories(
         ${TARGET_NAME}
-        PRIVATE ${CMAKE_SOURCE_DIR}/src
-                ${MPI_${EXAMPLE_LANG}_INCLUDE_DIRS}
-                ${T8CODE_INCLUDE_DIR}
+        PRIVATE ${CMAKE_SOURCE_DIR}/src ${T8CODE_INCLUDE_DIR}
     )
 
     # set runtime path for installed binaries
