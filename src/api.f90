@@ -248,12 +248,25 @@ module LibTrixi
     !>
     !! @fn LibTrixi::trixi_nelements::trixi_nelements(handle)
     !!
-    !! @brief Return number of elements (cells)
+    !! @brief Return number of local elements (cells)
     !!
     !! @param[in]  handle  simulation handle
     !!
     !! @see @ref trixi_nelements_api_c "trixi_nelements (C API)"
     integer(c_int) function trixi_nelements(handle) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int
+      integer(c_int), value, intent(in) :: handle
+    end function
+
+    !>
+    !! @fn LibTrixi::trixi_nelements_global::trixi_nelements_global(handle)
+    !!
+    !! @brief Return number of global elements (cells)
+    !!
+    !! @param[in]  handle  simulation handle
+    !!
+    !! @see @ref trixi_nelements_global_api_c "trixi_nelements_global (C API)"
+    integer(c_int) function trixi_nelements_global(handle) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int
       integer(c_int), value, intent(in) :: handle
     end function
