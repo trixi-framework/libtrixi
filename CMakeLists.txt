@@ -86,7 +86,7 @@ set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # Include directories
 target_include_directories( ${PROJECT_NAME}
-                            PRIVATE src ${JULIA_INCLUDE_DIRS} ${T8CODE_INCLUDE_DIR}))
+                            PRIVATE src ${JULIA_INCLUDE_DIRS} ${T8CODE_INCLUDE_DIR} )
 
 # Libraries to link
 target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} MPI::MPI_C )
