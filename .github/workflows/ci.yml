@@ -196,9 +196,17 @@ jobs:
         env:
           LIBTRIXI_DEBUG: all
 
-      - name: Run C/Fortran tests
+      - name: Run C tests
         run: |
-          cd build
+          cd build/test/c
+          ctest -V
+        env:
+          LIBTRIXI_DEBUG: all
+          GTEST_COLOR: 'yes'
+
+      - name: Run Fortran tests
+        run: |
+          cd build/test/fortran
           ctest -V
         env:
           LIBTRIXI_DEBUG: all
