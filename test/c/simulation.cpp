@@ -30,7 +30,7 @@ TEST(CInterfaceTest, SimulationRun) {
     MPI_Comm_size(comm, &nranks);
 
     // Initialize libtrixi
-    trixi_initialize( julia_project_path, NULL );
+    trixi_initialize(julia_project_path, NULL);
 
     // Set up the Trixi simulation, get a handle
     int handle = trixi_initialize_simulation(libelixir_path);
@@ -117,7 +117,7 @@ TEST(CInterfaceTest, SimulationRun) {
     }
     
     // Finalize Trixi simulation
-    trixi_finalize_simulation( handle );
+    trixi_finalize_simulation(handle);
 
     // Handle is now invalid and subsequent use should fail
     EXPECT_DEATH(trixi_is_finished(handle),
