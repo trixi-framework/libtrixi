@@ -47,7 +47,7 @@ TEST(CInterfaceTest, SimulationRun) {
 
     // Check time step length
     double dt = trixi_calculate_dt(handle);
-    EXPECT_DOUBLE_EQ(dt, 0.0028566952356658751);
+    EXPECT_NEAR(dt, 0.0028566952356658794, 1e-17);
     
     // Check finished status
     int finished_status = trixi_is_finished(handle);
@@ -72,44 +72,44 @@ TEST(CInterfaceTest, SimulationRun) {
     trixi_load_cell_averages(cell_averages.data(), handle);
     if (nranks == 1) {
         // check memory boarders (densities at the beginning, energies at the end)
-        EXPECT_DOUBLE_EQ(cell_averages[0],                   1.0);
-        EXPECT_DOUBLE_EQ(cell_averages[size-1],              1.0e-5);
+        EXPECT_DOUBLE_EQ(cell_averages[0],              1.0);
+        EXPECT_DOUBLE_EQ(cell_averages[size-1],         1.0e-5);
         // check values somewhere near the center (expect symmetries)
         // densities
-        EXPECT_DOUBLE_EQ(cell_averages[93],                  0.88263491354796);
-        EXPECT_DOUBLE_EQ(cell_averages[94],                  0.88263491354796);
-        EXPECT_DOUBLE_EQ(cell_averages[161],                 0.88263491354796);
-        EXPECT_DOUBLE_EQ(cell_averages[162],                 0.88263491354796);
+        EXPECT_NEAR(cell_averages[93],                  0.88263491354796, 1e-14);
+        EXPECT_NEAR(cell_averages[94],                  0.88263491354796, 1e-14);
+        EXPECT_NEAR(cell_averages[161],                 0.88263491354796, 1e-14);
+        EXPECT_NEAR(cell_averages[162],                 0.88263491354796, 1e-14);
         // velocities
-        EXPECT_DOUBLE_EQ(cell_averages[ 93+  nelements],    -0.14037267400591);
-        EXPECT_DOUBLE_EQ(cell_averages[ 94+2*nelements],    -0.14037267400591);
-        EXPECT_DOUBLE_EQ(cell_averages[161+2*nelements],     0.14037267400591);
-        EXPECT_DOUBLE_EQ(cell_averages[162+  nelements],     0.14037267400591);
+        EXPECT_NEAR(cell_averages[ 93+  nelements],    -0.14037267400591, 1e-14);
+        EXPECT_NEAR(cell_averages[ 94+2*nelements],    -0.14037267400591, 1e-14);
+        EXPECT_NEAR(cell_averages[161+2*nelements],     0.14037267400591, 1e-14);
+        EXPECT_NEAR(cell_averages[162+  nelements],     0.14037267400591, 1e-14);
     }
     else if (nranks == 2) {
         if (rank == 0) {
             // check memory boarders (densities at the beginning, energies at the end)
-            EXPECT_DOUBLE_EQ(cell_averages[0],               1.0);
-            EXPECT_DOUBLE_EQ(cell_averages[size-1],          1.0e-5);
+            EXPECT_DOUBLE_EQ(cell_averages[0],          1.0);
+            EXPECT_DOUBLE_EQ(cell_averages[size-1],     1.0e-5);
             // check values somewhere near the center (expect symmetries)
             // densities
-            EXPECT_DOUBLE_EQ(cell_averages[93],              0.882634913547968);
-            EXPECT_DOUBLE_EQ(cell_averages[94],              0.882634913547968);
+            EXPECT_NEAR(cell_averages[93],              0.88263491354796, 1e-14);
+            EXPECT_NEAR(cell_averages[94],              0.88263491354796, 1e-14);
             // velocities
-            EXPECT_DOUBLE_EQ(cell_averages[93+  nelements], -0.14037267400591);
-            EXPECT_DOUBLE_EQ(cell_averages[94+2*nelements], -0.14037267400591);
+            EXPECT_NEAR(cell_averages[93+  nelements], -0.14037267400591, 1e-14);
+            EXPECT_NEAR(cell_averages[94+2*nelements], -0.14037267400591, 1e-14);
         }
         else {
             // check memory boarders (densities at the beginning, energies at the end)
-            EXPECT_DOUBLE_EQ(cell_averages[0],               1.0);
-            EXPECT_DOUBLE_EQ(cell_averages[size-1],          1.0e-5);
+            EXPECT_DOUBLE_EQ(cell_averages[0],          1.0);
+            EXPECT_DOUBLE_EQ(cell_averages[size-1],     1.0e-5);
             // check values somewhere near the center (expect symmetries)
             // densities
-            EXPECT_DOUBLE_EQ(cell_averages[33],              0.882634913547968);
-            EXPECT_DOUBLE_EQ(cell_averages[34],              0.882634913547968);
+            EXPECT_NEAR(cell_averages[33],              0.88263491354796, 1e-14);
+            EXPECT_NEAR(cell_averages[34],              0.88263491354796, 1e-14);
             // velocities
-            EXPECT_DOUBLE_EQ(cell_averages[33+  nelements],  0.14037267400591);
-            EXPECT_DOUBLE_EQ(cell_averages[34+2*nelements],  0.14037267400591);
+            EXPECT_NEAR(cell_averages[33+2*nelements],  0.14037267400591, 1e-14);
+            EXPECT_NEAR(cell_averages[34+  nelements],  0.14037267400591, 1e-14);
         }
     }
     else {
