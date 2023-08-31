@@ -45,7 +45,7 @@ program simple_trixi_controller_f
   end do
 
   ! get number of elements
-  nelements = trixi_nelements_local(handle);
+  nelements = trixi_nelements(handle);
   write(*, '(a,i6)') "*** Trixi controller ***   nelements ", nelements
   write(*, '(a)') ""
 

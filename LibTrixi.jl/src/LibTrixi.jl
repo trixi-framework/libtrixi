@@ -25,9 +25,9 @@ export trixi_step,
 export trixi_ndims,
        trixi_ndims_cfptr,
        trixi_ndims_jl
-export trixi_nelements_local,
-       trixi_nelements_local_cfptr,
-       trixi_nelements_local_jl
+export trixi_nelements,
+       trixi_nelements_cfptr,
+       trixi_nelements_jl
 export trixi_nelements_global,
        trixi_nelements_global_cfptr,
        trixi_nelements_global_jl

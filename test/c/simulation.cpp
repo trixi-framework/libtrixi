@@ -58,7 +58,7 @@ TEST(CInterfaceTest, SimulationRun) {
     EXPECT_EQ(ndims, 2);
 
     // Check number of elements
-    int nelements = trixi_nelements_local(handle);
+    int nelements = trixi_nelements(handle);
     int nelements_global = trixi_nelements_global(handle);
     EXPECT_EQ(nelements * nranks, nelements_global);
 

@@ -283,18 +283,18 @@ trixi_ndims_cfptr() = @cfunction(trixi_ndims, Cint, (Cint,))
 
 
 """
-    trixi_nelements_local(simstate_handle::Cint)::Cint
+    trixi_nelements(simstate_handle::Cint)::Cint
 
 Return number of local elements (cells).
 """
-function trixi_nelements_local end
+function trixi_nelements end
 
-Base.@ccallable function trixi_nelements_local(simstate_handle::Cint)::Cint
+Base.@ccallable function trixi_nelements(simstate_handle::Cint)::Cint
     simstate = load_simstate(simstate_handle)
-    return trixi_nelements_local_jl(simstate)
+    return trixi_nelements_jl(simstate)
 end
 
-trixi_nelements_local_cfptr() = @cfunction(trixi_nelements_local, Cint, (Cint,))
+trixi_nelements_cfptr() = @cfunction(trixi_nelements, Cint, (Cint,))
 
 
 """
@@ -345,7 +345,7 @@ Base.@ccallable function trixi_load_cell_averages(data::Ptr{Cdouble},
     simstate = load_simstate(simstate_handle)
 
     # convert C to Julia array
-    size = trixi_nvariables_jl(simstate) * trixi_nelements_local_jl(simstate)
+    size = trixi_nvariables_jl(simstate) * trixi_nelements_jl(simstate)
     data_jl = unsafe_wrap(Array, data, size)
 
     trixi_load_cell_averages_jl(data_jl, simstate)

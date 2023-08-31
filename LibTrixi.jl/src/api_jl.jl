@@ -70,7 +70,7 @@ function trixi_ndims_jl(simstate)
 end
 
 
-function trixi_nelements_local_jl(simstate)
+function trixi_nelements_jl(simstate)
     _, _, solver, cache = mesh_equations_solver_cache(simstate.semi)
     return nelements(solver, cache)
 end
