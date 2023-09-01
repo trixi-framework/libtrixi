@@ -33,7 +33,7 @@ function init_simstate()
     # ODE solvers, callbacks etc.
 
     # Create ODE problem with time span from 0.0 to 1.0
-    ode = semidiscretize(semi, (0.0, 2.0));
+    ode = semidiscretize(semi, (0.0, 1.0));
 
     # At the beginning of the main loop, the SummaryCallback prints a summary of the simulation setup
     # and resets the timers
@@ -42,11 +42,6 @@ function init_simstate()
     # The AnalysisCallback allows to analyse the solution in regular intervals and prints the results
     analysis_interval = 100
     analysis_callback = AnalysisCallback(semi, interval=analysis_interval)
-
-    # Not implemented yet.
-    # # The SaveSolutionCallback allows to save the solution to a file in regular intervals
-    # save_solution = SaveSolutionCallback(interval=100,
-    #                                     solution_variables=cons2prim)
 
     alive_callback = AliveCallback(analysis_interval=analysis_interval)
 
@@ -57,7 +52,6 @@ function init_simstate()
     callbacks = CallbackSet(summary_callback,
                             analysis_callback,
                             alive_callback,
-                            # save_solution,
                             stepsize_callback)
 
 
