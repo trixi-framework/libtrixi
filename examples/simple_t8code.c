@@ -21,8 +21,8 @@ void t8_print_forest_information (t8_forest_t forest)
     local_num_elements = t8_forest_get_local_num_elements (forest);
     /* Get the global number of elements. */
     global_num_elements = t8_forest_get_global_num_elements (forest);
-    t8_global_productionf ("Local number of elements:\t%i\n", local_num_elements);
-    t8_global_productionf ("Global number of elements:\t%i\n", global_num_elements);
+    printf ("\n*** T8code ***  Local number of elements:\t%i\n", local_num_elements);
+    printf ("*** T8code ***  Global number of elements:\t%li\n", global_num_elements);
 }
 
 
@@ -40,50 +40,33 @@ int main ( int argc, char *argv[] ) {
 
     // Initialize Trixi
     printf("\n*** Trixi controller ***   Initialize Trixi\n");
-    trixi_initialize( argv[1] );
+    trixi_initialize(argv[1], NULL);
 
     // Set up the Trixi simulation
     // We get a handle to use subsequently
     printf("\n*** Trixi controller ***   Set up Trixi simulation\n");
-    int handle = trixi_initialize_simulation( argv[2] );
+    int handle = trixi_initialize_simulation(argv[2]);
 
     // Main loop
     printf("\n*** Trixi controller ***   Entering main loop\n");
-    while ( !trixi_is_finished( handle ) ) {
+    while ( !trixi_is_finished(handle) ) {
 
-        trixi_step( handle );
+        trixi_step(handle);
     }
+
+    // get number of elements
+    int nelements = trixi_nelements(handle);
+    printf("\n*** Trixi controller ***   nelements %d\n", nelements);
 
 
     // get t8code forest
-    t8_global_productionf("t8code here.\n");
-    t8_forest_t forest = trixi_get_t8code_mesh(handle);
+    t8_forest_t forest = trixi_get_t8code_forest(handle);
     t8_print_forest_information (forest);
-
-
-    // get number of elements
-    int nelements = trixi_nelements( handle );
-    printf("\n*** Trixi controller ***   nelements %d\n", nelements);
-
-    // get number of variables
-    int nvariables = trixi_nvariables( handle );
-    printf("\n*** Trixi controller ***   nvariables %d\n", nvariables);
-
-    // allocate memory
-    double* data = malloc( sizeof(double) * nelements * nvariables );
-
-    // get averaged cell values for each variable
-    trixi_get_cell_averages(data, handle);
-
-    for (int i = 0; i < nelements; ++i) {
-
-        printf("u[cell %3d] = %f\n", i, data[i] );
-    }
 
 
     // Finalize Trixi simulation
     printf("\n*** Trixi controller ***   Finalize Trixi simulation\n");
-    trixi_finalize_simulation( handle );
+    trixi_finalize_simulation(handle);
 
     // Finalize Trixi
     printf("\n*** Trixi controller ***   Finalize Trixi\n");
