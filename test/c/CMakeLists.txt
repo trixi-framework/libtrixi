@@ -23,7 +23,7 @@ foreach ( TEST ${TESTS} )
     # set include directories
     target_include_directories(
         ${TARGET_NAME}
-        PRIVATE ${CMAKE_SOURCE_DIR}/src
+        PRIVATE ${CMAKE_SOURCE_DIR}/src ${T8CODE_INCLUDE_DIR}
     )
 
     # enable warnings
