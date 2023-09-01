@@ -357,16 +357,17 @@ trixi_load_cell_averages_cfptr() =
 
 
 """
-    trixi_get_t8code_mesh(simstate_handle::Cint)::::Ptr{Trixi.t8_forest}
+    trixi_get_t8code_forest(simstate_handle::Cint)::::Ptr{Trixi.t8_forest}
 
 Return t8code forest of the current T8codeMesh.
 """
-function trixi_get_t8code_mesh end
+function trixi_get_t8code_forest end
 
-Base.@ccallable function trixi_get_t8code_mesh(simstate_handle::Cint)::Ptr{Trixi.t8_forest}
+Base.@ccallable function
+    trixi_get_t8code_forest(simstate_handle::Cint)::Ptr{Trixi.t8_forest}
     simstate = load_simstate(simstate_handle)
-    return trixi_get_t8code_mesh_jl(simstate)
+    return trixi_get_t8code_forest_jl(simstate)
 end
 
-trixi_get_t8code_mesh_cfptr() =
-    @cfunction(trixi_get_t8code_mesh, Ptr{Trixi.t8_forest}, (Cint,))
+trixi_get_t8code_forest_cfptr() =
+    @cfunction(trixi_get_t8code_forest, Ptr{Trixi.t8_forest}, (Cint,))
