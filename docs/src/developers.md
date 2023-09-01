@@ -13,7 +13,7 @@ publishing new Julia package releases.  Specifically, that means
 
 To support the ability to have TagBot create top-level releases even though the Julia
 package LibTrixi.jl lives in a subdirectory, we have symlinked `LibTrixi.jl/Project.toml` to
-the respository root.
+the repository root.
 
 ### Creating a new release
 To create a new libtrixi release, follow these steps:
