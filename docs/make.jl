@@ -30,11 +30,12 @@ makedocs(
     # Explicitly specify documentation structure
     pages = [
         "Home" => "index.md",
+        "Developers" => "developers.md",
+        "Troubleshooting" => "troubleshooting.md",
         "Reference" => [
                         "C/Fortran" => "reference-c-fortran.md",
                         "Julia" => "reference-julia.md",
                        ],
-        "Troubleshooting" => "troubleshooting.md",
         "License" => "license.md"
     ],
     strict = true # to make the GitHub action fail when doctests fail, see https://github.com/neuropsychology/Psycho.jl/issues/34
