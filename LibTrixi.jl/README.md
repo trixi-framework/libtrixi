@@ -118,6 +118,10 @@ julia> trixi_finalize_simulation(handle) # do some cleanup and show timers
  ────────────────────────────────────────────────────────────────────────────────────
 ```
 
+## Documentation
+For more information on LibTrixi.jl, please refer to the
+[main documentation](https://trixi-framework.github.io/libtrixi) of libtrixi.
+
 ## Authors
 For author information, see the
 [Authors section](https://github.com/trixi-framework/libtrixi#authors) of the main
