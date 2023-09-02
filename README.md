@@ -1,6 +1,7 @@
 # libtrixi
 
 [![Docs-dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://trixi-framework.github.io/libtrixi/dev)
+[![Build Status](https://github.com/trixi-framework/libtrixi/workflows/CI/badge.svg)](https://github.com/trixi-framework/libtrixi/actions?query=workflow%3ACI)
 [![Coveralls](https://coveralls.io/repos/github/trixi-framework/libtrixi/badge.svg)](https://coveralls.io/github/trixi-framework/libtrixi)
 [![Codecov](https://codecov.io/gh/trixi-framework/libtrixi/branch/main/graph/badge.svg)](https://codecov.io/gh/trixi-framework/libtrixi)
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg)](https://opensource.org/licenses/MIT)
@@ -20,6 +21,8 @@ Currently, libtrixi is only developed and tested for Linux.
 Furthermore, a local installation of `MPI`,
 [`t8code`](https://github.com/DLR-AMR/t8code), and
 [`Julia`](https://julialang.org/downloads/platform/) is required.
+Furthermore, a C11-compatible C compiler and a Fortran 2018-compatible Fortran compiler are
+necessary to build the C library and its Fortran bindings.
 
 ### Get the sources
 
@@ -91,7 +94,11 @@ In your code, pass the path to the `libtrixi-julia` directory to `trixi_initiali
 see the code of the examples. If you did not modify the default value for the Julia depot
 when calling `libtrixi-init-julia`, libtrixi will find it automatically.
 Otherwise, when running a program that uses libtrixi, you need to make sure to set the
-`JULIA_DEPOT_PATH` environment variable to point to the `<julia-depot>` folder reported. 
+`JULIA_DEPOT_PATH` environment variable to point to the `<julia-depot>` folder reported.
+
+If you intend to use additional Julia packages, besides `Trixi` and `OrdinaryDiffEq`, you
+will have to add them to your Julia project (i.e. use
+`julia --project=<libtrixi-julia_directory>` and `import Pkg; Pkg.add(<package>)`).
 
 ### Testing
 
@@ -202,11 +209,14 @@ to use the C and Fortran APIs of libtrixi, and can be found in the
 [`examples/`](examples/) folder.
 
 If you just want to test the Julia part of libtrixi, i.e., LibTrixi.jl, you can also run
-everything from Julia. From the repository root, execute
+everything from Julia.
+
 ```shell
-JULIA_DEPOT_PATH=$PWD/libtrixi-julia/julia-depot \
+JULIA_DEPOT_PATH=<julia-depot_directory> \
+LIBTRIXI_DEBUG=all \
     julia --project=<libtrixi-julia_directory>
-    <install_directory>/share/libtrixi/LibTrixi.jl/examples/simple_trixi_controller.jl
+    <install_directory>/share/libtrixi/examples/simple_trixi_controller.jl
+    <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
 ```
 
 Note: Most auxiliary output is hidden unless the environment variable `LIBTRIXI_DEBUG` is

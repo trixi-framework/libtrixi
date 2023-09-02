@@ -9,11 +9,12 @@ usage: libtrixi-init-julia [-h] [-f]
                            [--t8code-library T8CODE_LIBRARY]
                            [--p4est-library P4EST_LIBRARY]
                            [--sc-library SC_LIBRARY]
+                           [--skip-precompile]
                            PREFIX_OR_REPO
 
 Set up all necessary project files in the current working directory and set appropriate
-Julia preferences for using the system-installed MPI and p4est libraries. Furthermore, this
-will install all dependencies in a local Julia depot folder (unless changed with the
+Julia preferences for using the system-installed MPI and t8code libraries. Furthermore,
+this will install all dependencies in a local Julia depot folder (unless changed with the
 '--julia-depot' flag).
 
 The following files/folders will be created (or updated, if the '-f' flag is given):
@@ -38,6 +39,10 @@ optional arguments:
     --force, -f     By default, this tool does nothing if any of the files/folders to be
                     created already exist. With this option given on the command line, it
                     will continue anyways.
+
+    --skip-precompile
+                    Do not precompile Julia packages. This can be helpful, e.g., when
+                    planning to add more packages manually.
 
     --julia-depot JULIA_DEPOT
                     Path to the Julia depot to be used, i.e., the folder where all Julia
@@ -87,12 +92,13 @@ die() {
 # Parse arguments (based on https://stackoverflow.com/a/14203146/1329844)
 POSITIONAL_ARGS=()
 USE_FORCE=0
+SKIP_PRECOMPILE=0
 if [ -z "$LIBTRIXI_JULIA_EXEC" ]; then
   LIBTRIXI_JULIA_EXEC=julia
 fi
 if [ -z "$LIBTRIXI_JULIA_DEPOT" ]; then
   # OBS! If you change this value here, you should also update the default value for
-  # `default_depot_path` in `src/trixi.c` accordingly
+  # `default_depot_path` in `src/auxiliary.c` accordingly
   LIBTRIXI_JULIA_DEPOT=julia-depot
 fi
 while [[ $# -gt 0 ]]; do
@@ -103,6 +109,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     -f|--force)
       USE_FORCE=1
+      shift
+      ;;
+    --skip-precompile)
+      SKIP_PRECOMPILE=1
       shift
       ;;
     --julia-exec)
@@ -338,12 +348,14 @@ Pkg.add([\"Trixi\", \"OrdinaryDiffEq\"])
 echo
 
 # Install and precompile everything
-echo "Precompile all packages ..."
-JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
-    $julia_exec --project=. \
-    -e "using Pkg; Pkg.precompile(strict=true)"
-[ $? -eq 0 ] || die "could not precompile packages"
-echo
+if [ $SKIP_PRECOMPILE -ne 1 ]; then
+  echo "Precompile all packages ..."
+  JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
+      $julia_exec --project=. \
+      -e "using Pkg; Pkg.precompile(strict=true)"
+  [ $? -eq 0 ] || die "could not precompile packages"
+  echo
+fi
 
 
 # Congratulate user

@@ -1,3 +1,7 @@
+############################################################################################
+# Simulation control                                                                       #
+############################################################################################
+
 function trixi_initialize_simulation_jl(filename)
     # Load elixir with simulation setup
     Base.include(Main, abspath(filename))
@@ -14,6 +18,26 @@ function trixi_initialize_simulation_jl(filename)
     return simstate
 end
 
+
+function trixi_is_finished_jl(simstate)
+    # Return true if current time is approximately the final time
+    return isapprox(simstate.integrator.t, simstate.integrator.sol.prob.tspan[2])
+end
+
+
+function trixi_step_jl(simstate)
+    step!(simstate.integrator)
+
+    ret = check_error(simstate.integrator)
+
+    if ret != :Success
+        error("integrator failed to perform time step, return code: ", ret)
+    end
+
+    return nothing
+end
+
+
 function trixi_finalize_simulation_jl(simstate)
     # Run summary callback one final time
     for cb in simstate.integrator.opts.callback.discrete_callbacks
@@ -29,41 +53,40 @@ function trixi_finalize_simulation_jl(simstate)
     return nothing
 end
 
+
+
+############################################################################################
+# Simulation data                                                                          #
+############################################################################################
+
 function trixi_calculate_dt_jl(simstate)
     return simstate.integrator.dtpropose
 end
 
-function trixi_is_finished_jl(simstate)
-    # Return true if current time is approximately the final time
-    return isapprox(simstate.integrator.t, simstate.integrator.sol.prob.tspan[2])
-end
-
-function trixi_step_jl(simstate)
-    step!(simstate.integrator)
-
-    ret = check_error(simstate.integrator)
-
-    if ret != :Success
-        error("integrator failed to perform time step, return code: ", ret)
-    end
-
-    return nothing
-end
 
 function trixi_ndims_jl(simstate)
     mesh, _, _, _ = mesh_equations_solver_cache(simstate.semi)
     return ndims(mesh)
 end
 
+
 function trixi_nelements_jl(simstate)
     _, _, solver, cache = mesh_equations_solver_cache(simstate.semi)
     return nelements(solver, cache)
 end
 
+
+function trixi_nelements_global_jl(simstate)
+    _, _, solver, cache = mesh_equations_solver_cache(simstate.semi)
+    return nelementsglobal(solver, cache)
+end
+
+
 function trixi_nvariables_jl(simstate)
     _, equations, _, _ = mesh_equations_solver_cache(simstate.semi)
     return nvariables(equations)
 end
+
 
 function trixi_load_cell_averages_jl(data, simstate)
     mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)

@@ -13,21 +13,31 @@ program simple_trixi_controller_f
     write(error_unit, '(a)') "ERROR: missing arguments: PROJECT_DIR LIBELIXIR_PATH"
     write(error_unit, '(a)') ""
     write(error_unit, '(3a)') "usage: ", trim(argument), " PROJECT_DIR LIBELIXIR_PATH"
-    stop 1
+    call exit(2)
   else if (command_argument_count() < 2) then
     call get_command_argument(0, argument)
     write(error_unit, '(a)') "ERROR: missing argument: LIBELIXIR_PATH"
     write(error_unit, '(a)') ""
     write(error_unit, '(3a)') "usage: ", trim(argument), " PROJECT_DIR LIBELIXIR_PATH"
-    stop 1
+    call exit(2)
   end if
-
-  ! Print version information
-  write(*, '(a, a)') "libtrixi version: ", trixi_version()
 
   ! Initialize Trixi
   call get_command_argument(1, argument)
   call trixi_initialize(argument)
+
+  ! Print version information
+  write(*, '(a, i1, a, i1, a, i1, a, a)') "libtrixi version: ", &
+        trixi_version_library_major(), ".", trixi_version_library_minor(), ".", &
+        trixi_version_library_patch(), " ", trixi_version_library()
+  write(*, '(a)') ""
+  write(*, '(a)') "All loaded Julia packages"
+  write(*, '(a)') trixi_version_julia_extended()
+  write(*, '(a)') ""
+
+  ! Execute Julia code
+  write(*, '(a)') "Execute Julia code"
+  call trixi_eval_julia('println("3! = ", factorial(3))');
 
   ! Set up the Trixi simulation
   ! We get a handle to use subsequently
