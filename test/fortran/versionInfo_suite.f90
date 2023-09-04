@@ -21,19 +21,21 @@ module versionInfo_suite
 
   subroutine test_versionInfo(error)
     type(error_type), allocatable, intent(out) :: error
-    character(len=6) :: version_string
+    character(len=5) :: version_string
+    character(len=128) :: version_library
     integer :: substring_pos
 
     ! Initialize Trixi
     call trixi_initialize(julia_project_path)
 
     ! Check libtrixi version information
+    ! Assume single digits
     write (version_string, '(i1,a,i1,a,i1,a)') &
            trixi_version_library_major(), ".", &
            trixi_version_library_minor(), ".", &
-           trixi_version_library_patch(), c_null_char
-
-    call check(error, version_string, trixi_version_library())
+           trixi_version_library_patch()
+    version_library = trixi_version_library()
+    call check(error, version_string, version_library(1:5))
     
     ! Check Julia packages version information
     substring_pos = index(trixi_version_julia(), "Trixi")
