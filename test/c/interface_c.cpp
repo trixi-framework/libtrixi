@@ -80,8 +80,10 @@ TEST(CInterfaceTest, VersionInfo) {
     version_string.append(std::to_string(minor));
     version_string.append(".");
     version_string.append(std::to_string(patch));
-    
-    EXPECT_STREQ(version_string.c_str(), trixi_version_library());
+
+    std::string version_library(trixi_version_library());
+
+    EXPECT_EQ(version_string, version_library.substr(0, version_library.find("-")));
 
     // Check Julia packages version information
     std::string version_string_julia(trixi_version_julia());
