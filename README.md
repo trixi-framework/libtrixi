@@ -253,7 +253,7 @@ slightly slower.
 
 
 ## Documentation
-Documentation for the current release can be found at https://trixi-framework.github.io/libtrixi/dev,
+Documentation for the current release can be found at https://trixi-framework.github.io/libtrixi,
 and for the current development version at https://trixi-framework.github.io/libtrixi/stable.
 
 
