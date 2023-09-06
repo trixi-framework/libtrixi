@@ -1,7 +1,7 @@
 name = "LibTrixi"
 uuid = "7e097bd5-a775-4bc1-90b6-ad92bd7220c1"
 authors = ["Michael Schlottke-Lakemper <michael@sloede.com>", "Benedict Geihe <bgeihe@uni-koeln.de>"]
-version = "0.1.1-pre"
+version = "0.1.1"
 
 [deps]
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
