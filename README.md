@@ -252,6 +252,11 @@ this. If you skip this step, everything will work as usual, but some things migh
 slightly slower.
 
 
+## Documentation
+Documentation for the current release can be found at https://trixi-framework.github.io/libtrixi/dev,
+and for the current development version at https://trixi-framework.github.io/libtrixi/stable.
+
+
 ## Authors
 Libtrixi was initiated by
 [Benedict Geihe](https://www.mi.uni-koeln.de/NumSim/)
