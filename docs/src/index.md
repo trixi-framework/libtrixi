@@ -1,5 +1,6 @@
 # libtrixi
 
+[![Docs-stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://trixi-framework.github.io/libtrixi/stable)
 [![Docs-dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://trixi-framework.github.io/libtrixi/dev)
 [![Build Status](https://github.com/trixi-framework/libtrixi/workflows/CI/badge.svg)](https://github.com/trixi-framework/libtrixi/actions?query=workflow%3ACI)
 [![Coveralls](https://coveralls.io/repos/github/trixi-framework/libtrixi/badge.svg)](https://coveralls.io/github/trixi-framework/libtrixi)

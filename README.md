@@ -1,5 +1,6 @@
 # libtrixi
 
+[![Docs-stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://trixi-framework.github.io/libtrixi/stable)
 [![Docs-dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://trixi-framework.github.io/libtrixi/dev)
 [![Build Status](https://github.com/trixi-framework/libtrixi/workflows/CI/badge.svg)](https://github.com/trixi-framework/libtrixi/actions?query=workflow%3ACI)
 [![Coveralls](https://coveralls.io/repos/github/trixi-framework/libtrixi/badge.svg)](https://coveralls.io/github/trixi-framework/libtrixi)
@@ -249,6 +250,11 @@ program, you need to add the file `$LIBTRIXI_PREFIX/lib/libtrixi_tls.o` to the l
 that are linked with your main program. See `MakefileExternal` for an example of how to do
 this. If you skip this step, everything will work as usual, but some things might run
 slightly slower.
+
+
+## Documentation
+Documentation for the current release can be found at https://trixi-framework.github.io/libtrixi,
+and for the current development version at https://trixi-framework.github.io/libtrixi/dev.
 
 
 ## Authors
