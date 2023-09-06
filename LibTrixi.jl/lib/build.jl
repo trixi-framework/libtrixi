@@ -29,6 +29,8 @@ precompile_execution_file = joinpath(lib_dir, "precompile_execution_file.jl")
 
 header_files = [joinpath(dirname(dirname(lib_dir)), "src", "trixi.h")]
 
+julia_init_c_file = []
+
 @show package_dir
 @show dest_dir
 @show precompile_execution_file
@@ -43,4 +45,6 @@ PackageCompiler.create_library(package_dir, dest_dir;
                                force = true,
                                header_files = header_files,
                                version = version,
-                               compat_level = "minor")
+                               compat_level = "minor",
+                               include_transitive_dependencies = true,
+                               julia_init_c_file = julia_init_c_file)
