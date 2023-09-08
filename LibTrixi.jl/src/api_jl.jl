@@ -135,3 +135,9 @@ function trixi_get_t8code_forest_jl(simstate)
     mesh, _, _, _ = Trixi.mesh_equations_solver_cache(simstate.semi)
     return mesh.forest
 end
+
+
+function trixi_get_t8code_cmesh_jl(simstate)
+    mesh, _, _, _ = Trixi.mesh_equations_solver_cache(simstate.semi)
+    return mesh.cmesh
+end

@@ -24,6 +24,7 @@ enum {
     TRIXI_FTPR_VERSION_JULIA,
     TRIXI_FTPR_VERSION_JULIA_EXTENDED,
     TRIXI_FTPR_GET_T8CODE_FOREST,
+    TRIXI_FTPR_GET_T8CODE_CMESH,
 
     // The last one is for the array size
     TRIXI_NUM_FPTRS
@@ -51,7 +52,8 @@ static const char* trixi_function_pointer_names[] = {
     [TRIXI_FTPR_VERSION_LIBRARY_PATCH]  = "trixi_version_library_patch_cfptr",
     [TRIXI_FTPR_VERSION_JULIA]          = "trixi_version_julia_cfptr",
     [TRIXI_FTPR_VERSION_JULIA_EXTENDED] = "trixi_version_julia_extended_cfptr",
-    [TRIXI_FTPR_GET_T8CODE_FOREST]      = "trixi_get_t8code_forest_cfptr"
+    [TRIXI_FTPR_GET_T8CODE_FOREST]      = "trixi_get_t8code_forest_cfptr",
+    [TRIXI_FTPR_GET_T8CODE_CMESH]       = "trixi_get_t8code_cmesh_cfptr"
 };
 
 // Track initialization/finalization status to prevent unhelpful errors
@@ -539,6 +541,9 @@ void trixi_load_cell_averages(double * data, int handle) {
  *
  *  \param[in] handle simulation handle
  *
+ *  \warning The interface to t8code is experimental and implementation details may change
+ *           at any time without warning.
+ *
  *  \return t8code forest
  */
 t8_forest_t trixi_get_t8code_forest(int handle) {
@@ -549,6 +554,28 @@ t8_forest_t trixi_get_t8code_forest(int handle) {
 
     // Call function
     return get_t8code_forest(handle);
+}
+
+
+/** Get t8code cmesh
+ *
+ *  For Trixi simulations on t8code meshes, the t8code cmesh is returned.
+ *
+ *  \param[in] handle simulation handle
+ *
+ *  \warning The interface to t8code is experimental and implementation details may change
+ *           at any time without warning.
+ *
+ *  \return t8code cmesh
+ */
+t8_cmesh_t trixi_get_t8code_cmesh(int handle) {
+
+    // Get function pointer
+    t8_cmesh_t (*get_t8code_cmesh)(int) =
+        trixi_function_pointers[TRIXI_FTPR_GET_T8CODE_CMESH];
+
+    // Call function
+    return get_t8code_cmesh(handle);
 }
 
 

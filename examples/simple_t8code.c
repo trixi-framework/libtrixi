@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include <t8.h>
+#include <t8_cmesh_vtk_writer.h>
 #include <t8_forest/t8_forest_general.h>
 #include <t8_forest/t8_forest_io.h>
 #include <t8_forest/t8_forest_geometrical.h>
@@ -64,6 +65,10 @@ int main ( int argc, char *argv[] ) {
     // get t8code forest
     t8_forest_t forest = trixi_get_t8code_forest(handle);
     t8_print_forest_information (forest);
+
+    // get t8code cmesh
+    t8_cmesh_t cmesh = trixi_get_t8code_cmesh(handle);
+    t8_cmesh_vtk_write_file(cmesh, "t8_cmesh_test", 1.0);
 
 
     // Finalize Trixi simulation

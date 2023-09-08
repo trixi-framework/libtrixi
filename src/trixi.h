@@ -37,6 +37,7 @@ void trixi_load_cell_averages(double * data, int handle);
 
 // T8code
 t8_forest_t trixi_get_t8code_forest(int handle);
+t8_cmesh_t trixi_get_t8code_cmesh(int handle);
 
 // Misc
 void trixi_eval_julia(const char * code);
