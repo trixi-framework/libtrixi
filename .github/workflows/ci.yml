@@ -147,6 +147,7 @@ jobs:
               --force
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl .
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl .
+          cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_t8code_2d_dgsem_advection_basic.jl .
 
       - name: Prepare coverage reporting
         if: ${{ matrix.test_type == 'coverage' }}
@@ -172,6 +173,7 @@ jobs:
           ../build/examples/simple_trixi_controller_f . libelixir_p4est2d_dgsem_euler_sedov.jl
           ../build/examples/trixi_controller_data_c . libelixir_p4est2d_dgsem_euler_sedov.jl
           ../build/examples/trixi_controller_data_f . libelixir_p4est2d_dgsem_euler_sedov.jl
+          ../build/examples/simple_t8code_c . libelixir_t8code_2d_dgsem_advection_basic.jl
         env:
           LIBTRIXI_DEBUG: all
 
