@@ -1,9 +1,6 @@
 #ifndef TRIXI_H_
 #define TRIXI_H_
 
-#include <t8.h>
-#include <t8_forest/t8_forest_general.h>
-
 /**
  * @addtogroup api_c C API
  * @{
@@ -36,6 +33,8 @@ double trixi_calculate_dt(int handle);
 void trixi_load_cell_averages(double * data, int handle);
 
 // T8code
+typedef struct t8_cmesh *t8_cmesh_t;
+typedef struct t8_forest *t8_forest_t;
 t8_forest_t trixi_get_t8code_forest(int handle);
 t8_cmesh_t trixi_get_t8code_cmesh(int handle);
 
