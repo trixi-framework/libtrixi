@@ -35,7 +35,7 @@ list ( APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/" )
 find_package( Julia REQUIRED )
 
 # Find t8code
-find_package( T8code REQUIRED )
+find_package( T8code )
 
 # Find MPI
 find_package( MPI REQUIRED )
@@ -85,8 +85,10 @@ set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR})
 
 
 # Include directories
-target_include_directories( ${PROJECT_NAME}
-                            PRIVATE src ${JULIA_INCLUDE_DIRS} ${T8CODE_INCLUDE_DIR} )
+target_include_directories( ${PROJECT_NAME} PRIVATE src ${JULIA_INCLUDE_DIRS})
+if ( T8CODE_FOUND )
+    target_include_directories( ${PROJECT_NAME} PRIVATE ${T8CODE_INCLUDE_DIR} )
+endif()
 
 # Libraries to link
 target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} MPI::MPI_C )

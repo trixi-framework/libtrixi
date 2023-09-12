@@ -5,6 +5,9 @@ set ( EXAMPLES
       trixi_controller_data.c
       trixi_controller_data.f90 )
 
+if ( NOT T8CODE_FOUND )
+    list( FILTER EXAMPLES EXCLUDE REGEX ".*(t|T)8(c|C)(o|O)(d|D)(e|E).*" )
+endif()
 
 foreach ( EXAMPLE ${EXAMPLES} )
 
@@ -30,14 +33,19 @@ foreach ( EXAMPLE ${EXAMPLES} )
         ${TARGET_NAME}
         PRIVATE MPI::MPI_${EXAMPLE_LANG}
                 ${PROJECT_NAME} ${PROJECT_NAME}_tls
-                ${T8CODE_LIBRARIES}
     )
+    if ( T8CODE_FOUND )
+        target_link_libraries( ${TARGET_NAME} PRIVATE ${T8CODE_LIBRARIES} )
+    endif()
 
     # set include directories
     target_include_directories(
         ${TARGET_NAME}
-        PRIVATE ${CMAKE_SOURCE_DIR}/src ${T8CODE_INCLUDE_DIR}
+        PRIVATE ${CMAKE_SOURCE_DIR}/src
     )
+    if ( T8CODE_FOUND )
+        target_include_directories( ${TARGET_NAME} PRIVATE ${T8CODE_INCLUDE_DIR} )
+    endif()
 
     # set runtime path for installed binaries
     set_target_properties(
