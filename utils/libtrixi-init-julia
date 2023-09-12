@@ -315,16 +315,13 @@ echo
 # Set system HDF5 library
 echo "Use system HDF5 for Julia... "
 JULIA_HDF5_PATH="$hdf5_libdir" JULIA_DEPOT_PATH="$julia_depot" $julia_exec --project=. \
-    -e 'using Pkg; Pkg.build("HDF5"; verbose = true)'
-# Note: The following code replaces the previous line for HDF5 v0.17+, which has not yet
-# been released at the time of writing
-#     -e "
-# using Preferences, UUIDs
-# set_preferences!(UUID(\"f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f\"),
-#                  \"libhdf5\" => \"$hdf5_library\",
-#                  \"libhdf5_hl\" => \"$hdf5_hl_library\",
-#                  force = true)
-# "
+    -e "
+using Preferences, UUIDs
+set_preferences!(UUID(\"f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f\"),
+                 \"libhdf5\" => \"$hdf5_library\",
+                 \"libhdf5_hl\" => \"$hdf5_hl_library\",
+                 force = true)
+"
 [ $? -eq 0 ] || die "could not configure system HDF5 library for Julia"
 echo
 
