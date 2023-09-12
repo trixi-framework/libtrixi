@@ -314,7 +314,13 @@ echo
 
 # Set system HDF5 library
 echo "Use system HDF5 for Julia... "
-LD_PRELOAD="" JULIA_HDF5_PATH="$hdf5_libdir" JULIA_DEPOT_PATH="$julia_depot" $julia_exec --project=. \
+# Disable preloading libcurl.so if it has been set when running within the GitHub runner,
+# since it does not work with the JLL-provided libhdf5.so
+if [ "$CI" = "true" ] && [ -n "$LD_PRELOAD" ]; then
+  store_ld_preload="$LD_PRELOAD"
+  LD_PRELOAD=""
+fi
+JULIA_HDF5_PATH="$hdf5_libdir" JULIA_DEPOT_PATH="$julia_depot" $julia_exec --project=. \
     -e "
 using Preferences, UUIDs
 set_preferences!(UUID(\"f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f\"),
@@ -322,6 +328,10 @@ set_preferences!(UUID(\"f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f\"),
                  \"libhdf5_hl\" => \"$hdf5_hl_library\",
                  force = true)
 "
+# Restore LD_PRELOAD if it had been set before
+if [ "$CI" = "true" ] && [ -n "$store_ld_preload" ]; then
+  LD_PRELOAD="$store_ld_preload"
+fi
 [ $? -eq 0 ] || die "could not configure system HDF5 library for Julia"
 echo
 
