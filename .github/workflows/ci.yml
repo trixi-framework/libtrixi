@@ -160,6 +160,7 @@ jobs:
           check_bounds: 'auto'
         env:
           LIBTRIXI_DEBUG: all
+          LD_PRELOAD: ""
 
       - name: Run examples
         run: |
