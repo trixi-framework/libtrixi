@@ -43,7 +43,7 @@ jobs:
       JULIA_DEPOT_PATH: ~/.julia
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Enable Julia cache
         uses: julia-actions/cache@v1
@@ -163,6 +163,7 @@ jobs:
           check_bounds: 'auto'
         env:
           LIBTRIXI_DEBUG: all
+          LD_PRELOAD: "" # Disable preloading libcurl.so since it does not work with the JLL-provided libhdf5.so
 
       - name: Run examples
         run: |
