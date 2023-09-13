@@ -189,7 +189,9 @@ jobs:
                          "../build/examples/trixi_controller_data_c"     \
                          "../build/examples/trixi_controller_data_c ."   \
                          "../build/examples/trixi_controller_data_f"     \
-                         "../build/examples/trixi_controller_data_f ."
+                         "../build/examples/trixi_controller_data_f ."   \
+                         "../build/examples/simple_t8code_c"             \
+                         "../build/examples/simple_t8code_c ."
             do
               $command
               if [ $? -ne 2 ]; then
