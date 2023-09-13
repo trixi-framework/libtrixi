@@ -44,9 +44,9 @@ To create a new libtrixi release, follow these steps:
 
 ## Testing
 
-### Testing the C-interface
+### Testing the C interface
 
-For testing the C-interface part of libtrixi we rely on [GoogleTest](https://google.github.io/googletest).
+For testing the C interface part of libtrixi we rely on [GoogleTest](https://google.github.io/googletest).
 The tests are contained in `cpp`-files located under `test/c`. They are processed by `cmake` and made available via
 `ctest`, provided the options
 ```
