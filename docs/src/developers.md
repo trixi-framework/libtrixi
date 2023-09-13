@@ -61,9 +61,9 @@ from `<build_directory>/test/c` or the top-level directory `<build_directory>`.
 The optional argument `-V` turns on verbose output, and `-R` lets you specify a regular expression to select specific tests.
 A list of available tests can be obtained via `ctest -N`
 
-### Testing the Fortran-interface
+### Testing the Fortran interface
 
-For testing the Fortran-interface part of libtrixi we rely on [test-drive](https://github.com/fortran-lang/test-drive),
+For testing the Fortran interface of libtrixi we rely on [test-drive](https://github.com/fortran-lang/test-drive),
 which integrates with `cmake` and `ctest` as well. The tests are contained in `f90`-files under `test/fortran`. Usage is
 analogous to the C-interface part.
 
