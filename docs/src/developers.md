@@ -46,33 +46,33 @@ To create a new libtrixi release, follow these steps:
 
 ### Testing the C interface
 
-For testing the C interface part of libtrixi we rely on [GoogleTest](https://google.github.io/googletest).
+For testing the C interface of libtrixi we rely on [GoogleTest](https://google.github.io/googletest).
 The tests are contained in `cpp`-files located under `test/c`. They are processed by `cmake` and made available via
 `ctest`, provided the options
 ```
 -DENABLE_TESTING=ON -DJULIA_PROJECT_PATH=<libtrixi-julia_directory>
 ```
-are passed to `cmake` during configuration
+are passed to `cmake` during configuration.
 The executables can then be found under `<build_directory>/test/c` (they will not be installed). To run them, execute
 ```
 ctest [-V] [-R <regex>]
 ```
 from `<build_directory>/test/c` or the top-level directory `<build_directory>`.
 The optional argument `-V` turns on verbose output, and `-R` lets you specify a regular expression to select specific tests.
-A list of available tests can be obtained via `ctest -N`
+A list of available tests can be obtained via `ctest -N`.
 
 ### Testing the Fortran interface
 
 For testing the Fortran interface of libtrixi we rely on [test-drive](https://github.com/fortran-lang/test-drive),
 which integrates with `cmake` and `ctest` as well. The tests are contained in `f90`-files under `test/fortran`. Usage is
-analogous to the C interface part.
+analogous to the C interface.
 
 ### Testing the Julia interface
 
 For testing the Julia interface of libtrixi, which is contained in the Julia package `LibTrixi.jl`, we rely on
 [Julia's testing infrastructure](https://docs.julialang.org/en/v1/stdlib/Test/). There is a dedicated test project,
-located under `LibTrixi.jl/test`, which contains `runtest.jl` and further `jl`-files containing the actual tests. Invoke
-Julia via
+located under `LibTrixi.jl/test`, which contains `runtest.jl` and further `jl`-files containing the actual tests.
+Invoke via
 ```
 JULIA_DEPOT_PATH=<julia-depot_directory> \
 LIBTRIXI_DEBUG=all \
