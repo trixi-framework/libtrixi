@@ -55,7 +55,7 @@ The tests are contained in `cpp`-files located under `test/c`. They are processe
 are passed to `cmake` during configuration
 The executables can then be found under `<build_directory>/test/c` (they will not be installed). To run them, execute
 ```
-ctest -V -R <regex>
+ctest [-V] [-R <regex>]
 ```
 from `<build_directory>/test/c` or the top-level directory `<build_directory>`.
 The optional argument `-V` turns on verbose output, and `-R` lets you specify a regular expression to select specific tests.
