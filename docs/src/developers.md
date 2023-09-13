@@ -76,10 +76,5 @@ Julia via
 ```
 JULIA_DEPOT_PATH=<julia-depot_directory> \
 LIBTRIXI_DEBUG=all \
-    julia --project=./LibTrixi.jl
-```
-and use
-```
-julia> import Pkg
-julia> Pkg.test()
+    julia --project=./LibTrixi.jl -e 'import Pkg; Pkg.test()'
 ```
