@@ -67,7 +67,7 @@ For testing the Fortran interface of libtrixi we rely on [test-drive](https://gi
 which integrates with `cmake` and `ctest` as well. The tests are contained in `f90`-files under `test/fortran`. Usage is
 analogous to the C interface part.
 
-### Testing the Julia part
+### Testing the Julia interface
 
 For testing the Julia part `LibTrixi.jl` of libtrixi we rely on
 [Julia's testing infrastructure](https://docs.julialang.org/en/v1/stdlib/Test/), i.e. there is a dedicated test project,
