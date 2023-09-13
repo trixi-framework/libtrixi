@@ -69,7 +69,7 @@ analogous to the C interface part.
 
 ### Testing the Julia interface
 
-For testing the Julia part `LibTrixi.jl` of libtrixi we rely on
+For testing the Julia interface of libtrixi, which is contained in the Julia package `LibTrixi.jl`, we rely on
 [Julia's testing infrastructure](https://docs.julialang.org/en/v1/stdlib/Test/), i.e. there is a dedicated test project,
 located under `LibTrixi.jl/test`, which contains `runtest.jl` and further `jl`-files containing the actual tests. Invoke
 julia via
