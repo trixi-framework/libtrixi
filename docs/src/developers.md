@@ -65,7 +65,7 @@ A list of available tests can be obtained via `ctest -N`
 
 For testing the Fortran interface of libtrixi we rely on [test-drive](https://github.com/fortran-lang/test-drive),
 which integrates with `cmake` and `ctest` as well. The tests are contained in `f90`-files under `test/fortran`. Usage is
-analogous to the C-interface part.
+analogous to the C interface part.
 
 ### Testing the Julia part
 
