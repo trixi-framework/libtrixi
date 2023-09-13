@@ -31,8 +31,7 @@ foreach ( EXAMPLE ${EXAMPLES} )
     # set libraries to link
     target_link_libraries(
         ${TARGET_NAME}
-        PRIVATE MPI::MPI_${EXAMPLE_LANG}
-                ${PROJECT_NAME} ${PROJECT_NAME}_tls
+        PRIVATE MPI::MPI_${EXAMPLE_LANG} ${PROJECT_NAME} ${PROJECT_NAME}_tls
     )
     if ( T8CODE_FOUND )
         target_link_libraries( ${TARGET_NAME} PRIVATE ${T8CODE_LIBRARIES} )
