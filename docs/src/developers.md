@@ -52,7 +52,8 @@ The tests are contained in `cpp`-files located under `test/c`. They are processe
 ```
 -DENABLE_TESTING=ON -DJULIA_PROJECT_PATH=<libtrixi-julia_directory>
 ```
-were given. The executables can then be found under `<build_directory>/test/c` (they will not be installed). To run them execute
+are passed to `cmake` during configuration
+The executables can then be found under `<build_directory>/test/c` (they will not be installed). To run them, execute
 ```
 ctest -V -R <regex>
 ```
