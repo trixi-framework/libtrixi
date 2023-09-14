@@ -367,8 +367,7 @@ Return t8code forest of the current T8codeMesh.
 """
 function trixi_get_t8code_forest end
 
-Base.@ccallable function
-    trixi_get_t8code_forest(simstate_handle::Cint)::Ptr{Trixi.t8_forest}
+Base.@ccallable function trixi_get_t8code_forest(simstate_handle::Cint)::Ptr{Trixi.t8_forest}
     simstate = load_simstate(simstate_handle)
     return trixi_get_t8code_forest_jl(simstate)
 end
@@ -388,8 +387,7 @@ Return t8code cmesh of the current T8codeMesh.
 """
 function trixi_get_t8code_cmesh end
 
-Base.@ccallable function
-    trixi_get_t8code_cmesh(simstate_handle::Cint)::Ptr{Trixi.t8_cmesh}
+Base.@ccallable function trixi_get_t8code_cmesh(simstate_handle::Cint)::Ptr{Trixi.t8_cmesh}
     simstate = load_simstate(simstate_handle)
     return trixi_get_t8code_cmesh_jl(simstate)
 end
