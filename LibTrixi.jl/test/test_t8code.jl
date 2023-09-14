@@ -16,7 +16,6 @@ simstate_jl = trixi_initialize_simulation_jl(libelixir)
 
 
 @testset verbose=true showtiming=true "T8code mesh" begin
-
     # compare t8code forest
     forest_c = trixi_get_t8code_forest(handle)
     cmesh_c = trixi_get_t8code_cmesh(handle)
