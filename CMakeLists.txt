@@ -88,6 +88,8 @@ set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR})
 target_include_directories( ${PROJECT_NAME} PRIVATE src ${JULIA_INCLUDE_DIRS} )
 if ( T8CODE_FOUND )
     target_include_directories( ${PROJECT_NAME} PRIVATE ${T8CODE_INCLUDE_DIR} )
+else()
+    message("t8code not found: t8code examples will NOT be built")
 endif()
 
 # Libraries to link
