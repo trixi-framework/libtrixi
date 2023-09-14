@@ -1,6 +1,4 @@
 #include <gtest/gtest.h>
-#include <t8.h>
-#include <t8_forest/t8_forest_general.h>
 
 extern "C" {
     #include "../src/trixi.h"
@@ -23,9 +21,7 @@ TEST(CInterfaceTest, T8code) {
 
     // Check t8code mesh
     t8_forest_t trixi_forest = trixi_get_t8code_forest(handle);
-    t8_cmesh_t  trixi_cmesh  = trixi_get_t8code_cmesh(handle);
-    t8_cmesh_t  t8code_cmesh = t8_forest_get_cmesh(trixi_forest);
-    EXPECT_EQ(trixi_cmesh, t8code_cmesh);
+    EXPECT_NE(trixi_forest, nullptr);
     
     // Finalize Trixi simulation
     trixi_finalize_simulation(handle);

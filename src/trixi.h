@@ -33,14 +33,10 @@ double trixi_calculate_dt(int handle);
 void trixi_load_cell_averages(double * data, int handle);
 
 // T8code
-#if !defined(T8_H) && !defined(T8_CMESH_H)
-typedef struct t8_cmesh *t8_cmesh_t;
-#endif
 #if !defined(T8_H) && !defined(T8_FOREST_GENERAL_H)
 typedef struct t8_forest *t8_forest_t;
 #endif
 t8_forest_t trixi_get_t8code_forest(int handle);
-t8_cmesh_t trixi_get_t8code_cmesh(int handle);
 
 // Misc
 void trixi_eval_julia(const char * code);

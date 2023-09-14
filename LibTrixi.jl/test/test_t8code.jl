@@ -2,7 +2,7 @@ module TestT8code
 
 using Test
 using LibTrixi
-using T8code
+using Trixi
 
 
 libelixir = joinpath(dirname(pathof(LibTrixi)),
@@ -18,9 +18,8 @@ simstate_jl = trixi_initialize_simulation_jl(libelixir)
 @testset verbose=true showtiming=true "T8code mesh" begin
     # compare t8code forest
     forest_c = trixi_get_t8code_forest(handle)
-    cmesh_c = trixi_get_t8code_cmesh(handle)
-    cmesh_jl = t8_forest_get_cmesh(forest_c)
-    @test cmesh_c === cmesh_jl
+    @test forest_c isa Ptr{Trixi.t8_forest}
+    @test forest_c != C_NULL
 end
 
 

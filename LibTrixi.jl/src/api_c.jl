@@ -374,23 +374,3 @@ end
 
 trixi_get_t8code_forest_cfptr() =
     @cfunction(trixi_get_t8code_forest, Ptr{Trixi.t8_forest}, (Cint,))
-
-
-"""
-    trixi_get_t8code_cmesh(simstate_handle::Cint)::::Ptr{Trixi.t8_cmesh}
-
-Return t8code cmesh of the current T8codeMesh.
-
-!!! warning "Experimental"
-    The interface to t8code is experimental and implementation details may change at any
-    time without warning.
-"""
-function trixi_get_t8code_cmesh end
-
-Base.@ccallable function trixi_get_t8code_cmesh(simstate_handle::Cint)::Ptr{Trixi.t8_cmesh}
-    simstate = load_simstate(simstate_handle)
-    return trixi_get_t8code_cmesh_jl(simstate)
-end
-
-trixi_get_t8code_cmesh_cfptr() =
-    @cfunction(trixi_get_t8code_cmesh, Ptr{Trixi.t8_cmesh}, (Cint,))
