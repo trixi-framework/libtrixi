@@ -1,10 +1,12 @@
 # libtrixi
 
+[![Docs-stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://trixi-framework.github.io/libtrixi/stable)
 [![Docs-dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://trixi-framework.github.io/libtrixi/dev)
 [![Build Status](https://github.com/trixi-framework/libtrixi/workflows/CI/badge.svg)](https://github.com/trixi-framework/libtrixi/actions?query=workflow%3ACI)
 [![Coveralls](https://coveralls.io/repos/github/trixi-framework/libtrixi/badge.svg)](https://coveralls.io/github/trixi-framework/libtrixi)
 [![Codecov](https://codecov.io/gh/trixi-framework/libtrixi/branch/main/graph/badge.svg)](https://codecov.io/gh/trixi-framework/libtrixi)
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8321803.svg)](https://doi.org/10.5281/zenodo.8321803)
 
 **Libtrixi** is an interface library for using
 [Trixi.jl](https://github.com/trixi-framework/Trixi.jl) from C/C++/Fortran.
@@ -249,6 +251,23 @@ program, you need to add the file `$LIBTRIXI_PREFIX/lib/libtrixi_tls.o` to the l
 that are linked with your main program. See `MakefileExternal` for an example of how to do
 this. If you skip this step, everything will work as usual, but some things might run
 slightly slower.
+
+
+## Referencing
+If you use libtrixi in your own research or write a paper using results obtained
+with the help of libtrixi, you can refer to libtrixi directly as
+```bibtex
+@misc{schlottkelakemper2023libtrixi,
+  title={{L}ibtrixi: {I}nterface library for using {T}rixi.jl from {C}/{C}++/{F}ortran},
+  author={Schlottke-Lakemper, Michael and Geihe, Benedict and Gassner, Gregor J},
+  year={2023},
+  month={09},
+  howpublished={\url{https://github.com/trixi-framework/libtrixi}},
+  doi={10.5281/zenodo.8321803}
+}
+```
+Since libtrixi is based on Trixi.jl, you should also
+[cite Trixi.jl](https://github.com/trixi-framework/Trixi.jl#referencing) in this case.
 
 
 ## Authors
