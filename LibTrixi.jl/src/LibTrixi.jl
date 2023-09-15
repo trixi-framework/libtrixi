@@ -55,6 +55,9 @@ export trixi_version_julia,
 export trixi_version_julia_extended,
        trixi_version_julia_extended_cfptr,
        trixi_version_julia_extended_jl
+export trixi_get_t8code_forest,
+       trixi_get_t8code_forest_cfptr,
+       trixi_get_t8code_forest_jl
 
 export SimulationState, store_simstate, load_simstate, delete_simstate!
 
