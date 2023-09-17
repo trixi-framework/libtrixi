@@ -5,6 +5,7 @@ using PackageCompiler: PackageCompiler
 using TOML: TOML
 
 lib_dir = @__DIR__
+package_dir = dirname(lib_dir)
 
 if length(ARGS) < 1 || "-h" in ARGS || "--help" in ARGS
     project = relpath(lib_dir)
@@ -18,33 +19,58 @@ if length(ARGS) < 1 || "-h" in ARGS || "--help" in ARGS
             """)
     exit(1)
 end
-
 dest_dir = ARGS[1]
-project_toml = realpath(joinpath(dirname(lib_dir), "Project.toml"))
-version = VersionNumber(TOML.parsefile(project_toml)["version"])
 
-package_dir = dirname(lib_dir)
+lib_name = "trixi"
 
-precompile_execution_file = joinpath(lib_dir, "precompile_execution_file.jl")
+# precompile_execution_file = joinpath(lib_dir, "precompile_execution_file.jl")
+precompile_execution_file = ""
+
+incremental = true
+
+filter_stdlibs = true
+
+force = true
 
 header_files = [joinpath(dirname(dirname(lib_dir)), "src", "trixi.h")]
 
-julia_init_c_file = []
+julia_init_c_file = ["init.c", PackageCompiler.default_julia_init()]
 
-@show package_dir
-@show dest_dir
-@show precompile_execution_file
-@show header_files
-@show version
+julia_init_h_file = [PackageCompiler.default_julia_init_header()]
 
-PackageCompiler.create_library(package_dir, dest_dir;
-                               lib_name = "trixi",
-                               precompile_execution_file = precompile_execution_file,
-                               incremental = false,
-                               filter_stdlibs = true,
-                               force = true,
-                               header_files = header_files,
-                               version = version,
-                               compat_level = "minor",
-                               include_transitive_dependencies = true,
-                               julia_init_c_file = julia_init_c_file)
+project_toml = realpath(joinpath(dirname(lib_dir), "Project.toml"))
+version = VersionNumber(TOML.parsefile(project_toml)["version"])
+
+compat_level = "minor"
+
+include_transitive_dependencies = true
+
+@info("List of arguments passed to `create_library`:",
+      package_dir,
+      dest_dir,
+      lib_name,
+      precompile_execution_file,
+      incremental,
+      filter_stdlibs,
+      force,
+      header_files,
+      julia_init_c_file,
+      julia_init_h_file,
+      version,
+      compat_level,
+      include_transitive_dependencies)
+
+total_time = @elapsed PackageCompiler.create_library(package_dir, dest_dir;
+                                                     lib_name,
+                                                     precompile_execution_file,
+                                                     incremental,
+                                                     filter_stdlibs,
+                                                     force,
+                                                     header_files,
+                                                     julia_init_c_file,
+                                                     julia_init_h_file,
+                                                     version,
+                                                     compat_level,
+                                                     include_transitive_dependencies)
+
+@info "Total time (in seconds)" total_time
