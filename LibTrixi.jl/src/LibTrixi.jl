@@ -63,9 +63,12 @@ export SimulationState, store_simstate, load_simstate, delete_simstate!
 
 
 # global storage of name and version information of loaded packages
-const _version_info = Ref("")
-const _version_info_extended = Ref("")
-const _version_libtrixi = Ref("")
+const _version_info = assemble_version_info(filter_expr = filter(p -> p.is_direct_dep))
+const _version_info_extended = assemble_version_info()
+const _version_libtrixi = begin
+    libtrixi_string = assemble_version_info(filter_expr = filter(p -> p.name == "LibTrixi"))
+    split(split(libtrixi_string, "\n")[1], " ")[2]
+end
 
 
 include("simulationstate.jl")
@@ -111,12 +114,6 @@ function __init__()
     if show_debug_output()
         MPI.set_default_error_handler_return()
     end
-
-    # assemble packages information
-    _version_info[] = assemble_version_info(filter_expr = filter(p -> p.is_direct_dep))
-    _version_info_extended[] = assemble_version_info()
-    libtrixi_string = assemble_version_info(filter_expr = filter(p -> p.name == "LibTrixi"))
-    _version_libtrixi[] = split(split(libtrixi_string, "\n")[1], " ")[2]
 end
 
 end # module LibTrixi
