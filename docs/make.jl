@@ -37,7 +37,8 @@ makedocs(
                         "Julia" => "reference-julia.md",
                        ],
         "License" => "license.md"
-    ]
+    ],
+    warnonly = [:cross_references]
 )
 
 
