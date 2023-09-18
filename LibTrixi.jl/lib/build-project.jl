@@ -5,7 +5,7 @@ using PackageCompiler: PackageCompiler
 using TOML: TOML
 
 lib_dir = @__DIR__
-package_dir = dirname(lib_dir)
+package_dir = joinpath(dirname(dirname(lib_dir)), "libtrixi-julia")
 
 if length(ARGS) < 1 || "-h" in ARGS || "--help" in ARGS
     project = relpath(lib_dir)
@@ -34,10 +34,7 @@ force = true
 
 header_files = [joinpath(dirname(dirname(lib_dir)), "src", "trixi.h")]
 
-# julia_init_c_file = ["init.c", PackageCompiler.default_julia_init()]
 julia_init_c_file = "init-project.c"
-
-# julia_init_h_file = [PackageCompiler.default_julia_init_header()]
 
 project_toml = realpath(joinpath(dirname(lib_dir), "Project.toml"))
 version = VersionNumber(TOML.parsefile(project_toml)["version"])
@@ -45,6 +42,8 @@ version = VersionNumber(TOML.parsefile(project_toml)["version"])
 compat_level = "minor"
 
 include_transitive_dependencies = true
+
+include_lazy_artifacts = true
 
 @info("List of arguments passed to `create_library`:",
       package_dir,
@@ -56,10 +55,10 @@ include_transitive_dependencies = true
       force,
       header_files,
       julia_init_c_file,
-      # julia_init_h_file,
       version,
       compat_level,
-      include_transitive_dependencies)
+      include_transitive_dependencies,
+      include_lazy_artifacts)
 
 total_time = @elapsed PackageCompiler.create_library(package_dir, dest_dir;
                                                      lib_name,
@@ -69,9 +68,9 @@ total_time = @elapsed PackageCompiler.create_library(package_dir, dest_dir;
                                                      force,
                                                      header_files,
                                                      julia_init_c_file,
-                                                     # julia_init_h_file,
                                                      version,
                                                      compat_level,
-                                                     include_transitive_dependencies)
+                                                     include_transitive_dependencies,
+                                                     include_lazy_artifacts)
 
 @info "Total time (in seconds)" total_time
