@@ -12,7 +12,7 @@ This function is thread-safe. It must be run after `trixi_initialize` has been c
 function trixi_version_library_major end
 
 Base.@ccallable function trixi_version_library_major()::Cint
-    return VersionNumber(_version_libtrixi[]).major
+    return VersionNumber(_version_libtrixi).major
 end
 
 trixi_version_library_major_cfptr() = @cfunction(trixi_version_library_major, Cint, ())
@@ -28,7 +28,7 @@ This function is thread-safe. It must be run after `trixi_initialize` has been c
 function trixi_version_library_minor end
 
 Base.@ccallable function trixi_version_library_minor()::Cint
-    return VersionNumber(_version_libtrixi[]).minor
+    return VersionNumber(_version_libtrixi).minor
 end
 
 trixi_version_library_minor_cfptr() = @cfunction(trixi_version_library_minor, Cint, ())
@@ -44,7 +44,7 @@ This function is thread-safe. It must be run after `trixi_initialize` has been c
 function trixi_version_library_patch end
 
 Base.@ccallable function trixi_version_library_patch()::Cint
-    return VersionNumber(_version_libtrixi[]).patch
+    return VersionNumber(_version_libtrixi).patch
 end
 
 trixi_version_library_patch_cfptr() = @cfunction(trixi_version_library_patch, Cint, ())
@@ -67,7 +67,7 @@ This function is thread-safe. It must be run after `trixi_initialize` has been c
 function trixi_version_library end
 
 Base.@ccallable function trixi_version_library()::Cstring
-    return pointer(_version_libtrixi[])
+    return pointer(_version_libtrixi)
 end
 
 trixi_version_library_cfptr() = @cfunction(trixi_version_library, Cstring, ())
@@ -89,7 +89,7 @@ This function is thread-safe. It must be run after `trixi_initialize` has been c
 function trixi_version_julia end
 
 Base.@ccallable function trixi_version_julia()::Cstring
-    return pointer(_version_info[])
+    return pointer(_version_info)
 end
 
 trixi_version_julia_cfptr() = @cfunction(trixi_version_julia, Cstring, ())
@@ -112,7 +112,7 @@ This function is thread-safe. It must be run after `trixi_initialize` has been c
 function trixi_version_julia_extended end
 
 Base.@ccallable function trixi_version_julia_extended()::Cstring
-    return pointer(_version_info_extended[])
+    return pointer(_version_info_extended)
 end
 
 trixi_version_julia_extended_cfptr() = @cfunction(trixi_version_julia_extended, Cstring, ())
