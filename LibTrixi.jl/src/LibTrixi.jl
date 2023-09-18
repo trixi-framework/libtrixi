@@ -63,6 +63,20 @@ export SimulationState, store_simstate, load_simstate, delete_simstate!
 
 
 # global storage of name and version information of loaded packages
+function assemble_version_info(; filter_expr = identity)
+    packages = Pkg.dependencies() |> values |> collect |> filter_expr
+    versions = String[]
+    for p in sort(packages, by=x->x.name)
+        if isnothing(p.version)
+            push!(versions, p.name * " n/a")
+        else
+            push!(versions, p.name * " " * string(p.version))
+        end
+    end
+    push!(versions, "julia " * string(VERSION))
+    join(versions, "\n")
+end
+
 const _version_info = assemble_version_info(filter_expr = filter(p -> p.is_direct_dep))
 const _version_info_extended = assemble_version_info()
 const _version_libtrixi = begin
@@ -87,21 +101,6 @@ function show_debug_output()
     else
         return false
     end
-end
-
-
-function assemble_version_info(; filter_expr = identity)
-    packages = Pkg.dependencies() |> values |> collect |> filter_expr
-    versions = String[]
-    for p in sort(packages, by=x->x.name)
-        if isnothing(p.version)
-            push!(versions, p.name * " n/a")
-        else
-            push!(versions, p.name * " " * string(p.version))
-        end
-    end
-    push!(versions, "julia " * string(VERSION))
-    join(versions, "\n")
 end
 
 
