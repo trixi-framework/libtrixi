@@ -52,7 +52,7 @@ makedocs(
                        ],
         "License" => "license.md"
     ],
-    linkcheck_ignore = [$doxygen_url]
+    linkcheck_ignore = [doxygen_url]
 )
 
 
