@@ -36,13 +36,14 @@ header_files = [joinpath(dirname(dirname(lib_dir)), "src", "trixi.h")]
 julia_init_c_file = "init.c"
 
 project_toml = realpath(joinpath(dirname(lib_dir), "Project.toml"))
-version = VersionNumber(TOML.parsefile(project_toml)["version"])
+long_version = TOML.parsefile(project_toml)["version"]
+version = VersionNumber(long_version.major, long_version.minor, long_version.patch)
 
 compat_level = "minor"
 
-include_lazy_artifacts = true
+include_lazy_artifacts = false
 
-include_transitive_dependencies = true
+include_transitive_dependencies = false
 
 @info("List of arguments passed to `create_library`:",
       package_or_project_dir,
