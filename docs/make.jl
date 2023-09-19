@@ -23,7 +23,7 @@ DocMeta.setdocmeta!(LibTrixi, :DocTestSetup, :(using LibTrixi); recursive=true)
 # Generate source files from templates
 template_dir = joinpath(@__DIR__, "templates")
 doxygen_dir = get(ENV, "doxygen_dir", "DOXYGEN_DIR_NOT_SET")
-doxygen_url = joinpath("https://", repo, doxygen_dir)
+doxygen_url = joinpath("https://trixi-framework.github.io/libtrixi", doxygen_dir)
 reference_c_fortran_text = read(joinpath(template_dir, "reference-c-fortran.tmpl.md"), String)
 reference_c_fortran_text = replace(reference_c_fortran_text, "{doxygen_url}" => doxygen_url)
 write(joinpath(@__DIR__, "src", "reference-c-fortran.md"), reference_c_fortran_text)
