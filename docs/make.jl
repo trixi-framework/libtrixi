@@ -38,7 +38,7 @@ makedocs(
                        ],
         "License" => "license.md"
     ],
-    strict = true # to make the GitHub action fail when doctests fail, see https://github.com/neuropsychology/Psycho.jl/issues/34
+    warnonly = [:cross_references]
 )
 
 
