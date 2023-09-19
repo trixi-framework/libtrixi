@@ -1,7 +1,7 @@
 using Documenter
 
-# Note: If you change any input values here, make sure you also update the call to
-# deploydocs(...) in `make.jl`
+# Note: If you change any input values here, make sure you also update the values in
+# `make.jl` accordingly
 repo = "github.com/trixi-framework/libtrixi"
 devbranch = "main"
 push_preview = true

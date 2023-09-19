@@ -41,12 +41,6 @@ jobs:
           PYTHON: ""
       - name: Install dependencies
         run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=joinpath(pwd(), "LibTrixi.jl"))); Pkg.instantiate()'
-      - name: Build and deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # For authentication with GitHub Actions token
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }} # For authentication with SSH deploy key
-          GKSwstype: 100 # To make GitHub Action work, disable showing a plot window with the GR backend of the Plots package
-        run: julia --project=docs --color=yes docs/make.jl
       - name: Determine folder for doxygen docs
         id: determine_doxygen_dir
         env:
@@ -54,7 +48,14 @@ jobs:
         run: |
           doxygen_dir=$(julia --project=docs --color=yes docs/determine_doxygen_dir.jl)
           echo "doxygen_dir=$doxygen_dir"
-          echo "doxygen_dir=$doxygen_dir" >> "$GITHUB_OUTPUT"
+          echo "doxygen_dir=$doxygen_dir" >> "$GITHUB_OUTPUT" # required for Doxygen
+          echo "doxygen_dir=$doxygen_dir" >> "$GITHUB_ENV"    # required for Documenter.jl
+      - name: Build and deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # For authentication with GitHub Actions token
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }} # For authentication with SSH deploy key
+          GKSwstype: 100 # To make GitHub Action work, disable showing a plot window with the GR backend of the Plots package
+        run: julia --project=docs --color=yes docs/make.jl
 
   build-doxygen:
     runs-on: ubuntu-latest

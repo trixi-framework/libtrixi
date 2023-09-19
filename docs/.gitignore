@@ -1,0 +1,2 @@
+# Files that will be generated on the fly from templates prior to the call to `makedocs`
+src/reference-c-fortran.md
