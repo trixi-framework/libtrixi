@@ -1,7 +1,7 @@
 # Note: This file is inspired by
 # https://github.com/simonbyrne/libcg/blob/master/CG/build/build.jl.
 
-time_start = time()
+start_time = time()
 
 # Ensure correct usage
 if length(ARGS) < 2 || "-h" in ARGS || "--help" in ARGS
@@ -102,5 +102,5 @@ version_file = joinpath(dest_dir, "share", "julia", "LIBTRIXI_VERSION")
 @info "Writing version information to `$version_file`..."
 write(version_file, string(version) * "\n")
 
-total_time = time() - start_time()
+total_time = time() - start_time
 @info "Duration (in seconds)" total_time lib_time
