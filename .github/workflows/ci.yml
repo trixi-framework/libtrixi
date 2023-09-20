@@ -251,3 +251,96 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled && always() }}
         uses: mxschmitt/action-tmate@v3
         timeout-minutes: 15
+
+  package-compiler:
+    name: ${{ matrix.os }} - package-compiler - ${{ github.event_name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        arch:
+          - x64
+        julia_version:
+          - '1.9'
+        t8code_version:
+          - '1.4.1'
+    env:
+      # Necessary for HDF5 to play nice with Julia
+      LD_PRELOAD: /lib/x86_64-linux-gnu/libcurl.so.4
+      # Necessary such that libtrixi will not use its own default for the depot path
+      JULIA_DEPOT_PATH: ~/.julia
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Enable Julia cache
+        uses: julia-actions/cache@v1
+
+      - name: Enable t8code cache
+        id: cache-t8code
+        uses: actions/cache@v3
+        with:
+          path: ./t8code-local
+          key: ${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.t8code_version }}
+
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: ${{ matrix.julia_version }}
+          arch: ${{ matrix.arch }}
+
+      - name: Show Julia version information
+        run: julia -e 'using InteractiveUtils; versioninfo(verbose=true)'
+
+      - name: Install dependencies available with `apt-get`
+        # - MPI
+        # - HDF5
+        # - Google Test
+        # - Coverage (lcov)
+        run: |
+          sudo apt-get install -y openmpi-bin libopenmpi-dev \
+                                  libhdf5-openmpi-dev \
+                                  libgtest-dev \
+                                  lcov
+
+      - name: Install t8code
+        if: steps.cache-t8code.outputs.cache-hit != 'true'
+        run: |
+          T8CODE_RELEASE=${{ matrix.t8code_version }}
+          mkdir t8code-local
+          cd t8code-local
+          wget https://github.com/DLR-AMR/t8code/releases/download/v${T8CODE_RELEASE}/t8-${T8CODE_RELEASE}.tar.gz
+          tar xf t8-${T8CODE_RELEASE}.tar.gz
+          mkdir build
+          cd build
+          CC=mpicc CXX=mpicxx ../t8-${T8CODE_RELEASE}/configure \
+              --prefix=$PWD/../prefix --enable-mpi
+          make -j 2
+          make install
+
+      - name: Initialize project directory
+        # Note that we set the Julia depot to `~/.julia` *ONLY* to make use of the
+        # julia-actions/cache above (which unfortunately hardcoded the `~/.julia`
+        # directory). For this reason, we also need to use `--force`
+        # Still create subfolder `julia-depot`, which reflects the typical default
+        # and is tested below
+        run: |
+          mkdir libtrixi-julia
+          cd libtrixi-julia
+          mkdir julia-depot
+          ../utils/libtrixi-init-julia .. \
+              --hdf5-library /usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so \
+              --t8code-library ../t8code-local/prefix/lib/libt8.so \
+              --julia-depot ~/.julia \
+              --force
+
+      - name: Build libtrixi using PackageCompiler
+        run: cd LibTrixi.jl/lib && make
+
+      # Enable tmate debugging of manually-triggered workflows if the input option was provided
+      - name: Setup tmate session for debugging
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled && always() }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 15
