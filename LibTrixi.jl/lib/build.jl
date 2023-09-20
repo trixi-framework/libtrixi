@@ -1,6 +1,8 @@
 # Note: This file is inspired by
 # https://github.com/simonbyrne/libcg/blob/master/CG/build/build.jl.
 
+time_start = time()
+
 using PackageCompiler: PackageCompiler
 using TOML: TOML
 using Pkg
@@ -21,6 +23,8 @@ if length(ARGS) < 2 || "-h" in ARGS || "--help" in ARGS
             """)
     exit(1)
 end
+
+@info "Preparing arguments..."
 
 # Location of package/project that should be built into a library
 package_or_project_dir = ARGS[1]
@@ -51,10 +55,8 @@ julia_init_c_file = ["init.c", PackageCompiler.default_julia_init()]
 # Extract version from `Project.toml`
 project_toml = joinpath(package_or_project_dir, "Project.toml")
 ctx = Pkg.Types.Context(env=Pkg.Types.EnvCache(project_toml))
-long_version = filter(p -> p.name == "LibTrixi", collect(values(ctx.env.manifest.deps)))[1]
+long_version = filter(p -> p.name == "LibTrixi", collect(values(ctx.env.manifest.deps)))[1].version
 version = VersionNumber(long_version.major, long_version.minor, long_version.patch)
-println(version)
-wololo
 
 # Set compat level to minor. Since we using zerover at the moment, a bump in minor version
 # comes with potential ABI breakage
@@ -80,16 +82,22 @@ include_transitive_dependencies = false
       include_lazy_artifacts,
       include_transitive_dependencies)
 
-total_time = @elapsed PackageCompiler.create_library(package_or_project_dir, dest_dir;
-                                                     lib_name,
-                                                     incremental,
-                                                     filter_stdlibs,
-                                                     force,
-                                                     header_files,
-                                                     julia_init_c_file,
-                                                     version,
-                                                     compat_level,
-                                                     include_lazy_artifacts,
-                                                     include_transitive_dependencies)
+@info "Running `PackageCompiler.create_library`..."
+lib_time = @elapsed PackageCompiler.create_library(package_or_project_dir, dest_dir;
+                                                   lib_name,
+                                                   incremental,
+                                                   filter_stdlibs,
+                                                   force,
+                                                   header_files,
+                                                   julia_init_c_file,
+                                                   version,
+                                                   compat_level,
+                                                   include_lazy_artifacts,
+                                                   include_transitive_dependencies)
 
-@info "Total time (in seconds)" total_time
+version_file = joinpath(dest_dir, "share", "julia", "LIBTRIXI_VERSION")
+@info "Writing version information to `$version_file`..."
+write(version_file, string(version) * "\n")
+
+total_time = time() - start_time()
+@info "Duration (in seconds)" total_time lib_time
