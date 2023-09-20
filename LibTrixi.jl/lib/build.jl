@@ -36,7 +36,7 @@ header_files = [joinpath(dirname(dirname(lib_dir)), "src", "trixi.h")]
 julia_init_c_file = "init.c"
 
 project_toml = realpath(joinpath(dirname(lib_dir), "Project.toml"))
-long_version = TOML.parsefile(project_toml)["version"]
+long_version = VersionNumber(TOML.parsefile(project_toml)["version"])
 version = VersionNumber(long_version.major, long_version.minor, long_version.patch)
 
 compat_level = "minor"
