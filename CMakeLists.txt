@@ -15,6 +15,7 @@ if (${libtrixi_project_toml} MATCHES "version = \"(([0-9]+)\\.([0-9]+)\\.([0-9]+
 else()
   message(FATAL_ERROR "Unable to parse version from LibTrixi.jl/Project.toml")
 endif()
+file(WRITE "${CMAKE_BINARY_DIR}/LIBTRIXI_VERSION" "${LIBTRIXI_VERSION}\n")
 
 # Specify the project info.
 project ( trixi VERSION ${LIBTRIXI_VERSION_MAJOR}.${LIBTRIXI_VERSION_MINOR}.${LIBTRIXI_VERSION_PATCH}
@@ -128,4 +129,5 @@ install( TARGETS ${PROJECT_NAME} )
 install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/libtrixi.mod TYPE INCLUDE)
 install( FILES $<TARGET_OBJECTS:${PROJECT_NAME}_tls> TYPE LIB RENAME lib${PROJECT_NAME}_tls.o )
 install( DIRECTORY LibTrixi.jl DESTINATION share/libtrixi )
+install( FILES LIBTRIXI_VERSION DESTINATION share/julia )
 install( PROGRAMS utils/libtrixi-init-julia TYPE BIN )
