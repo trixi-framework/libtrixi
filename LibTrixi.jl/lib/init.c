@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <julia_init.h>
 
 // Track initialization/finalization status to prevent unhelpful errors
 static int is_initialized = 0;
