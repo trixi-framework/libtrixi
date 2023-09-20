@@ -1,6 +1,12 @@
 using Documenter
 import Pkg
 
+# Note: If you change any input values here, make sure you also update the values in
+# `determine_doxygen_dir.jl` accordingly
+repo = "github.com/trixi-framework/libtrixi"
+devbranch = "main"
+push_preview = true
+
 # Get LibTrixi.jl root directory
 libtrixi_root_dir = dirname(@__DIR__)
 
@@ -13,6 +19,14 @@ using LibTrixi
 
 # Define module-wide setups such that the respective modules are available in doctests
 DocMeta.setdocmeta!(LibTrixi, :DocTestSetup, :(using LibTrixi); recursive=true)
+
+# Generate source files from templates
+template_dir = joinpath(@__DIR__, "templates")
+doxygen_dir = get(ENV, "doxygen_dir", "DOXYGEN_DIR_NOT_SET")
+doxygen_url = joinpath("https://trixi-framework.github.io/libtrixi", doxygen_dir)
+reference_c_fortran_text = read(joinpath(template_dir, "reference-c-fortran.tmpl.md"), String)
+reference_c_fortran_text = replace(reference_c_fortran_text, "{doxygen_url}" => doxygen_url)
+write(joinpath(@__DIR__, "src", "reference-c-fortran.md"), reference_c_fortran_text)
 
 # Make documentation
 makedocs(
@@ -38,14 +52,10 @@ makedocs(
                        ],
         "License" => "license.md"
     ],
-    strict = true # to make the GitHub action fail when doctests fail, see https://github.com/neuropsychology/Psycho.jl/issues/34
+    linkcheck_ignore = [doxygen_url]
 )
 
 
 # Note: If you change any input values here, make sure you also update the values in
 # `determine_doxygen_dir.jl` accordingly
-deploydocs(
-    repo = "github.com/trixi-framework/libtrixi",
-    devbranch = "main",
-    push_preview = true
-)
+deploydocs(; repo, devbranch, push_preview)
