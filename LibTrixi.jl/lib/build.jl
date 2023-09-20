@@ -3,14 +3,9 @@
 
 time_start = time()
 
-using PackageCompiler: PackageCompiler
-using TOML: TOML
-using Pkg
-
-lib_dir = @__DIR__
-
+# Ensure correct usage
 if length(ARGS) < 2 || "-h" in ARGS || "--help" in ARGS
-    project = relpath(lib_dir)
+    project = relpath(@__DIR__)
     println("""
             usage: julia --project=$project $PROGRAM_FILE PACKAGE_OR_PROJECT_DIR DEST_DIR
 
@@ -24,7 +19,15 @@ if length(ARGS) < 2 || "-h" in ARGS || "--help" in ARGS
     exit(1)
 end
 
-@info "Preparing arguments..."
+using PackageCompiler: PackageCompiler
+using TOML: TOML
+using Pkg
+
+# Switch to current directory as the active project and install dependencies
+Pkg.activate(@__DIR__)
+Pkg.instantiate()
+
+@info "Preparing arguments to `PackageCompiler.create_library`..."
 
 # Location of package/project that should be built into a library
 package_or_project_dir = ARGS[1]
@@ -45,7 +48,7 @@ filter_stdlibs = true
 force = true
 
 # Bundle header file with library (will be put in `PREFIX/include`)
-header_files = [joinpath(dirname(dirname(lib_dir)), "src", "trixi.h")]
+header_files = [joinpath(dirname(dirname(@__DIR__)), "src", "trixi.h")]
 
 # Name of the files that include the initialization functions:
 # - `init.c` contains `trixi_initialize`/`trixi_finalize` for API compatibility
