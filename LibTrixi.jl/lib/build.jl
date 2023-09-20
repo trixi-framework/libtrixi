@@ -20,13 +20,13 @@ if length(ARGS) < 2 || "-h" in ARGS || "--help" in ARGS
 end
 
 # Switch to current directory as the active project and install dependencies
+using Pkg
 Pkg.activate(@__DIR__)
 Pkg.instantiate()
 
 # Load packages
 using PackageCompiler: PackageCompiler
 using TOML: TOML
-using Pkg
 
 @info "Preparing arguments to `PackageCompiler.create_library`..."
 
