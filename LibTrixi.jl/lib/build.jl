@@ -3,6 +3,7 @@
 
 using PackageCompiler: PackageCompiler
 using TOML: TOML
+using Pkg
 
 lib_dir = @__DIR__
 
@@ -20,29 +21,49 @@ if length(ARGS) < 2 || "-h" in ARGS || "--help" in ARGS
             """)
     exit(1)
 end
+
+# Location of package/project that should be built into a library
 package_or_project_dir = ARGS[1]
+
+# Prefix where compiled library should be installed
 dest_dir = ARGS[2]
 
+# Library name
 lib_name = "trixi"
 
-incremental = true
+# Create a fresh sysimage and do not reuse the default sysimage
+incremental = false
 
+# Do not include stdlibs which are not needed
 filter_stdlibs = true
 
+# Overwrite existing files/folders at `dest_dir`
 force = true
 
+# Bundle header file with library (will be put in `PREFIX/include`)
 header_files = [joinpath(dirname(dirname(lib_dir)), "src", "trixi.h")]
 
-julia_init_c_file = "init.c"
+# Name of the files that include the initialization functions:
+# - `init.c` contains `trixi_initialize`/`trixi_finalize` for API compatibility
+# - the other file contains the `init_julia`/`shutdown_julia` functions from PackageCompiler
+julia_init_c_file = ["init.c", PackageCompiler.default_julia_init()]
 
-project_toml = realpath(joinpath(dirname(lib_dir), "Project.toml"))
-long_version = VersionNumber(TOML.parsefile(project_toml)["version"])
+# Extract version from `Project.toml`
+project_toml = joinpath(package_or_project_dir, "Project.toml")
+ctx = Pkg.Types.Context(env=Pkg.Types.EnvCache(project_toml))
+long_version = filter(p -> p.name == "LibTrixi", collect(values(ctx.env.manifest.deps)))[1]
 version = VersionNumber(long_version.major, long_version.minor, long_version.patch)
+println(version)
+wololo
 
+# Set compat level to minor. Since we using zerover at the moment, a bump in minor version
+# comes with potential ABI breakage
 compat_level = "minor"
 
+# Do not include lazy artifacts to keep library bundle size within sane bounds
 include_lazy_artifacts = false
 
+# Do not include transitive dependencies unless really needed
 include_transitive_dependencies = false
 
 @info("List of arguments passed to `create_library`:",

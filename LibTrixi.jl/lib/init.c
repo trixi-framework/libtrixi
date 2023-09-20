@@ -1,24 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/*
- * =========================================================================================
- * From PackageCompiler.jl's `julia_init.h`
- * ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
- */
-void init_julia(int argc, char *argv[]);
-void shutdown_julia(int retcode);
-/*
- * ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
- * =========================================================================================
- */
-
 // Track initialization/finalization status to prevent unhelpful errors
 static int is_initialized = 0;
 static int is_finalized = 0;
 
-void trixi_initialize(const char * _unused1 /* project_directory */,
-                      const char * _unused2 /* depot_path */) {
+void trixi_initialize(const char * project_directory__unused,
+                      const char * depot_path__unused) {
     // Prevent double initialization
     if (is_initialized) {
         fprintf(stderr, "ERROR in %s:%d (%s): %s\n", __FILE__, __LINE__, __func__,
@@ -28,10 +16,29 @@ void trixi_initialize(const char * _unused1 /* project_directory */,
     // Initialization after finalization is also erroneous, but finalization requires
     // initialization, so this is already caught above.
 
+    // Check if we want debug output
+    const char * env = getenv("LIBTRIXI_DEBUG");
+    const int show_debug = (env != NULL &&
+                            (strcmp(env, "all") == 0 || strcmp(env, "c") == 0));
+
+    // Do not error if project directory or depot path are passed, since this is supposed to
+    // work interchangeably with the C based library. However, if debugging is enabled, we
+    // can at least inform the user about it
+    if (project_directory__unused != NULL && show_debug) {
+      printf("trixi_initialize: 'project_directory' is non-null but will not be used\n");
+    }
+    if (depot_path__unused != NULL && show_debug) {
+      printf("trixi_initialize: 'depot_path' is non-null but will not be used\n");
+    }
+
     // Init Julia (do not pass command line arguments)
     int argc = 0;
     char** argv = NULL;
     init_julia(argc, argv);
+
+    if (show_debug) {
+      printf("trixi_initialize: Julia has been initialized\n");
+    }
 
     // Mark as initialized
     is_initialized = 1;
@@ -55,92 +62,3 @@ void trixi_finalize() {
     // Mark as finalized
     is_finalized = 1;
 }
-
-
-/*
- * =========================================================================================
- * From PackageCompiler.jl's `julia_init.c`
- * ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
- */
-
-#include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#ifdef _MSC_VER
-JL_DLLEXPORT char *dirname(char *);
-#else
-#include <libgen.h>
-#endif
-
-// Julia headers (for initialization and gc commands)
-#include "julia.h"
-#include "uv.h"
-
-void setup_args(int argc, char **argv) {
-    uv_setup_args(argc, argv);
-    jl_parse_opts(&argc, &argv);
-}
-
-const char *get_sysimage_path(const char *libname) {
-    if (libname == NULL) {
-        jl_error("julia: Specify `libname` when requesting the sysimage path");
-        exit(1);
-    }
-
-    void *handle = jl_load_dynamic_library(libname, JL_RTLD_DEFAULT, 0);
-    if (handle == NULL) {
-        jl_errorf("julia: Failed to load library at %s", libname);
-        exit(1);
-    }
-
-    const char *libpath = jl_pathname_for_handle(handle);
-    if (libpath == NULL) {
-        jl_errorf("julia: Failed to retrieve path name for library at %s",
-                  libname);
-        exit(1);
-    }
-
-    return libpath;
-}
-
-void set_depot_load_path(const char *root_dir) {
-#ifdef _WIN32
-    char *julia_share_subdir = "\\share\\julia";
-#else
-    char *julia_share_subdir = "/share/julia";
-#endif
-    char *share_dir =
-        calloc(sizeof(char), strlen(root_dir) + strlen(julia_share_subdir) + 1);
-    strcat(share_dir, root_dir);
-    strcat(share_dir, julia_share_subdir);
-
-#ifdef _WIN32
-    _putenv_s("JULIA_DEPOT_PATH", share_dir);
-    _putenv_s("JULIA_LOAD_PATH", share_dir);
-#else
-    setenv("JULIA_DEPOT_PATH", share_dir, 1);
-    setenv("JULIA_LOAD_PATH", share_dir, 1);
-#endif
-    free(share_dir);
-}
-
-void init_julia(int argc, char **argv) {
-    setup_args(argc, argv);
-
-    const char *sysimage_path = get_sysimage_path(JULIAC_PROGRAM_LIBNAME);
-    char *_sysimage_path = strdup(sysimage_path);
-    char *root_dir = dirname(dirname(_sysimage_path));
-    set_depot_load_path(root_dir);
-    free(_sysimage_path);
-
-    jl_options.image_file = sysimage_path;
-    julia_init(JL_IMAGE_CWD);
-}
-
-void shutdown_julia(int retcode) { jl_atexit_hook(retcode); }
-
-/*
- * ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
- * =========================================================================================
- */
