@@ -339,6 +339,16 @@ jobs:
       - name: Build libtrixi using PackageCompiler
         run: cd LibTrixi.jl/lib && make
 
+      - name: Build example
+        run: |
+          cd examples
+          make -f MakefileCompiled LIBTRIXI_PREFIX=$PWD/../LibTrixi.jl/lib/build
+
+      - name: Run example
+        run: |
+          cd examples
+          simple_trixi_controller_c ../libtrixi-julia ../LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
+
       # Enable tmate debugging of manually-triggered workflows if the input option was provided
       - name: Setup tmate session for debugging
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled && always() }}
