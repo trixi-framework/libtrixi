@@ -66,8 +66,8 @@ export SimulationState, store_simstate, load_simstate, delete_simstate!
 
 
 # global storage of name and version information of loaded packages
-function assemble_version_info(; filter_expr = identity, include_julia = true)
-    packages = Pkg.dependencies() |> values |> collect |> filter_expr
+function assemble_version_info(; filter_expr = p -> true, include_julia = true)
+    packages = filter(filter_expr, Pkg.dependencies() |> values |> collect)
     versions = String[]
     found_libtrixi = false
     for p in packages
@@ -97,10 +97,10 @@ function assemble_version_info(; filter_expr = identity, include_julia = true)
     return join(versions, "\n")
 end
 
-const _version_info = assemble_version_info(filter_expr = filter(p -> p.is_direct_dep))
+const _version_info = assemble_version_info(filter_expr = p -> p.is_direct_dep)
 const _version_info_extended = assemble_version_info()
 const _version_libtrixi = begin
-    libtrixi_string = assemble_version_info(filter_expr = filter(p -> p.name == "LibTrixi"),
+    libtrixi_string = assemble_version_info(filter_expr = p -> p.name == "LibTrixi",
                                             include_julia = false)
 
     # When running Julia with the LibTrixi package dir as the active project,
