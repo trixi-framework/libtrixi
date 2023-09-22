@@ -1,0 +1,18 @@
+# Override any of these variables on the command line if necessary, e.g.,
+# make -f MakefileExternal LIBTRIXI_PREFIX=path/to/install/dir FC=gfortran
+LIBTRIXI_PREFIX ?= ERROR_LIBTRIXI_PREFIX_NOT_SET
+# this works for Ubuntu with OpenMPI from apt-get
+MPI_PREFIX ?= /usr/lib/x86_64-linux-gnu/openmpi
+CC ?= gcc
+
+prefix := $(shell realpath $(LIBTRIXI_PREFIX))
+libdir := $(prefix)/lib
+incdir := $(prefix)/include
+
+CPPFLAGS ?= -I$(incdir) -I$(MPI_PREFIX)/include
+CFLAGS ?= -fPIC
+LDFLAGS ?= -L$(libdir) -Wl,-rpath,$(libdir) -L$(MPI_PREFIX)/lib -Wl,-rpath,$(MPI_PREFIX)/lib
+LIBS ?= -ltrixi -lmpi
+
+simple_trixi_controller_c: simple_trixi_controller.c
+	$(CC) $< -o $@ $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(LIBS)
