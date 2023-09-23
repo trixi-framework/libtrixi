@@ -23,6 +23,7 @@ enum {
     TRIXI_FTPR_VERSION_LIBRARY_PATCH,
     TRIXI_FTPR_VERSION_JULIA,
     TRIXI_FTPR_VERSION_JULIA_EXTENDED,
+    TRIXI_FTPR_EVAL_JULIA,
     TRIXI_FTPR_GET_T8CODE_FOREST,
 
     // The last one is for the array size
@@ -51,6 +52,7 @@ static const char* trixi_function_pointer_names[] = {
     [TRIXI_FTPR_VERSION_LIBRARY_PATCH]  = "trixi_version_library_patch_cfptr",
     [TRIXI_FTPR_VERSION_JULIA]          = "trixi_version_julia_cfptr",
     [TRIXI_FTPR_VERSION_JULIA_EXTENDED] = "trixi_version_julia_extended_cfptr",
+    [TRIXI_FTPR_EVAL_JULIA]             = "trixi_eval_julia_cfptr",
     [TRIXI_FTPR_GET_T8CODE_FOREST]      = "trixi_get_t8code_forest_cfptr"
 };
 
@@ -571,5 +573,9 @@ t8_forest_t trixi_get_t8code_forest(int handle) {
  */
 void trixi_eval_julia(const char * code) {
 
-    checked_eval_string(code, LOC);
+    // Get function pointer
+    const char* (*eval_julia)() = trixi_function_pointers[TRIXI_FTPR_EVAL_JULIA];
+
+    // Call function
+    eval_julia();
 }
