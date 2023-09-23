@@ -19,7 +19,7 @@ end
 @testset verbose=true showtiming=true "Evaluate string as code (trixi_eval_string)" begin
     # We can't really do much more than a smoke test, since the C API does not return
     # anything useful
-    @test_throws UndefVarError trixi_eval_julia("wololo")
+    @test_throws UndefVarError trixi_eval_julia(pointer("wololo"))
 end
 
 
