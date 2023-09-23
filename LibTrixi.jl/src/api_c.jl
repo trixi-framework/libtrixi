@@ -389,7 +389,8 @@ Execute the provided code in the current Julia runtime environment.
 function trixi_eval_julia end
 
 Base.@ccallable function trixi_eval_julia(code::Cstring)::Cvoid
-    return trixi_eval_julia_jl(unsafe_string(code))
+    trixi_eval_julia_jl(unsafe_string(code))
+    return # Return nothing to not pass arbitrary Julia objects to C
 end
 
 trixi_eval_julia_cfptr() = @cfunction(trixi_eval_julia, Cvoid, (Cstring,))

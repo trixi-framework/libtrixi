@@ -141,6 +141,5 @@ end
 ############################################################################################
 function trixi_eval_julia_jl(code)
     expr = Meta.parse(code)
-    Base.eval(Main, expr)
-    return
+    return Base.eval(Main, expr)
 end
