@@ -574,8 +574,9 @@ t8_forest_t trixi_get_t8code_forest(int handle) {
 void trixi_eval_julia(const char * code) {
 
     // Get function pointer
-    const char* (*eval_julia)() = trixi_function_pointers[TRIXI_FTPR_EVAL_JULIA];
+    const char* (*eval_julia)(const char *) =
+        trixi_function_pointers[TRIXI_FTPR_EVAL_JULIA];
 
     // Call function
-    eval_julia();
+    eval_julia(code);
 }
