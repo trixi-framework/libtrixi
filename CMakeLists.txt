@@ -94,7 +94,7 @@ if ( T8CODE_FOUND )
 endif()
 
 # Libraries to link
-target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} MPI::MPI_C )
+target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} )
 
 # Set appropriate compile flags
 target_compile_options( ${PROJECT_NAME} PUBLIC "-fPIC" )
