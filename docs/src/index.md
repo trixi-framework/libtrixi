@@ -255,7 +255,7 @@ that are linked with your main program. See `MakefileExternal` for an example of
 this. If you skip this step, everything will work as usual, but some things might run
 slightly slower.
 
-### Experimental support direct compilation of the Julia sources
+### Experimental support for direct compilation of the Julia sources
 There is _experimental_ support for compiling the Julia sources in LibTrixi.jl to a shared
 library with a C interface. This is possible with the use of the Julia package
 [PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl).
@@ -263,7 +263,9 @@ library with a C interface. This is possible with the use of the Julia package
 To try this out, perform the following steps:
 1. Initialize the project directory `libtrixi-julia` using `libtrixi-init-julia` as
    described above.
-2. Go to the `LibTrixi.jl/lib` directory and call `make`:
+2. Go to the `LibTrixi.jl/lib` directory in the repository root,
+   make sure that `PROJECT_DIR` (defined in `Makefile`) point to your `libtrixi-julia` directory,
+   and call `make`:
    ```shell
    cd LibTrixi.jl/lib
    make
