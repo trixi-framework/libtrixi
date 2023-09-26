@@ -19,12 +19,15 @@ Nevertheless, basic functionality is already implemented and actively tested.**
 
 ### Prerequisites
 
-Currently, libtrixi is only developed and tested for Linux.
-Furthermore, a local installation of `MPI`,
-[`t8code`](https://github.com/DLR-AMR/t8code), and
-[`Julia`](https://julialang.org/downloads/platform/) is required.
-Furthermore, a C11-compatible C compiler and a Fortran 2018-compatible Fortran compiler are
-necessary to build the C library and its Fortran bindings.
+Currently, libtrixi is only developed and tested for Linux. Furthermore, the following
+software packages need to be made available locally before installing libtrixi:
+* [Julia](https://julialang.org/downloads/platform/) v1.8+
+* C compiler with support for C11 or later (e.g., [gcc](https://gcc.gnu.org/) or [clang](https://clang.llvm.org/))
+* Fortran compiler with support for Fortran 2018 or later (e.g., [gfortran](https://gcc.gnu.org/fortran/))
+* [CMake](https://cmake.org/)
+* MPI (e.g., [OpenMPI](https://www.open-mpi.org/) or [MPICH](https://www.mpich.org/))
+* [HDF5](https://www.hdfgroup.org/solutions/hdf5/)
+* [t8code](https://github.com/DLR-AMR/t8code)
 
 ### Get the sources
 
@@ -251,6 +254,37 @@ program, you need to add the file `$LIBTRIXI_PREFIX/lib/libtrixi_tls.o` to the l
 that are linked with your main program. See `MakefileExternal` for an example of how to do
 this. If you skip this step, everything will work as usual, but some things might run
 slightly slower.
+
+### Experimental support for direct compilation of the Julia sources
+There is _experimental_ support for compiling the Julia sources in LibTrixi.jl to a shared
+library with a C interface. This is possible with the use of the Julia package
+[PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl).
+
+To try this out, perform the following steps:
+1. Initialize the project directory `libtrixi-julia` using `libtrixi-init-julia` as
+   described above.
+2. Go to the `LibTrixi.jl/lib` directory in the repository root,
+   make sure that `PROJECT_DIR` (defined in `Makefile`) point to your `libtrixi-julia` directory,
+   and call `make`:
+   ```shell
+   cd LibTrixi.jl/lib
+   make
+   ```
+3. Go to the `examples` folder in the repository root and compile
+   `simple_trixi_controller_c`:
+   ```shell
+   cd examples
+   make -f MakefileCompiled LIBTRIXI_PREFIX=$PWD/../LibTrixi.jl/lib/build
+   ```
+   This will create a `simple_trixi_controller_c` file.
+4. From inside the `examples` folder you should be able to run the example (in parallel)
+   with the following command:
+   ```shell
+   mpirun -n 2 simple_trixi_controller_c \
+       ../libtrixi-julia \
+       ../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl
+   ```
+   Optionally, you can set `LIBTRIXI_DEBUG=all` to get some debug output along the way.
 
 
 ## Referencing

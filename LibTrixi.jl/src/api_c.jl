@@ -374,3 +374,23 @@ end
 
 trixi_get_t8code_forest_cfptr() =
     @cfunction(trixi_get_t8code_forest, Ptr{Trixi.t8_forest}, (Cint,))
+
+############################################################################################
+# Auxiliary
+############################################################################################
+"""
+    trixi_eval_julia(code::Cstring)::Cvoid
+
+Execute the provided code in the current Julia runtime environment.
+
+!!! warning "Only for development"
+    Code is not checked prior to execution.
+"""
+function trixi_eval_julia end
+
+Base.@ccallable function trixi_eval_julia(code::Cstring)::Cvoid
+    trixi_eval_julia_jl(unsafe_string(code))
+    return # Return nothing to not pass arbitrary Julia objects to C
+end
+
+trixi_eval_julia_cfptr() = @cfunction(trixi_eval_julia, Cvoid, (Cstring,))

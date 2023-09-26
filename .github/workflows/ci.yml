@@ -30,6 +30,7 @@ jobs:
         test_type:
           - regular
           - coverage
+          - package-compiler
         arch:
           - x64
         julia_version:
@@ -115,11 +116,13 @@ jobs:
                    -DENABLE_TESTING=ON -DJULIA_PROJECT_PATH=../libtrixi-julia
 
       - name: Build
+        if: ${{ matrix.test_type == 'regular' || matrix.test_type == 'coverage' }}
         run: |
           cd build
           make -j 2
 
       - name: Install
+        if: ${{ matrix.test_type == 'regular' || matrix.test_type == 'coverage' }}
         run: |
           cd build
           make install
@@ -131,6 +134,7 @@ jobs:
           make -f MakefileExternal LIBTRIXI_PREFIX=$PWD/../install
 
       - name: Initialize project directory
+        if: ${{ matrix.test_type == 'regular' || matrix.test_type == 'coverage' }}
         # Note that we set the Julia depot to `~/.julia` *ONLY* to make use of the
         # julia-actions/cache above (which unfortunately hardcoded the `~/.julia`
         # directory). For this reason, we also need to use `--force`
@@ -149,6 +153,35 @@ jobs:
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl .
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_t8code_2d_dgsem_advection_basic.jl .
 
+      - name: Initialize project directory
+        if: ${{ matrix.test_type == 'package-compiler' }}
+        # Note that we set the Julia depot to `~/.julia` *ONLY* to make use of the
+        # julia-actions/cache above (which unfortunately hardcoded the `~/.julia`
+        # directory). For this reason, we also need to use `--force`
+        # Still create subfolder `julia-depot`, which reflects the typical default
+        # and is tested below
+        run: |
+          mkdir libtrixi-julia
+          cd libtrixi-julia
+          mkdir julia-depot
+          ../utils/libtrixi-init-julia .. \
+              --hdf5-library /usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so \
+              --t8code-library ../t8code-local/prefix/lib/libt8.so \
+              --julia-depot ~/.julia \
+              --force
+
+      - name: Build libtrixi using PackageCompiler
+        if: ${{ matrix.test_type == 'package-compiler' }}
+        run: |
+          cd LibTrixi.jl/lib
+          make
+
+      - name: Build example
+        if: ${{ matrix.test_type == 'package-compiler' }}
+        run: |
+          cd examples
+          make -f MakefileCompiled LIBTRIXI_PREFIX=$PWD/../LibTrixi.jl/lib/build
+
       - name: Prepare coverage reporting
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
@@ -156,6 +189,7 @@ jobs:
           lcov --directory ../build --zerocounters
 
       - name: Run Julia tests
+        if: ${{ matrix.test_type == 'regular' || matrix.test_type == 'coverage' }}
         uses: julia-actions/julia-runtest@v1
         with:
           coverage: ${{ matrix.test_type == 'coverage' }}
@@ -166,6 +200,7 @@ jobs:
           LD_PRELOAD: "" # Disable preloading libcurl.so since it does not work with the JLL-provided libhdf5.so
 
       - name: Run examples
+        if: ${{ matrix.test_type == 'regular' || matrix.test_type == 'coverage' }}
         run: |
           cd libtrixi-julia
           ../build/examples/simple_trixi_controller_c . libelixir_tree1d_dgsem_advection_basic.jl
@@ -178,7 +213,18 @@ jobs:
         env:
           LIBTRIXI_DEBUG: all
 
+      - name: Run examples
+        if: ${{ matrix.test_type == 'package-compiler' }}
+        run: |
+          cd examples
+          mpirun -n 2 simple_trixi_controller_c \
+              ../libtrixi-julia \
+              ../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl
+        env:
+          LIBTRIXI_DEBUG: all
+
       - name: Check error handling of examples
+        if: ${{ matrix.test_type == 'regular' || matrix.test_type == 'coverage' }}
         run: |
           cd libtrixi-julia
           set +e  # disable early exit on non-zero exit code
@@ -203,6 +249,7 @@ jobs:
           LIBTRIXI_DEBUG: all
 
       - name: Run C tests
+        if: ${{ matrix.test_type == 'regular' || matrix.test_type == 'coverage' }}
         run: |
           cd build/test/c
           ctest -V
@@ -211,6 +258,7 @@ jobs:
           GTEST_COLOR: 'yes'
 
       - name: Run Fortran tests
+        if: ${{ matrix.test_type == 'regular' || matrix.test_type == 'coverage' }}
         run: |
           cd build/test/fortran
           ctest -V

@@ -135,3 +135,11 @@ function trixi_get_t8code_forest_jl(simstate)
     mesh, _, _, _ = Trixi.mesh_equations_solver_cache(simstate.semi)
     return mesh.forest
 end
+
+############################################################################################
+# Auxiliary
+############################################################################################
+function trixi_eval_julia_jl(code)
+    expr = Meta.parse(code)
+    return Base.eval(Main, expr)
+end
