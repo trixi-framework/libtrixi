@@ -60,74 +60,92 @@ if( ENABLE_TESTING )
     find_package( test-drive REQUIRED )
 endif()
 
+# Optionally use PackageCompiler.jl to build standalone libtrixi.so
+option( USE_PACKAGE_COMPILER "Build standalone libtrixi.so using PackageCompiler.jl" )
+if( USE_PACKAGE_COMPILER )
+    if ( NOT DEFINED JULIA_PROJECT_PATH )
+        message( FATAL_ERROR "JULIA_PROJECT_PATH needs to be set for PackageCompiler.jl.")
+    endif()
+
+    # no sources
+    add_library( ${PROJECT_NAME} INTERFACE build-pc/lib/libtrixi.so )
+    add_custom_command( OUTPUT build-pc/lib/libtrixi.so
+                        COMMENT "Building ${PROJECT_NAME} with PackageCompiler.jl..."
+                        COMMAND ${JULIA_EXECUTABLE}
+                                --project=${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib
+                                ${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib/build.jl
+                                ${JULIA_PROJECT_PATH}
+                                ${CMAKE_BINARY_DIR}/build-pc )
+
+else()
+
+    # Library target
+    add_library ( ${PROJECT_NAME} SHARED
+        src/api.c
+        src/api.f90
+        src/auxiliary.h
+        src/auxiliary.c
+        src/trixi.h
+    )
+
+    # Include directories, private
+    target_include_directories ( ${PROJECT_NAME} PRIVATE src )
+
+    # Version info
+    set_target_properties ( ${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION} )
+
+    # Version info for the shared object
+    set_target_properties ( ${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR} )
+
+    # Include directories, public for actual users
+    set_target_properties ( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER src/trixi.h )
+
+    # Fortran mod file location
+    set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR})
 
 
-# Library target
-add_library ( ${PROJECT_NAME} SHARED
-    src/api.c
-    src/api.f90
-    src/auxiliary.h
-    src/auxiliary.c
-    src/trixi.h
-)
 
-# Include directories, private
-target_include_directories ( ${PROJECT_NAME} PRIVATE src )
+    # Include directories
+    target_include_directories( ${PROJECT_NAME} PRIVATE src ${JULIA_INCLUDE_DIRS} )
+    if ( T8CODE_FOUND )
+        target_include_directories( ${PROJECT_NAME} PRIVATE ${T8CODE_INCLUDE_DIR} )
+    endif()
 
-# Version info
-set_target_properties ( ${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION} )
+    # Libraries to link
+    target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} )
 
-# Version info for the shared object
-set_target_properties ( ${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR} )
-
-# Include directories, public for actual users
-set_target_properties ( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER src/trixi.h )
-
-# Fortran mod file location
-set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR})
+    # Set appropriate compile flags
+    target_compile_options( ${PROJECT_NAME} PUBLIC "-fPIC" )
+    target_compile_options( ${PROJECT_NAME} PRIVATE -Wall -Wextra -Werror)
+    # Require C11 standard with GNU extensions for C files
+    target_compile_options( ${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-std=gnu11>)
+    # Require Fortran 2018 standard for Fortran files
+    target_compile_options( ${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:Fortran>:-std=f2018>)
 
 
 
-# Include directories
-target_include_directories( ${PROJECT_NAME} PRIVATE src ${JULIA_INCLUDE_DIRS} )
-if ( T8CODE_FOUND )
-    target_include_directories( ${PROJECT_NAME} PRIVATE ${T8CODE_INCLUDE_DIR} )
+    # Add auxiliary *object* library to support fast thread-local storage (TLS)
+    add_library ( ${PROJECT_NAME}_tls OBJECT
+        src/tls.c
+    )
+    target_include_directories( ${PROJECT_NAME}_tls PRIVATE ${JULIA_INCLUDE_DIRS} )
+
+    # Add examples
+    add_subdirectory( examples )
+
+    # Add test on demand
+    if( ENABLE_TESTING )
+        enable_testing()
+        add_subdirectory( test/c )
+        add_subdirectory( test/fortran )
+    endif()
+
+
+    # Install configuration
+    install( TARGETS ${PROJECT_NAME} )
+    install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/libtrixi.mod TYPE INCLUDE)
+    install( FILES $<TARGET_OBJECTS:${PROJECT_NAME}_tls> TYPE LIB RENAME lib${PROJECT_NAME}_tls.o )
+    install( DIRECTORY LibTrixi.jl DESTINATION share/libtrixi )
+    install( FILES "${CMAKE_BINARY_DIR}/LIBTRIXI_VERSION" DESTINATION share/julia )
+    install( PROGRAMS utils/libtrixi-init-julia TYPE BIN )
 endif()
-
-# Libraries to link
-target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} )
-
-# Set appropriate compile flags
-target_compile_options( ${PROJECT_NAME} PUBLIC "-fPIC" )
-target_compile_options( ${PROJECT_NAME} PRIVATE -Wall -Wextra -Werror)
-# Require C11 standard with GNU extensions for C files
-target_compile_options( ${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-std=gnu11>)
-# Require Fortran 2018 standard for Fortran files
-target_compile_options( ${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:Fortran>:-std=f2018>)
-
-
-
-# Add auxiliary *object* library to support fast thread-local storage (TLS)
-add_library ( ${PROJECT_NAME}_tls OBJECT
-    src/tls.c
-)
-target_include_directories( ${PROJECT_NAME}_tls PRIVATE ${JULIA_INCLUDE_DIRS} )
-
-# Add examples
-add_subdirectory( examples )
-
-# Add test on demand
-if( ENABLE_TESTING )
-    enable_testing()
-    add_subdirectory( test/c )
-    add_subdirectory( test/fortran )
-endif()
-
-
-# Install configuration
-install( TARGETS ${PROJECT_NAME} )
-install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/libtrixi.mod TYPE INCLUDE)
-install( FILES $<TARGET_OBJECTS:${PROJECT_NAME}_tls> TYPE LIB RENAME lib${PROJECT_NAME}_tls.o )
-install( DIRECTORY LibTrixi.jl DESTINATION share/libtrixi )
-install( FILES "${CMAKE_BINARY_DIR}/LIBTRIXI_VERSION" DESTINATION share/julia )
-install( PROGRAMS utils/libtrixi-init-julia TYPE BIN )
