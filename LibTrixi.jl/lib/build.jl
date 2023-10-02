@@ -54,7 +54,7 @@ header_files = [joinpath(dirname(dirname(@__DIR__)), "src", "trixi.h")]
 # Name of the files that include the initialization functions:
 # - `init.c` contains `trixi_initialize`/`trixi_finalize` for API compatibility
 # - the other file contains the `init_julia`/`shutdown_julia` functions from PackageCompiler
-julia_init_c_file = [joinpath(@__DIR__, "init.c"), PackageCompiler.default_julia_init()]
+julia_init_c_file = ["init.c", PackageCompiler.default_julia_init()]
 
 # Extract version from `Project.toml`
 project_toml = joinpath(package_or_project_dir, "Project.toml")

@@ -67,15 +67,21 @@ if( USE_PACKAGE_COMPILER )
         message( FATAL_ERROR "JULIA_PROJECT_PATH needs to be set for PackageCompiler.jl.")
     endif()
 
+    # copy source with initialization routines, an object file will be created
+    file( MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/build-pc )
+    file( COPY_FILE ${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib/init.c
+                    ${CMAKE_BINARY_DIR}/build-pc/init.c
+                    ONLY_IF_DIFFERENT )
     # no sources
-    add_library( ${PROJECT_NAME} INTERFACE build-pc/lib/libtrixi.so )
-    add_custom_command( OUTPUT build-pc/lib/libtrixi.so
+    add_library( ${PROJECT_NAME} INTERFACE prefix-pc/lib/libtrixi.so )
+    add_custom_command( OUTPUT prefix-pc/lib/libtrixi.so
                         COMMENT "Building ${PROJECT_NAME} with PackageCompiler.jl..."
                         COMMAND ${JULIA_EXECUTABLE}
                                 --project=${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib
                                 ${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib/build.jl
                                 ${JULIA_PROJECT_PATH}
-                                ${CMAKE_BINARY_DIR}/build-pc )
+                                ${CMAKE_BINARY_DIR}/prefix-pc
+                        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/build-pc )
 
 else()
 
