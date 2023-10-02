@@ -49,7 +49,7 @@ For building, `cmake` and its typical workflow is used.
 2. Call cmake
 
     ```bash
-    cmake -DCMAKE_BUILD_TYPE=(debug|release) -DCMAKE_INSTALL_PREFIX=<install_directory> ..
+    cmake -DCMAKE_BUILD_TYPE=(Debug|Release) -DCMAKE_INSTALL_PREFIX=<install_directory> ..
     ```
 
     `cmake` should find `MPI` and `Julia` automatically. If not, the directories
