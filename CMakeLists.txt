@@ -56,25 +56,37 @@ if( ENABLE_TESTING )
     find_package( GTest REQUIRED )
 
     set ( TEST_DRIVE_FIND_METHOD fetch )
-    # option TEST_DRIVE_BUILD_TESTING is hard-coded to ON
+    # Option TEST_DRIVE_BUILD_TESTING is hard-coded to ON, could be spared
     find_package( test-drive REQUIRED )
 endif()
 
 # Optionally use PackageCompiler.jl to build standalone libtrixi.so
 option( USE_PACKAGE_COMPILER "Build standalone libtrixi.so using PackageCompiler.jl" )
+
 if( USE_PACKAGE_COMPILER )
     if ( NOT DEFINED LIBTRIXI_JULIA_PROJECT )
         message( FATAL_ERROR "LIBTRIXI_JULIA_PROJECT needs to be set for PackageCompiler.jl.")
     endif()
 
-    # copy source with initialization routines, an object file will be created
+    # Copy source with initialization routines; an object file will be created
     file( MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/build-pc )
     file( COPY_FILE ${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib/init.c
                     ${CMAKE_BINARY_DIR}/build-pc/init.c
                     ONLY_IF_DIFFERENT )
-    # no sources
-    add_library( ${PROJECT_NAME} INTERFACE prefix-pc/lib/libtrixi.so )
-    add_custom_command( OUTPUT prefix-pc/lib/libtrixi.so
+
+    # Define PackageCompiler.jl output file
+    set( PC_LIBTRIXI_SO ${CMAKE_BINARY_DIR}/prefix-pc/lib/libtrixi.so )
+
+    # Add a library target (libtrixi), but only for Fortran module)
+    add_library( ${PROJECT_NAME} SHARED
+        src/api.f90
+    )
+
+    # Add linking to the real libtrixi.so produced by PackageCompiler.jl
+    target_link_libraries( ${PROJECT_NAME} INTERFACE ${PC_LIBTRIXI_SO} )
+
+    # Actual command to run PackageCompiler.jl
+    add_custom_command( OUTPUT ${PC_LIBTRIXI_SO}
                         COMMENT "Building ${PROJECT_NAME} with PackageCompiler.jl..."
                         COMMAND ${JULIA_EXECUTABLE}
                                 --project=${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib
@@ -82,9 +94,7 @@ if( USE_PACKAGE_COMPILER )
                                 ${LIBTRIXI_JULIA_PROJECT}
                                 ${CMAKE_BINARY_DIR}/prefix-pc
                         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/build-pc )
-
 else()
-
     # Library target
     add_library ( ${PROJECT_NAME} SHARED
         src/api.c
@@ -105,9 +115,6 @@ else()
 
     # Include directories, public for actual users
     set_target_properties ( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER src/trixi.h )
-
-    # Fortran mod file location
-    set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR})
 
 
 
@@ -136,9 +143,6 @@ else()
     )
     target_include_directories( ${PROJECT_NAME}_tls PRIVATE ${JULIA_INCLUDE_DIRS} )
 
-    # Add examples
-    add_subdirectory( examples )
-
     # Add test on demand
     if( ENABLE_TESTING )
         enable_testing()
@@ -148,10 +152,19 @@ else()
 
 
     # Install configuration
-    install( TARGETS ${PROJECT_NAME} )
-    install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/libtrixi.mod TYPE INCLUDE)
     install( FILES $<TARGET_OBJECTS:${PROJECT_NAME}_tls> TYPE LIB RENAME lib${PROJECT_NAME}_tls.o )
-    install( DIRECTORY LibTrixi.jl DESTINATION share/libtrixi )
     install( FILES "${CMAKE_BINARY_DIR}/LIBTRIXI_VERSION" DESTINATION share/julia )
-    install( PROGRAMS utils/libtrixi-init-julia TYPE BIN )
 endif()
+
+
+# Fortran mod file location
+set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR})
+
+# Common install configuration
+install( TARGETS ${PROJECT_NAME} )
+install( DIRECTORY LibTrixi.jl DESTINATION share/libtrixi )
+install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/libtrixi.mod TYPE INCLUDE)
+install( PROGRAMS utils/libtrixi-init-julia TYPE BIN )
+
+# Add examples
+add_subdirectory( examples )
