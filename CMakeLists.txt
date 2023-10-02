@@ -47,10 +47,10 @@ find_package( MPI REQUIRED )
 # Find Google Test and test-drive on demand
 option( ENABLE_TESTING "Build tests using Google Test (C) and test-drive (Fortran)" )
 if( ENABLE_TESTING )
-    if ( NOT DEFINED JULIA_PROJECT_PATH )
-        message( FATAL_ERROR "JULIA_PROJECT_PATH not set, tests will not work.")
+    if ( NOT DEFINED LIBTRIXI_JULIA_PROJECT )
+        message( FATAL_ERROR "LIBTRIXI_JULIA_PROJECT not set, tests will not work.")
     endif()
-    set( JULIA_PROJECT_PATH ${JULIA_PROJECT_PATH} CACHE PATH
+    set( LIBTRIXI_JULIA_PROJECT ${LIBTRIXI_JULIA_PROJECT} CACHE PATH
                             "Path to Julia project (typically 'libtrixi-julia').")
 
     find_package( GTest REQUIRED )
@@ -63,8 +63,8 @@ endif()
 # Optionally use PackageCompiler.jl to build standalone libtrixi.so
 option( USE_PACKAGE_COMPILER "Build standalone libtrixi.so using PackageCompiler.jl" )
 if( USE_PACKAGE_COMPILER )
-    if ( NOT DEFINED JULIA_PROJECT_PATH )
-        message( FATAL_ERROR "JULIA_PROJECT_PATH needs to be set for PackageCompiler.jl.")
+    if ( NOT DEFINED LIBTRIXI_JULIA_PROJECT )
+        message( FATAL_ERROR "LIBTRIXI_JULIA_PROJECT needs to be set for PackageCompiler.jl.")
     endif()
 
     # copy source with initialization routines, an object file will be created
@@ -79,7 +79,7 @@ if( USE_PACKAGE_COMPILER )
                         COMMAND ${JULIA_EXECUTABLE}
                                 --project=${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib
                                 ${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib/build.jl
-                                ${JULIA_PROJECT_PATH}
+                                ${LIBTRIXI_JULIA_PROJECT}
                                 ${CMAKE_BINARY_DIR}/prefix-pc
                         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/build-pc )
 

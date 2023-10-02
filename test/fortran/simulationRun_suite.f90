@@ -6,7 +6,7 @@ module simulationRun_suite
 
   public :: collect_simulationRun_suite
 
-  character(len=*), parameter, public :: julia_project_path = JULIA_PROJECT_PATH
+  character(len=*), parameter, public :: julia_project_path = LIBTRIXI_JULIA_PROJECT
   character(len=*), parameter, public :: libelixir_path = &
     "../../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl"
 

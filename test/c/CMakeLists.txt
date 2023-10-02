@@ -40,7 +40,7 @@ foreach ( TEST ${TESTS} )
 
     # pass julia project path
     target_compile_definitions( ${TARGET_NAME} PRIVATE 
-                                JULIA_PROJECT_PATH=\"${JULIA_PROJECT_PATH}\" )
+                                LIBTRIXI_JULIA_PROJECT=\"${LIBTRIXI_JULIA_PROJECT}\" )
 
     # discover tests
     gtest_discover_tests( ${TARGET_NAME} )

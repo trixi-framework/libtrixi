@@ -50,7 +50,7 @@ For testing the C interface of libtrixi we rely on [GoogleTest](https://google.g
 The tests are contained in `cpp`-files located under `test/c`. They are processed by `cmake` and made available via
 `ctest`, provided the options
 ```
--DENABLE_TESTING=ON -DJULIA_PROJECT_PATH=<libtrixi-julia_directory>
+-DENABLE_TESTING=ON -DLIBTRIXI_JULIA_PROJECT=<libtrixi-julia_directory>
 ```
 are passed to `cmake` during configuration.
 The executables can then be found under `<build_directory>/test/c` (they will not be installed). To run them, execute

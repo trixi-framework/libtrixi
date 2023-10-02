@@ -7,7 +7,7 @@ module versionInfo_suite
 
   public :: collect_versionInfo_suite
 
-  character(len=*), parameter, public :: julia_project_path = JULIA_PROJECT_PATH
+  character(len=*), parameter, public :: julia_project_path = LIBTRIXI_JULIA_PROJECT
 
   contains
 
