@@ -63,6 +63,9 @@ endif()
 # Optionally use PackageCompiler.jl to build standalone libtrixi.so
 option( USE_PACKAGE_COMPILER "Build standalone libtrixi.so using PackageCompiler.jl" )
 
+# Fortran mod file location
+set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR})
+
 if( USE_PACKAGE_COMPILER )
     if ( NOT DEFINED LIBTRIXI_JULIA_PROJECT )
         message( FATAL_ERROR "LIBTRIXI_JULIA_PROJECT needs to be set for PackageCompiler.jl.")
@@ -77,8 +80,8 @@ if( USE_PACKAGE_COMPILER )
     # Define PackageCompiler.jl output file
     set( PC_LIBTRIXI_SO ${CMAKE_BINARY_DIR}/prefix-pc/lib/libtrixi.so )
 
-    # Add a library target (libtrixi), but only for Fortran module)
-    add_library( ${PROJECT_NAME} SHARED
+    # Add a library target (libtrixi), but only for Fortran module
+    add_library( ${PROJECT_NAME} OBJECT
         src/api.f90
     )
 
@@ -94,6 +97,12 @@ if( USE_PACKAGE_COMPILER )
                                 ${LIBTRIXI_JULIA_PROJECT}
                                 ${CMAKE_BINARY_DIR}/prefix-pc
                         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/build-pc )
+
+    # Install configuration
+    install( DIRECTORY "${CMAKE_BINARY_DIR}/prefix-pc/lib/" TYPE LIB )
+    install( DIRECTORY "${CMAKE_BINARY_DIR}/prefix-pc/share/julia"
+             DESTINATION share
+             PATTERN "cert.pem" EXCLUDE )
 else()
     # Library target
     add_library ( ${PROJECT_NAME} SHARED
@@ -112,9 +121,6 @@ else()
 
     # Version info for the shared object
     set_target_properties ( ${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR} )
-
-    # Include directories, public for actual users
-    set_target_properties ( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER src/trixi.h )
 
 
 
@@ -157,12 +163,13 @@ else()
 endif()
 
 
-# Fortran mod file location
-set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR})
+
+# Public header for libtrixi
+set_target_properties ( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER src/trixi.h )
 
 # Common install configuration
 install( TARGETS ${PROJECT_NAME} )
-install( DIRECTORY LibTrixi.jl DESTINATION share/libtrixi )
+install( DIRECTORY LibTrixi.jl DESTINATION share/libtrixi PATTERN "lib" EXCLUDE )
 install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/libtrixi.mod TYPE INCLUDE)
 install( PROGRAMS utils/libtrixi-init-julia TYPE BIN )
 
