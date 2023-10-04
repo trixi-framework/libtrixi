@@ -228,8 +228,10 @@ set to `all`. Alternative values for the variable are `c` or `julia` to only sho
 statements from the C or Julia part of the library, respectively. All values are
 case-sensitive and must be provided all lowercase.
 
-
 ### Linking against libtrixi
+
+#### Make
+
 To use libtrixi in your program, you need to specify `-I$LIBTRIXI_PREFIX/include` for the
 include directory with header and module files, `-L$LIBTRIXI_PREFIX/lib` for the library
 directory, and `-ltrixi` for the library itself during your build process. Optionally, you
@@ -245,6 +247,16 @@ which can be invoked from inside the `examples/` directory as
 make -f MakefileExternal LIBTRIXI_PREFIX=path/to/libtrixi/prefix
 ```
 to build `simple_trixi_controller_f`.
+
+#### CMake
+
+A CMake module for the discovery of an installed libtrixi library is provided with
+[`cmake/FindLibTrixi.cmake`](cmake/FindLibTrixi.cmake). Upon invocation of
+`find_package(LibTrixi)`, the CMake variable `LIBTRIXI_PREFIX` must be set to
+`<install_directory>`. An example `CMakeLists.txt` can be found in
+[`examples/CMakeListsExternal.txt`](examples/CMakeListsExternal.txt).
+
+#### Note on thread-local storage (TLS)
 
 Note: On Linux and FreeBSD systems (i.e., *not* on macOS or Windows), Julia may internally
 use a faster implementation for thread-local storage (TLS), which is used whenever Julia
