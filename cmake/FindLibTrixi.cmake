@@ -5,23 +5,17 @@ if ( LIBTRIXI_FOUND )
     return()
 endif()
 
-
-
 #
-# Look for include, libs, executables
+# Look for include, libs, version file
 #
 find_path ( LIBTRIXI_INCLUDE_DIR trixi.h PATHS ${LIBTRIXI_PREFIX}/include )
-find_file ( LIBTRIXI_VERSION_FILE LIBTRIXI_VERSION PATHS ${LIBTRIXI_PREFIX} )
 find_library ( LIBTRIXI_LIBRARY trixi PATHS ${LIBTRIXI_PREFIX}/lib )
-
-
+find_file ( LIBTRIXI_VERSION_FILE LIBTRIXI_VERSION PATHS ${LIBTRIXI_PREFIX}/share/julia )
 
 #
 # Extract version
 #
-file ( READ ${LIBTRIXI_VERSION_FILE} LIBTRIXI_VERSION_STRING )
-
-
+file ( STRINGS ${LIBTRIXI_VERSION_FILE} LIBTRIXI_VERSION_STRING )
 
 #
 # Finalize
