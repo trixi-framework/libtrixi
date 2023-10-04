@@ -70,6 +70,9 @@ if( USE_PACKAGE_COMPILER )
     if ( NOT DEFINED LIBTRIXI_JULIA_PROJECT )
         message( FATAL_ERROR "LIBTRIXI_JULIA_PROJECT needs to be set for PackageCompiler.jl.")
     endif()
+    if ( ENABLE_TESTING )
+        message( NOTICE "Testing is not supported when PackageCompiler is used.")
+    endif()
 
     # Copy source with initialization routines; an object file will be created
     file( MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/build-pc )
