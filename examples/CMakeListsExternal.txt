@@ -13,16 +13,17 @@ find_package( MPI REQUIRED )
 # Find LibTrixi
 find_package( LibTrixi REQUIRED )
 
+# Set sources
 set ( TARGET_NAME trixi_controller_simple )
 add_executable ( ${TARGET_NAME} trixi_controller_simple.c )
 
-# set libraries to link
+# Set libraries to link
 target_link_libraries(
         ${TARGET_NAME}
         PRIVATE MPI::MPI_C ${LIBTRIXI_LIBRARY}
 )
 
-# set include directories
+# Set include directories
 target_include_directories(
     ${TARGET_NAME}
     PRIVATE ${LIBTRIXI_INCLUDE_DIR}
