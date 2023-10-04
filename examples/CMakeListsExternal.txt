@@ -1,0 +1,29 @@
+# Specify the minimum version
+cmake_minimum_required ( VERSION 3.9 )
+
+# Specify a project name
+project(ExternalLibTrixi)
+
+# Additional cmake modules (should contain FindLibTrixi.cmake)
+list ( APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake" )
+
+# Find MPI
+find_package( MPI REQUIRED )
+
+# Find LibTrixi
+find_package( LibTrixi REQUIRED )
+
+set ( TARGET_NAME trixi_controller_simple )
+add_executable ( ${TARGET_NAME} trixi_controller_simple.c )
+
+# set libraries to link
+target_link_libraries(
+        ${TARGET_NAME}
+        PRIVATE MPI::MPI_C ${LIBTRIXI_LIBRARY}
+)
+
+# set include directories
+target_include_directories(
+    ${TARGET_NAME}
+    PRIVATE ${LIBTRIXI_INCLUDE_DIR}
+)
