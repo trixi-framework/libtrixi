@@ -133,6 +133,18 @@ jobs:
           cd examples
           make -f MakefileExternal LIBTRIXI_PREFIX=$PWD/../install
 
+      - name: Test building in external CMake project
+        if: ${{ matrix.test_type == 'regular' }}
+        run: |
+          mkdir examples/test_cmake
+          cp examples/simple_trixi_controller.c examples/test_cmake/
+          cp examples/CMakeListsExternal.txt    examples/test_cmake/CMakeLists.txt
+          cp cmake/FindLibTrixi.cmake           examples/test_cmake/
+          mkdir examples/test_cmake/build
+          cd    examples/test_cmake/build
+          cmake -DLIBTRIXI_PREFIX=$PWD/../../../install ..
+          make
+
       - name: Initialize project directory
         if: ${{ matrix.test_type == 'regular' || matrix.test_type == 'coverage' }}
         # Note that we set the Julia depot to `~/.julia` *ONLY* to make use of the
