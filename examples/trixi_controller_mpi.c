@@ -84,15 +84,15 @@ int main ( int argc, char *argv[] ) {
     }
 
     // Finalize Trixi simulation
-    printf("\n*** Trixi controller ***   Finalize Trixi simulation\n");
+    printf("*** Trixi controller ***   Finalize Trixi simulation\n\n");
     trixi_finalize_simulation( handle );
 
     // Finalize Trixi
-    printf("\n*** Trixi controller ***   Finalize Trixi\n");
+    printf("*** Trixi controller ***   Finalize Trixi\n\n");
     trixi_finalize();
 
     // Finalize MPI
-    printf("\n*** Trixi controller ***   Finalize MPI\n");
+    printf("*** Trixi controller ***   Finalize MPI\n");
     MPI_Finalize();
 
     return 0;
