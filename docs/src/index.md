@@ -211,16 +211,24 @@ Current time step length: 0.050000
 
 If you change the executable name from `trixi_controller_simple_c` to
 `trixi_controller_simple_f`, you will get a near identical output. The corresponding source
-files `trixi_controller_simple.c` and `trixi_controller_simple.f90` give you an idea on how
-to use the C and Fortran APIs of libtrixi, and can be found in the
-[`examples/`](https://github.com/trixi-framework/libtrixi/tree/main/examples/) folder.
+files can be found in the
+[`examples/`](https://github.com/trixi-framework/libtrixi/tree/main/examples/) folder. The
+examples demonstrate different aspects on how to use the C and Fortran APIs of libtrixi:
+
+- `trixi_controller_simple.(c|f90)`: basic usage
+- `trixi_controller_mpi.(c|f90)`: usage in the presence of MPI
+- `trixi_controller_data.(c|f90)`: simulation data access
+- `trixi_controller_t8code.c`: interacting with t8code
 
 If you just want to test the Julia part of libtrixi, i.e., LibTrixi.jl, you can also run
-everything from Julia. From the repository root, execute
+`trixi_controller_simple.jl` from Julia.
+
 ```shell
-JULIA_DEPOT_PATH=$PWD/libtrixi-julia/julia-depot \
+JULIA_DEPOT_PATH=<julia-depot_directory> \
+LIBTRIXI_DEBUG=all \
     julia --project=<libtrixi-julia_directory>
-    <install_directory>/share/libtrixi/LibTrixi.jl/examples/trixi_controller_simple.jl
+    <install_directory>/share/libtrixi/examples/trixi_controller_simple.jl
+    <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
 ```
 
 Note: Most auxiliary output is hidden unless the environment variable `LIBTRIXI_DEBUG` is
