@@ -1,16 +1,12 @@
-program trixi_controller_data_f
+program trixi_controller_mpi_f
   use LibTrixi
   use, intrinsic :: iso_fortran_env, only: error_unit
-  use, intrinsic :: iso_c_binding, only: c_int, c_double
+  use, intrinsic :: iso_c_binding, only: c_int, c_null_char
 
   implicit none
 
-  integer(c_int) :: handle, nelements, nvariables, i
+  integer(c_int) :: handle
   character(len=256) :: argument
-  integer, parameter :: dp = selected_real_kind(12)
-  real(dp), dimension(:), pointer :: data
-  real(c_double) :: gas_constant
-
 
   if (command_argument_count() < 1) then
     call get_command_argument(0, argument)
@@ -26,15 +22,30 @@ program trixi_controller_data_f
     call exit(2)
   end if
 
-
   ! Initialize Trixi
   call get_command_argument(1, argument)
   call trixi_initialize(argument)
+
+  ! Print version information
+  write(*, '(a, i1, a, i1, a, i1, a, a)') "libtrixi version: ", &
+        trixi_version_library_major(), ".", trixi_version_library_minor(), ".", &
+        trixi_version_library_patch(), " ", trixi_version_library()
+  write(*, '(a)') ""
+  write(*, '(a)') "All loaded Julia packages"
+  write(*, '(a)') trixi_version_julia_extended()
+  write(*, '(a)') ""
+
+  ! Execute Julia code
+  write(*, '(a)') "Execute Julia code"
+  call trixi_eval_julia('println("3! = ", factorial(3))');
 
   ! Set up the Trixi simulation
   ! We get a handle to use subsequently
   call get_command_argument(2, argument)
   handle = trixi_initialize_simulation(argument)
+
+  ! Get time step length
+  write(*, '(a, e14.8)') "Current time step length: ", trixi_calculate_dt(handle)
 
   ! Main loop
   do
@@ -43,32 +54,6 @@ program trixi_controller_data_f
 
     call trixi_step(handle)
   end do
-
-  ! get number of elements
-  nelements = trixi_nelements(handle);
-  write(*, '(a,i6)') "*** Trixi controller ***   nelements ", nelements
-  write(*, '(a)') ""
-
-  ! get number of variables
-  nvariables = trixi_nvariables( handle );
-  write(*, '(a,i6)') "*** Trixi controller ***   nvariables ", nvariables
-  write(*, '(a)') ""
-
-  ! allocate memory
-  allocate ( data(nelements*nvariables) )
-
-  ! get averaged cell values for each variable
-  call trixi_load_cell_averages(data, handle);
-
-  ! compute temperature
-  gas_constant = 0.287;
-
-  do i = 1,nelements
-    print "('T[cell  ', i4, '] = ', e14.8)", i, data(i+3*nelements)/(gas_constant*data(i))
-  end do
-
-  write(*, '(a,i6)') "*** Trixi controller ***   Finalize Trixi simulation "
-  write(*, '(a)') ""
 
   ! Finalize Trixi simulation
   call trixi_finalize_simulation(handle)

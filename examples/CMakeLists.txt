@@ -1,9 +1,11 @@
 set ( EXAMPLES
-      simple_trixi_controller.c
-      simple_trixi_controller.f90
-      simple_t8code.c 
+      trixi_controller_simple.c
+      trixi_controller_simple.f90
+      trixi_controller_mpi.c
+      trixi_controller_mpi.f90
       trixi_controller_data.c
-      trixi_controller_data.f90 )
+      trixi_controller_data.f90
+      trixi_controller_t8code.c )
 
 if ( NOT T8CODE_FOUND )
     list( FILTER EXAMPLES EXCLUDE REGEX ".*(t|T)8(c|C)(o|O)(d|D)(e|E).*" )
@@ -61,4 +63,4 @@ foreach ( EXAMPLE ${EXAMPLES} )
 endforeach()
 
 # install the julia controller example as well
-install( FILES simple_trixi_controller.jl DESTINATION share/libtrixi/examples/ )
+install( FILES trixi_controller_simple.jl DESTINATION share/libtrixi/examples/ )

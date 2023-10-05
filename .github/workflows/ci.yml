@@ -203,13 +203,13 @@ jobs:
         if: ${{ matrix.test_type == 'regular' || matrix.test_type == 'coverage' }}
         run: |
           cd libtrixi-julia
-          ../build/examples/simple_trixi_controller_c . libelixir_tree1d_dgsem_advection_basic.jl
-          ../build/examples/simple_trixi_controller_f . libelixir_tree1d_dgsem_advection_basic.jl
-          ../build/examples/simple_trixi_controller_c . libelixir_p4est2d_dgsem_euler_sedov.jl
-          ../build/examples/simple_trixi_controller_f . libelixir_p4est2d_dgsem_euler_sedov.jl
+          ../build/examples/trixi_controller_simple_c . libelixir_tree1d_dgsem_advection_basic.jl
+          ../build/examples/trixi_controller_simple_f . libelixir_tree1d_dgsem_advection_basic.jl
+          ../build/examples/trixi_controller_simple_c . libelixir_p4est2d_dgsem_euler_sedov.jl
+          ../build/examples/trixi_controller_simple_f . libelixir_p4est2d_dgsem_euler_sedov.jl
           ../build/examples/trixi_controller_data_c . libelixir_p4est2d_dgsem_euler_sedov.jl
           ../build/examples/trixi_controller_data_f . libelixir_p4est2d_dgsem_euler_sedov.jl
-          ../build/examples/simple_t8code_c . libelixir_t8code_2d_dgsem_advection_basic.jl
+          ../build/examples/trixi_controller_t8code_c . libelixir_t8code_2d_dgsem_advection_basic.jl
         env:
           LIBTRIXI_DEBUG: all
 
@@ -217,7 +217,7 @@ jobs:
         if: ${{ matrix.test_type == 'package-compiler' }}
         run: |
           cd examples
-          mpirun -n 2 simple_trixi_controller_c \
+          mpirun -n 2 trixi_controller_simple_c \
               ../libtrixi-julia \
               ../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl
         env:
@@ -228,16 +228,16 @@ jobs:
         run: |
           cd libtrixi-julia
           set +e  # disable early exit on non-zero exit code
-          for command in "../build/examples/simple_trixi_controller_c"   \
-                         "../build/examples/simple_trixi_controller_c ." \
-                         "../build/examples/simple_trixi_controller_f"   \
-                         "../build/examples/simple_trixi_controller_f ." \
+          for command in "../build/examples/trixi_controller_simple_c"   \
+                         "../build/examples/trixi_controller_simple_c ." \
+                         "../build/examples/trixi_controller_simple_f"   \
+                         "../build/examples/trixi_controller_simple_f ." \
                          "../build/examples/trixi_controller_data_c"     \
                          "../build/examples/trixi_controller_data_c ."   \
                          "../build/examples/trixi_controller_data_f"     \
                          "../build/examples/trixi_controller_data_f ."   \
-                         "../build/examples/simple_t8code_c"             \
-                         "../build/examples/simple_t8code_c ."
+                         "../build/examples/trixi_controller_t8code_c"             \
+                         "../build/examples/trixi_controller_t8code_c ."
             do
               $command
               if [ $? -ne 2 ]; then
