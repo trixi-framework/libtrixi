@@ -14,8 +14,8 @@ find_package( MPI REQUIRED )
 find_package( LibTrixi REQUIRED )
 
 # Set sources
-set ( TARGET_NAME trixi_controller_simple )
-add_executable ( ${TARGET_NAME} trixi_controller_simple.c )
+set ( TARGET_NAME simple_trixi_controller )
+add_executable ( ${TARGET_NAME} simple_trixi_controller.c )
 
 # Set libraries to link
 target_link_libraries(
