@@ -187,7 +187,7 @@ jobs:
         run: |
           cd examples/external
           ./build.sh
-          mpirun -n 2 ./build/examples/simple_trixi_controller_c \
+          mpirun -n 2 ./build/simple_trixi_controller_c \
               ../../libtrixi-julia \
               ../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl
         env:
