@@ -15,7 +15,7 @@ find_package( LibTrixi REQUIRED )
 
 # Set sources
 set ( TARGET_NAME simple_trixi_controller )
-add_executable ( ${TARGET_NAME} ${CMAKE_SOURCE_DIR}/../src/simple_trixi_controller.c )
+add_executable ( ${TARGET_NAME} ${CMAKE_SOURCE_DIR}/../simple_trixi_controller.c )
 
 # Set libraries to link
 target_link_libraries(
