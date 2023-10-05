@@ -417,7 +417,7 @@ module LibTrixi
   function trixi_version_julia_extended()
     use, intrinsic :: iso_c_binding, only: c_char, c_null_char, c_f_pointer
     character(len=:), allocatable :: trixi_version_julia_extended
-    character(len=4096, kind=c_char), pointer :: buffer
+    character(len=8192, kind=c_char), pointer :: buffer
     integer :: length, i
 
     ! Associate buffer with C pointer
@@ -425,7 +425,7 @@ module LibTrixi
 
     ! Determine the actual length of the version string
     length = 0
-    do i = 1,4096
+    do i = 1,8192
       if ( buffer(i:i) == c_null_char ) exit
       length = length + 1
     end do
