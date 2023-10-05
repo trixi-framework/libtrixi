@@ -5,7 +5,7 @@ cmake_minimum_required ( VERSION 3.9 )
 project(ExternalLibTrixi)
 
 # Additional cmake modules (should contain FindLibTrixi.cmake)
-list ( APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}" )
+list ( APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../../cmake" )
 
 # Find MPI
 find_package( MPI REQUIRED )
