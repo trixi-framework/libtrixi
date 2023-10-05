@@ -28,3 +28,6 @@ target_include_directories(
     ${TARGET_NAME}
     PRIVATE ${LIBTRIXI_INCLUDE_DIR}
 )
+
+# Set compiler flag for position independent code
+target_compile_options( ${TARGET_NAME} PRIVATE "-fPIC" )
