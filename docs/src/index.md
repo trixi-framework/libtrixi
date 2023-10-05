@@ -254,7 +254,10 @@ A CMake module for the discovery of an installed libtrixi library is provided wi
 [`cmake/FindLibTrixi.cmake`](https://github.com/trixi-framework/libtrixi/tree/main/cmake/FindLibTrixi.cmake).
 Before calling `find_package(LibTrixi)`, the CMake variable `LIBTRIXI_PREFIX` has to be set to
 `<install_directory>`. An example `CMakeLists.txt` can be found in
-[`examples/CMakeListsExternal.txt`](https://github.com/trixi-framework/libtrixi/tree/main/examples/CMakeListsExternal.txt).
+[`examples/external/CMakeLists.txt`](https://github.com/trixi-framework/libtrixi/tree/main/examples/external/CMakeLists.txt).
+To see the commands required to build an example program with this CMake project,
+please refer to
+[`examples/external/build.sh`](https://github.com/trixi-framework/libtrixi/tree/main/examples/external/build.sh).
 
 #### Note on thread-local storage (TLS)
 
