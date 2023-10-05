@@ -136,12 +136,8 @@ jobs:
       - name: Test building in external CMake project
         if: ${{ matrix.test_type == 'regular' }}
         run: |
-          mkdir examples/test_cmake
-          cp examples/simple_trixi_controller.c examples/test_cmake/
-          cp examples/CMakeListsExternal.txt    examples/test_cmake/CMakeLists.txt
-          cp cmake/FindLibTrixi.cmake           examples/test_cmake/
-          mkdir examples/test_cmake/build
-          cd    examples/test_cmake/build
+          mkdir examples/external/build
+          cd    examples/external/build
           cmake -DLIBTRIXI_PREFIX=$PWD/../../../install ..
           make
 
