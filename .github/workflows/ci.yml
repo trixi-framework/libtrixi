@@ -182,6 +182,17 @@ jobs:
           cd examples
           make -f MakefileCompiled LIBTRIXI_PREFIX=$PWD/../LibTrixi.jl/lib/build
 
+      - name: Test external CMake project
+        if: ${{ matrix.test_type == 'regular' }}
+        run: |
+          cd examples/external
+          ./build.sh
+          mpirun -n 2 ./build/simple_trixi_controller_c \
+              ../../libtrixi-julia \
+              ../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl
+        env:
+          LIBTRIXI_DEBUG: all
+
       - name: Prepare coverage reporting
         if: ${{ matrix.test_type == 'coverage' }}
         run: |
