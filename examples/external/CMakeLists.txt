@@ -14,7 +14,7 @@ find_package( MPI REQUIRED )
 find_package( LibTrixi REQUIRED )
 
 # Set sources
-set ( TARGET_NAME simple_trixi_controller )
+set ( TARGET_NAME simple_trixi_controller_c )
 add_executable ( ${TARGET_NAME} ${CMAKE_SOURCE_DIR}/../simple_trixi_controller.c )
 
 # Set libraries to link
