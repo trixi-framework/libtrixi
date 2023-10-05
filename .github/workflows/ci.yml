@@ -178,7 +178,7 @@ jobs:
           cmake .. -DCMAKE_INSTALL_PREFIX=../install \
                    -DCMAKE_BUILD_TYPE=Debug \
                    -DUSE_PACKAGE_COMPILER=ON \
-                   -DLIBTRIXI_JULIA_PROJECT=../libtrixi-julia
+                   -DLIBTRIXI_JULIA_PROJECT=$PWD/../libtrixi-julia
 
       - name: Build
         if: ${{ matrix.test_type == 'package-compiler' }}
