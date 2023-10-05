@@ -83,18 +83,12 @@ if( USE_PACKAGE_COMPILER )
     # Define PackageCompiler.jl output file
     set( PC_LIBTRIXI_SO ${CMAKE_BINARY_DIR}/prefix-pc/lib/libtrixi.so )
 
-    # Add a library target (libtrixi)
-    # - for Fortran module (therefore OBJECT library)
-    # - for generating a rule to build libtrixi.so
+    # Add a library target (libtrixi), only for Fortran module
     add_library( ${PROJECT_NAME} OBJECT
         src/api.f90
-        ${PC_LIBTRIXI_SO}
     )
 
-    # Add linking to the real libtrixi.so produced by PackageCompiler.jl
-    target_link_libraries( ${PROJECT_NAME} INTERFACE ${PC_LIBTRIXI_SO} )
-
-    # Command to run PackageCompiler.jl to actually produce libtrixi.so
+    # Custom command to run PackageCompiler.jl to produce libtrixi.so
     add_custom_command( OUTPUT ${PC_LIBTRIXI_SO}
                         COMMENT "Building ${PROJECT_NAME} with PackageCompiler.jl..."
                         COMMAND ${JULIA_EXECUTABLE}
@@ -103,6 +97,15 @@ if( USE_PACKAGE_COMPILER )
                                 ${LIBTRIXI_JULIA_PROJECT}
                                 ${CMAKE_BINARY_DIR}/prefix-pc
                         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/build-pc )
+
+    # Custom target for PackageCompiler.jl's libtrixi.so
+    add_custom_target( PC_LIBTRIXI DEPENDS ${PC_LIBTRIXI_SO} )
+
+    # Depency of main library target on PackageCompiler.jl target
+    add_dependencies( ${PROJECT_NAME} PC_LIBTRIXI )
+
+    # Add linking to PackageCompiler.jl's libtrixi.so
+    target_link_libraries( ${PROJECT_NAME} INTERFACE ${PC_LIBTRIXI_SO} )
 
     # Install configuration
     install( DIRECTORY "${CMAKE_BINARY_DIR}/prefix-pc/lib/" TYPE LIB )
