@@ -101,7 +101,7 @@ if( USE_PACKAGE_COMPILER )
     # Custom target for PackageCompiler.jl's libtrixi.so
     add_custom_target( PC_LIBTRIXI DEPENDS ${PC_LIBTRIXI_SO} )
 
-    # Depency of main library target on PackageCompiler.jl target
+    # Dependency of main library target on PackageCompiler.jl target
     add_dependencies( ${PROJECT_NAME} PC_LIBTRIXI )
 
     # Add linking to PackageCompiler.jl's libtrixi.so
