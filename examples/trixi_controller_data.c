@@ -53,8 +53,9 @@ int main ( int argc, char *argv[] ) {
         }
     }
 
+    // Print first variable
     for (int i = 0; i < nelements; ++i) {
-        printf("T[cell %3d] = %f\n", i, data[i+3*nelements] / (gas_constant * data[i]) );
+        printf("u[cell %3d] = %f\n", i, data[i]);
     }
 
     // Finalize Trixi simulation
