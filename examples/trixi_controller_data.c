@@ -24,29 +24,34 @@ int main ( int argc, char *argv[] ) {
     printf("\n*** Trixi controller ***   Set up Trixi simulation\n");
     int handle = trixi_initialize_simulation( argv[2] );
 
+    // Get number of variables
+    int nvariables = trixi_nvariables( handle );
+    printf("\n*** Trixi controller ***   nvariables %d\n", nvariables);
+
     // Main loop
+    int steps = 0;
+    int nelements = 0;
+    double* data = NULL;
+
     printf("\n*** Trixi controller ***   Entering main loop\n");
     while ( !trixi_is_finished( handle ) ) {
 
         trixi_step( handle );
+        steps++;
+
+        if (steps % 10 == 0) {
+
+            // Get number of elements
+            nelements = trixi_nelements( handle );
+            printf("\n*** Trixi controller ***   nelements %d\n", nelements);
+
+            // Allocate memory
+            data = realloc( data, sizeof(double) * nelements * nvariables );
+
+            // Get averaged cell values for each variable
+            trixi_load_cell_averages(data, handle);
+        }
     }
-
-    // get number of elements
-    int nelements = trixi_nelements( handle );
-    printf("\n*** Trixi controller ***   nelements %d\n", nelements);
-
-    // get number of variables
-    int nvariables = trixi_nvariables( handle );
-    printf("\n*** Trixi controller ***   nvariables %d\n", nvariables);
-
-    // allocate memory
-    double* data = malloc( sizeof(double) * nelements * nvariables );
-
-    // get averaged cell values for each variable
-    trixi_load_cell_averages(data, handle);
-
-    // compute temperature
-    const double gas_constant = 0.287;
 
     for (int i = 0; i < nelements; ++i) {
         printf("T[cell %3d] = %f\n", i, data[i+3*nelements] / (gas_constant * data[i]) );

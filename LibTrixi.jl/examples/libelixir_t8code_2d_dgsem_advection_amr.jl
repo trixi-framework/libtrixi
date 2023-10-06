@@ -48,10 +48,21 @@ function init_simstate()
     # The StepsizeCallback handles the re-calculation of the maximum Δt after each time step
     stepsize_callback = StepsizeCallback(cfl=0.5)
 
+    # The AMRCallback triggers adaptive mesh refinement
+    amr_controller = ControllerThreeLevel(semi, IndicatorMax(semi, variable=first),
+                                          base_level=4,
+                                          med_level=5, med_threshold=0.1,
+                                          max_level=6, max_threshold=0.6)
+    amr_callback = AMRCallback(semi, amr_controller,
+                               interval=5,
+                               adapt_initial_condition=true,
+                               adapt_initial_condition_only_refine=true)
+
     # Create a CallbackSet to collect all callbacks such that they can be passed to the ODE solver
     callbacks = CallbackSet(summary_callback,
                             analysis_callback,
                             alive_callback,
+                            amr_callback,
                             stepsize_callback)
 
 
