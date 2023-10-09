@@ -219,7 +219,7 @@ jobs:
           ../build/examples/trixi_controller_simple_c . libelixir_p4est2d_dgsem_euler_sedov.jl
           ../build/examples/trixi_controller_simple_f . libelixir_p4est2d_dgsem_euler_sedov.jl
           ../build/examples/trixi_controller_data_c . libelixir_t8code_2d_dgsem_advection_amr.jl
-          ../build/examples/trixi_controller_data_f . libelixir_p4est2d_dgsem_euler_sedov.jl
+          ../build/examples/trixi_controller_data_f . libelixir_t8code_2d_dgsem_advection_amr.jl
           ../build/examples/trixi_controller_t8code_c . libelixir_t8code_2d_dgsem_advection_amr.jl
         env:
           LIBTRIXI_DEBUG: all
