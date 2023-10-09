@@ -27,6 +27,7 @@ program trixi_controller_data_f
 
 
   ! Initialize Trixi
+  write(*, '(a)') ""
   write(*, '(a)') "*** Trixi controller ***   Initialize Trixi"
   call get_command_argument(1, argument)
   call trixi_initialize(argument)
@@ -39,11 +40,13 @@ program trixi_controller_data_f
 
   ! get number of variables
   nvariables = trixi_nvariables( handle );
+  write(*, '(a)') ""
   write(*, '(a,i6)') "*** Trixi controller ***   nvariables ", nvariables
   write(*, '(a)') ""
 
   ! Main loop
   steps = 0
+  write(*, '(a)') "*** Trixi controller ***   Entering main loop"
 
   do
     ! Exit loop once simulation is completed
@@ -55,8 +58,8 @@ program trixi_controller_data_f
     if (modulo(steps, 10) == 0) then
       ! get number of elements
       nelements = trixi_nelements(handle);
-      write(*, '(a,i6)') "*** Trixi controller ***   nelements ", nelements
       write(*, '(a)') ""
+      write(*, '(a,i6)') "*** Trixi controller ***   nelements ", nelements
 
       ! allocate memory
       allocate( data(nelements*nvariables) )
@@ -71,14 +74,13 @@ program trixi_controller_data_f
     print "('u[cell  ', i4, '] = ', e14.8)", i, data(i)
   end do
 
-  write(*, '(a,i6)') "*** Trixi controller ***   Finalize Trixi simulation "
-  write(*, '(a)') ""
-
   ! Finalize Trixi simulation
+  write(*, '(a)') ""
   write(*, '(a)') "*** Trixi controller ***   Finalize Trixi simulation"
   call trixi_finalize_simulation(handle)
 
   ! Finalize Trixi
+  write(*, '(a)') ""
   write(*, '(a)') "*** Trixi controller ***   Finalize Trixi"
   call trixi_finalize()
 end program
