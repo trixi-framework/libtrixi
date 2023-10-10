@@ -6,7 +6,7 @@ using Trixi
 
 
 libelixir = joinpath(dirname(pathof(LibTrixi)),
-                     "../examples/libelixir_t8code_2d_dgsem_advection_basic.jl")
+                     "../examples/libelixir_t8code_2d_dgsem_advection_amr.jl")
 
 # initialize a simulation via API, receive a handle
 handle = trixi_initialize_simulation(libelixir)
