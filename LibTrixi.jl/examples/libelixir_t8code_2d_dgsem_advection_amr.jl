@@ -33,7 +33,7 @@ function init_simstate()
     # ODE solvers, callbacks etc.
 
     # Create ODE problem with time span from 0.0 to 1.0
-    ode = semidiscretize(semi, (0.0, 0.1));
+    ode = semidiscretize(semi, (0.0, 0.2));
 
     # At the beginning of the main loop, the SummaryCallback prints a summary of the simulation setup
     # and resets the timers
@@ -54,7 +54,7 @@ function init_simstate()
                                           med_level=3, med_threshold=0.1,
                                           max_level=4, max_threshold=0.6)
     amr_callback = AMRCallback(semi, amr_controller,
-                               interval=5,
+                               interval=10,
                                adapt_initial_condition=true,
                                adapt_initial_condition_only_refine=true)
 
