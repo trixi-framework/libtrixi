@@ -1,0 +1,26 @@
+functions:
+    - name: nelements
+      doc_brief:  Return number of local elements (cells).
+      doc_detail: These usually differ from the global count when doing parallel
+                  computations.
+      see:        nelements_global
+      args:
+          - name:   handle
+            ctype:  int
+            intent: in
+            doc:    simulation handle
+      return:
+          ctype: int
+
+    - name: nelements_global
+      doc_brief: Return number of global elements (cells).
+      doc_detail: These usually differ from the local count when doing parallel
+                  computations.
+      see:        nelements_local
+      args:
+          - name:   handle
+            ctype:  int
+            intent: in
+            doc:    simulation handle
+      return:
+          ctype: int
