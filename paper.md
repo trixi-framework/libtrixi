@@ -89,13 +89,17 @@ allowing scientists to connect established research codes to a modern numerical 
 package written in Julia. That is, a main program written in C/C++ or Fortran is able to
 execute a simulation set up in Julia with Trixi.jl without sacrifices in performance.
 
-This control direction, where a Julia package is managed from C/Fortran, has, to the best of
-our knowledge, not been used in practical applications so far. Besides making Trixi.jl
+So far, this control direction, where a Julia package is managed from C/Fortran, has
+only been demonstrated in prototypes such as libcg[^1] or libdiffusion[^2]. To the best of
+our knowledge, however, it has not yet been employed in practical applications. Besides making Trixi.jl
 available to a wider scientific audience, `libtrixi` is thus a research project to investigate
 the efficacy of using Julia-based libraries in existing code environments, and can eventually
 serve as a blueprint for other similar efforts. Questions such as how to retain the flexibility
 of Julia while providing a traditional, fixed API, how to use system-local third-party libraries,
 or how to interact with Fortran are investigated and answered.
+
+[^1]: libcg, [https://github.com/simonbyrne/libcg](https://github.com/simonbyrne/libcg)
+[^2]: libdiffusion, [https://github.com/omlins/libdiffusion](https://github.com/omlins/libdiffusion)
 
 
 # Technical overview
@@ -132,27 +136,27 @@ simulations simultaneously.
 As an alternative to the aforementioned translation layer written in C, which exposes the
 Julia API of LibTrixi.jl via function pointers, there exists experimental support in
 `libtrixi` for compiling LibTrixi.jl directly into a C library. This is achieved with
-PackageCompiler.jl[^1], a Julia package that allows one to compile Julia packages directly
+PackageCompiler.jl[^3], a Julia package that allows one to compile Julia packages directly
 into a shared C library or even a standalone executable. While other Julia packages exist
 that provide build options for PackageCompiler.jl, they typically use it to offer the Julia
-package as an executable and not as a library, e.g., Ribasim[^2], Comonicon.jl[^3], or
+package as an executable and not as a library, e.g., Ribasim[^4], Comonicon.jl[^5], or
 SpmImage Tycoon [@Riss_JOSS_2022].
 
 In addition to the library itself, `libtrixi` comes with the tools necessary for a smooth
 setup and installation process. A custom shell script installs all required Julia
 dependencies and allows one to configure the use of system-local library dependencies, such
-as for the MPI library. A CMake[^4]-based build system handles the build process of the C
+as for the MPI library. A CMake[^6]-based build system handles the build process of the C
 translation layer and the Fortran bindings. All parts of `libtrixi` are extensively tested
-using the built-in unit testing framework for Julia [^5], GoogleTest[^6] for the C API, and
-test-drive[^7] for the Fortran bindings.
+using the built-in unit testing framework for Julia [^7], GoogleTest[^8] for the C API, and
+test-drive[^9] for the Fortran bindings.
 
-[^1]: PackageCompiler.jl, [https://github.com/JuliaLang/PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl)
-[^2]: Ribasim, [https://github.com/Deltares/Ribasim](https://github.com/Deltares/Ribasim)
-[^3]: Comonicon.jl, [https://github.com/comonicon/Comonicon.jl](https://github.com/comonicon/Comonicon.jl)
-[^4]: CMake, [https://cmake.org](https://cmake.org)
-[^5]: Julia testing with `Test`, [https://docs.julialang.org/en/v1/stdlib/Test/](https://docs.julialang.org/en/v1/stdlib/Test/)
-[^6]: GoogleTest, [https://google.github.io/googletest/](https://google.github.io/googletest/)
-[^7]: test-drive, [https://github.com/fortran-lang/test-drive](https://github.com/fortran-lang/test-drive)
+[^3]: PackageCompiler.jl, [https://github.com/JuliaLang/PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl)
+[^4]: Ribasim, [https://github.com/Deltares/Ribasim](https://github.com/Deltares/Ribasim)
+[^5]: Comonicon.jl, [https://github.com/comonicon/Comonicon.jl](https://github.com/comonicon/Comonicon.jl)
+[^6]: CMake, [https://cmake.org](https://cmake.org)
+[^7]: Julia testing with `Test`, [https://docs.julialang.org/en/v1/stdlib/Test/](https://docs.julialang.org/en/v1/stdlib/Test/)
+[^8]: GoogleTest, [https://google.github.io/googletest/](https://google.github.io/googletest/)
+[^9]: test-drive, [https://github.com/fortran-lang/test-drive](https://github.com/fortran-lang/test-drive)
 
 
 # Acknowledgments
