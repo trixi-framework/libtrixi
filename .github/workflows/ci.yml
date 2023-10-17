@@ -65,6 +65,9 @@ jobs:
       - name: Show Julia version information
         run: julia -e 'using InteractiveUtils; versioninfo(verbose=true)'
 
+      - name: Update `apt-get`
+        run: sudo apt-get update
+
       - name: Install dependencies available with `apt-get`
         # - MPI
         # - HDF5
