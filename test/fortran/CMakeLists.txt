@@ -32,7 +32,7 @@ target_compile_options( ${TARGET_NAME} PRIVATE -cpp -Wall -Wextra -Werror -Wno-u
 
 # pass julia project path
 target_compile_definitions( ${TARGET_NAME} PRIVATE 
-                            LIBTRIXI_JULIA_PROJECT=\"${LIBTRIXI_JULIA_PROJECT}\" )
+                            JULIA_PROJECT_PATH=\"${JULIA_PROJECT_PATH}\" )
 
 # add tests
 foreach ( TEST ${TESTS} )

@@ -7,7 +7,7 @@ extern "C" {
 }
 
 // Julia project path defined via cmake
-const char * julia_project_path = LIBTRIXI_JULIA_PROJECT;
+const char * julia_project_path = JULIA_PROJECT_PATH;
 
 // Example libexlixir
 const char * libelixir_path =

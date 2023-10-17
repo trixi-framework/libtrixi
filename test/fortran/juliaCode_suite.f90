@@ -6,7 +6,7 @@ module juliaCode_suite
 
   public :: collect_juliaCode_suite
 
-  character(len=*), parameter, public :: julia_project_path = LIBTRIXI_JULIA_PROJECT
+  character(len=*), parameter, public :: julia_project_path = JULIA_PROJECT_PATH
 
   contains
 
