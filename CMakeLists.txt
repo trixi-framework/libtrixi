@@ -76,9 +76,8 @@ if( USE_PACKAGE_COMPILER )
 
     # Copy source with initialization routines; an object file will be created
     file( MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/build-pc )
-    file( COPY_FILE ${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib/init.c
-                    ${CMAKE_BINARY_DIR}/build-pc/init.c
-                    ONLY_IF_DIFFERENT )
+    file( COPY ${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib/init.c
+          DESTINATION build-pc/ )
 
     # Define PackageCompiler.jl output file
     set( PC_LIBTRIXI_SO ${CMAKE_BINARY_DIR}/prefix-pc/lib/libtrixi.so )
