@@ -183,7 +183,7 @@ jobs:
                    -DUSE_PACKAGE_COMPILER=ON \
                    -DJULIA_PROJECT_PATH=$PWD/../libtrixi-julia
 
-      - name: Build
+      - name: Build (test_type == 'package-compiler')
         if: ${{ matrix.test_type == 'package-compiler' }}
         run: |
           cd build
