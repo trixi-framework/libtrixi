@@ -276,23 +276,33 @@ library with a C interface. This is possible with the use of the Julia package
 [PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl).
 
 To try this out, perform the following steps:
-1. Initialize the project directory `libtrixi-julia` using `libtrixi-init-julia` as
-   described above.
-2. Go to the `LibTrixi.jl/lib` directory in the repository root,
-   make sure that `PROJECT_DIR` (defined in `Makefile`) points to your `libtrixi-julia` directory,
-   and call `make`:
-   ```shell
-   cd LibTrixi.jl/lib
-   make
-   ```
-3. Go to the `examples` folder in the repository root and compile
-   `simple_trixi_controller_c`:
-   ```shell
-   cd examples
-   make -f MakefileCompiled LIBTRIXI_PREFIX=$PWD/../LibTrixi.jl/lib/build
-   ```
-   This will create a `simple_trixi_controller_c` file.
-4. From inside the `examples` folder you should be able to run the example (in parallel)
+1.  Initialize the project directory `libtrixi-julia` using `libtrixi-init-julia` as
+    described above.
+2.  Build
+
+    *using make*
+    - Go to the `LibTrixi.jl/lib` directory in the repository root,
+      make sure that `PROJECT_DIR` (defined in `Makefile`) points to your `libtrixi-julia` directory,
+      and call `make`:
+      ```shell
+      cd LibTrixi.jl/lib
+      make
+      ```
+    - Go to the `examples` folder in the repository root and compile
+      `simple_trixi_controller_c`:
+      ```shell
+      cd examples
+      make -f MakefileCompiled LIBTRIXI_PREFIX=$PWD/../LibTrixi.jl/lib/build
+      ```
+      This will create a `simple_trixi_controller_c` file.
+
+    *using cmake*
+    - Add
+      ```
+      -DUSE_PACKAGE_COMPILER=ON -DJULIA_PROJECT_PATH=<libtrixi-julia_directory>
+      ```
+      to your cmake call (see above)
+3. From inside the `examples` folder you should be able to run the example (in parallel)
    with the following command:
    ```shell
    mpirun -n 2 simple_trixi_controller_c \
