@@ -216,6 +216,7 @@ aspects on how to use the C and Fortran APIs of libtrixi:
 - `trixi_controller_mpi.(c|f90)`: usage in the presence of MPI
 - `trixi_controller_data.(c|f90)`: simulation data access
 - `trixi_controller_t8code.c`: interacting with t8code
+  (there is no Fortran example yet as the Fortran interface of t8code is still under development)
 
 If you just want to test the Julia part of libtrixi, i.e., LibTrixi.jl, you can also run
 `trixi_controller_simple.jl` from Julia.
