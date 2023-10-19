@@ -66,5 +66,7 @@ int main ( int argc, char *argv[] ) {
     printf("\n*** Trixi controller ***   Finalize Trixi\n");
     trixi_finalize();
 
+    free(data);
+
     return 0;
 }

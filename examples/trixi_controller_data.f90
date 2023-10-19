@@ -8,7 +8,7 @@ program trixi_controller_data_f
   integer(c_int) :: handle, nelements, nvariables, steps, i
   character(len=256) :: argument
   integer, parameter :: dp = selected_real_kind(12)
-  real(dp), dimension(:), pointer :: data
+  real(dp), dimension(:), pointer :: data => null()
 
 
   if (command_argument_count() < 1) then
@@ -62,6 +62,7 @@ program trixi_controller_data_f
       write(*, '(a,i6)') "*** Trixi controller ***   nelements ", nelements
 
       ! allocate memory
+      if ( associated(data) ) deallocate(data)
       allocate( data(nelements*nvariables) )
 
       ! get averaged cell values for each variable
@@ -83,4 +84,6 @@ program trixi_controller_data_f
   write(*, '(a)') ""
   write(*, '(a)') "*** Trixi controller ***   Finalize Trixi"
   call trixi_finalize()
+
+  deallocate(data)
 end program
