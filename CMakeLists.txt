@@ -109,8 +109,7 @@ if( USE_PACKAGE_COMPILER )
     # Install configuration
     install( DIRECTORY "${CMAKE_BINARY_DIR}/prefix-pc/lib/" TYPE LIB )
     install( DIRECTORY "${CMAKE_BINARY_DIR}/prefix-pc/share/julia"
-             DESTINATION share
-             PATTERN "cert.pem" EXCLUDE )
+             DESTINATION share )
 else()
     # Library target
     add_library ( ${PROJECT_NAME} SHARED
