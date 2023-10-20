@@ -1,7 +1,7 @@
-program simple_trixi_controller_f
+program trixi_controller_simple_f
   use LibTrixi
   use, intrinsic :: iso_fortran_env, only: error_unit
-  use, intrinsic :: iso_c_binding, only: c_int, c_null_char
+  use, intrinsic :: iso_c_binding, only: c_int
 
   implicit none
 
@@ -26,26 +26,10 @@ program simple_trixi_controller_f
   call get_command_argument(1, argument)
   call trixi_initialize(argument)
 
-  ! Print version information
-  write(*, '(a, i1, a, i1, a, i1, a, a)') "libtrixi version: ", &
-        trixi_version_library_major(), ".", trixi_version_library_minor(), ".", &
-        trixi_version_library_patch(), " ", trixi_version_library()
-  write(*, '(a)') ""
-  write(*, '(a)') "All loaded Julia packages"
-  write(*, '(a)') trixi_version_julia_extended()
-  write(*, '(a)') ""
-
-  ! Execute Julia code
-  write(*, '(a)') "Execute Julia code"
-  call trixi_eval_julia('println("3! = ", factorial(3))');
-
   ! Set up the Trixi simulation
   ! We get a handle to use subsequently
   call get_command_argument(2, argument)
   handle = trixi_initialize_simulation(argument)
-
-  ! Get time step length
-  write(*, '(a, e14.8)') "Current time step length: ", trixi_calculate_dt(handle)
 
   ! Main loop
   do

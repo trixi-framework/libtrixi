@@ -19,7 +19,7 @@ function init_simstate()
 
     mapping = Trixi.coordinates2mapping(coordinates_min, coordinates_max)
 
-    trees_per_dimension = (4, 4)
+    trees_per_dimension = (2, 2)
 
     mesh = T8codeMesh(trees_per_dimension, polydeg=3,
                       mapping=mapping,
@@ -32,8 +32,8 @@ function init_simstate()
     ###############################################################################
     # ODE solvers, callbacks etc.
 
-    # Create ODE problem with time span from 0.0 to 1.0
-    ode = semidiscretize(semi, (0.0, 1.0));
+    # Create ODE problem with time span from 0.0 to 0.2
+    ode = semidiscretize(semi, (0.0, 0.2));
 
     # At the beginning of the main loop, the SummaryCallback prints a summary of the simulation setup
     # and resets the timers
@@ -48,10 +48,21 @@ function init_simstate()
     # The StepsizeCallback handles the re-calculation of the maximum Δt after each time step
     stepsize_callback = StepsizeCallback(cfl=0.5)
 
+    # The AMRCallback triggers adaptive mesh refinement
+    amr_controller = ControllerThreeLevel(semi, IndicatorMax(semi, variable=first),
+                                          base_level=2,
+                                          med_level=3, med_threshold=0.1,
+                                          max_level=4, max_threshold=0.6)
+    amr_callback = AMRCallback(semi, amr_controller,
+                               interval=10,
+                               adapt_initial_condition=true,
+                               adapt_initial_condition_only_refine=true)
+
     # Create a CallbackSet to collect all callbacks such that they can be passed to the ODE solver
     callbacks = CallbackSet(summary_callback,
                             analysis_callback,
                             alive_callback,
+                            amr_callback,
                             stepsize_callback)
 
 

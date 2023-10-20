@@ -113,7 +113,7 @@ Go to some directory from where you want to run a Trixi simulation.
 
 ```shell
 LIBTRIXI_DEBUG=all \
-    <install_directory>/bin/simple_trixi_controller_c \
+    <install_directory>/bin/trixi_controller_simple_c \
     <libtrixi-julia_directory> \
     <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
 ```
@@ -209,18 +209,27 @@ Current time step length: 0.050000
  ────────────────────────────────────────────────────────────────────────────────────
 ```
 
-If you change the executable name from `simple_trixi_controller_c` to
-`simple_trixi_controller_f`, you will get a near identical output. The corresponding source
-files `simple_trixi_controller.c` and `simple_trixi_controller.f90` give you an idea on how
-to use the C and Fortran APIs of libtrixi, and can be found in the
-[`examples/`](https://github.com/trixi-framework/libtrixi/tree/main/examples/) folder.
+If you change the executable name from `trixi_controller_simple_c` to
+`trixi_controller_simple_f`, you will get a near identical output. The corresponding source
+files can be found in the
+[`examples/`](https://github.com/trixi-framework/libtrixi/tree/main/examples/) folder. The
+examples demonstrate different aspects on how to use the C and Fortran APIs of libtrixi:
+
+- `trixi_controller_simple.(c|f90)`: basic usage
+- `trixi_controller_mpi.(c|f90)`: usage in the presence of MPI
+- `trixi_controller_data.(c|f90)`: simulation data access
+- `trixi_controller_t8code.c`: interacting with t8code
+  (there is no Fortran example yet as the Fortran interface of t8code is still under development)
 
 If you just want to test the Julia part of libtrixi, i.e., LibTrixi.jl, you can also run
-everything from Julia. From the repository root, execute
+`trixi_controller_simple.jl` from Julia.
+
 ```shell
-JULIA_DEPOT_PATH=$PWD/libtrixi-julia/julia-depot \
+JULIA_DEPOT_PATH=<julia-depot_directory> \
+LIBTRIXI_DEBUG=all \
     julia --project=<libtrixi-julia_directory>
-    <install_directory>/share/libtrixi/LibTrixi.jl/examples/simple_trixi_controller.jl
+    <install_directory>/share/libtrixi/examples/trixi_controller_simple.jl
+    <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
 ```
 
 Note: Most auxiliary output is hidden unless the environment variable `LIBTRIXI_DEBUG` is
@@ -246,7 +255,7 @@ which can be invoked from inside the `examples/` directory as
 ```shell
 make -f MakefileExternal LIBTRIXI_PREFIX=path/to/libtrixi/prefix
 ```
-to build `simple_trixi_controller_f`.
+to build `trixi_controller_simple_f`.
 
 #### CMake
 
@@ -289,12 +298,12 @@ To try this out, perform the following steps:
       make
       ```
     - Go to the `examples` folder in the repository root and compile
-      `simple_trixi_controller_c`:
+      `trixi_controller_simple_c`:
       ```shell
       cd examples
       make -f MakefileCompiled LIBTRIXI_PREFIX=$PWD/../LibTrixi.jl/lib/build
       ```
-      This will create a `simple_trixi_controller_c` file.
+      This will create a `trixi_controller_simple_c` file.
 
     *using cmake*
     - Add
@@ -305,7 +314,7 @@ To try this out, perform the following steps:
 3. From inside the `examples` folder you should be able to run the example (in parallel)
    with the following command:
    ```shell
-   mpirun -n 2 simple_trixi_controller_c \
+   mpirun -n 2 trixi_controller_simple_c \
        ../libtrixi-julia \
        ../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl
    ```

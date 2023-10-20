@@ -14,5 +14,5 @@ CFLAGS ?= -fPIC
 LDFLAGS ?= -L$(libdir) -Wl,-rpath,$(libdir) -L$(MPI_PREFIX)/lib -Wl,-rpath,$(MPI_PREFIX)/lib
 LIBS ?= -ltrixi -lmpi
 
-simple_trixi_controller_c: simple_trixi_controller.c
+trixi_controller_simple_c: trixi_controller_simple.c
 	$(CC) $< -o $@ $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(LIBS)

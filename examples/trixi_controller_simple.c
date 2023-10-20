@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 #include <trixi.h>
 
@@ -24,38 +23,11 @@ int main ( int argc, char *argv[] ) {
     printf("\n*** Trixi controller ***   Set up Trixi simulation\n");
     int handle = trixi_initialize_simulation( argv[2] );
 
-    // Get number of variables
-    int nvariables = trixi_nvariables( handle );
-    printf("\n*** Trixi controller ***   nvariables %d\n", nvariables);
-
     // Main loop
-    int steps = 0;
-    int nelements = 0;
-    double* data = NULL;
-
     printf("\n*** Trixi controller ***   Entering main loop\n");
     while ( !trixi_is_finished( handle ) ) {
 
         trixi_step( handle );
-        steps++;
-
-        if (steps % 10 == 0) {
-
-            // Get number of elements
-            nelements = trixi_nelements( handle );
-            printf("\n*** Trixi controller ***   nelements %d\n", nelements);
-
-            // Allocate memory
-            data = realloc( data, sizeof(double) * nelements * nvariables );
-
-            // Get averaged cell values for each variable
-            trixi_load_cell_averages(data, handle);
-        }
-    }
-
-    // Print first variable
-    for (int i = 0; i < nelements; ++i) {
-        printf("u[cell %3d] = %f\n", i, data[i]);
     }
 
     // Finalize Trixi simulation
@@ -65,8 +37,6 @@ int main ( int argc, char *argv[] ) {
     // Finalize Trixi
     printf("\n*** Trixi controller ***   Finalize Trixi\n");
     trixi_finalize();
-
-    free(data);
 
     return 0;
 }

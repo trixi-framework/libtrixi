@@ -9,7 +9,7 @@ const char * julia_project_path = JULIA_PROJECT_PATH;
 
 // Example libexlixir
 const char * libelixir_path =
-  "../../../LibTrixi.jl/examples/libelixir_t8code_2d_dgsem_advection_basic.jl";
+  "../../../LibTrixi.jl/examples/libelixir_t8code_2d_dgsem_advection_amr.jl";
 
 TEST(CInterfaceTest, T8code) {
 
