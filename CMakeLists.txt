@@ -74,13 +74,18 @@ if( USE_PACKAGE_COMPILER )
         message( NOTICE "Testing is not supported when PackageCompiler is used.")
     endif()
 
-    # Copy source with initialization routines; an object file will be created
-    file( MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/build-pc )
-    file( COPY ${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib/init.c
-          DESTINATION build-pc/ )
-
     # Define PackageCompiler.jl output file
     set( PC_LIBTRIXI_SO ${CMAKE_BINARY_DIR}/prefix-pc/lib/libtrixi.so )
+
+    # Define PackageCompiler.jl initialization source file
+    set( PC_INIT_SOURCE ${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib/init.c )
+    set( PC_INIT_BUILD  ${CMAKE_BINARY_DIR}/build-pc/init.c )
+
+    # Copy initialization source to build directory
+    add_custom_command( OUTPUT ${PC_INIT_BUILD}
+                        COMMENT "Copying `init.c` to build folder..."
+                        COMMAND ${CMAKE_COMMAND} -E copy ${PC_INIT_SOURCE} ${PC_INIT_BUILD}
+                        DEPENDS ${PC_INIT_SOURCE} )
 
     # Add a library target (libtrixi), only for Fortran module
     add_library( ${PROJECT_NAME} OBJECT
@@ -95,6 +100,7 @@ if( USE_PACKAGE_COMPILER )
                                 ${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib/build.jl
                                 ${JULIA_PROJECT_PATH}
                                 ${CMAKE_BINARY_DIR}/prefix-pc
+                        DEPENDS ${PC_INIT_BUILD}
                         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/build-pc )
 
     # Custom target for PackageCompiler.jl's libtrixi.so
