@@ -33,8 +33,11 @@ foreach ( EXAMPLE ${EXAMPLES} )
     # set libraries to link
     target_link_libraries(
         ${TARGET_NAME}
-        PRIVATE MPI::MPI_${EXAMPLE_LANG} ${PROJECT_NAME} ${PROJECT_NAME}_tls
+        PRIVATE MPI::MPI_${EXAMPLE_LANG} ${PROJECT_NAME}
     )
+    if ( NOT USE_PACKAGE_COMPILER )
+        target_link_libraries( ${TARGET_NAME} PRIVATE ${PROJECT_NAME}_tls )
+    endif()
     if ( T8CODE_FOUND )
         target_link_libraries( ${TARGET_NAME} PRIVATE ${T8CODE_LIBRARIES} )
     endif()
@@ -53,6 +56,9 @@ foreach ( EXAMPLE ${EXAMPLES} )
         ${TARGET_NAME}
         PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib"
     )
+
+    # position independent code
+    target_compile_options( ${TARGET_NAME} PRIVATE "-fPIC" )
 
     # enable warnings
     target_compile_options( ${TARGET_NAME} PRIVATE -Wall -Wextra -Werror )

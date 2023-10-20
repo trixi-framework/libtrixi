@@ -65,6 +65,9 @@ jobs:
       - name: Show Julia version information
         run: julia -e 'using InteractiveUtils; versioninfo(verbose=true)'
 
+      - name: Update `apt-get`
+        run: sudo apt-get update
+
       - name: Install dependencies available with `apt-get`
         # - MPI
         # - HDF5
@@ -170,17 +173,21 @@ jobs:
               --julia-depot ~/.julia \
               --force
 
-      - name: Build libtrixi using PackageCompiler
+      - name: Configure (test_type == 'package-compiler')
         if: ${{ matrix.test_type == 'package-compiler' }}
         run: |
-          cd LibTrixi.jl/lib
-          make
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_INSTALL_PREFIX=../install \
+                   -DCMAKE_BUILD_TYPE=Debug \
+                   -DUSE_PACKAGE_COMPILER=ON \
+                   -DJULIA_PROJECT_PATH=$PWD/../libtrixi-julia
 
-      - name: Build example
+      - name: Build (test_type == 'package-compiler')
         if: ${{ matrix.test_type == 'package-compiler' }}
         run: |
-          cd examples
-          make -f MakefileCompiled LIBTRIXI_PREFIX=$PWD/../LibTrixi.jl/lib/build
+          cd build
+          make -j2
 
       - name: Test external CMake project
         if: ${{ matrix.test_type == 'regular' }}
@@ -227,10 +234,10 @@ jobs:
       - name: Run examples
         if: ${{ matrix.test_type == 'package-compiler' }}
         run: |
-          cd examples
+          cd build/examples
           mpirun -n 2 trixi_controller_simple_c \
-              ../libtrixi-julia \
-              ../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl
+              ../../libtrixi-julia \
+              ../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl
         env:
           LIBTRIXI_DEBUG: all
 
