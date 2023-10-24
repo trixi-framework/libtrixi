@@ -80,10 +80,10 @@ makedocs(
         "Home" => "index.md",
         "Developers" => "developers.md",
         "Troubleshooting" => "troubleshooting.md",
-        "Reference" => [
-                        "C/Fortran" => "reference-c-fortran.md",
-                        "Julia" => "reference-julia.md",
-                       ],
+        "API Reference" => [
+            "C/Fortran" => "reference-c-fortran.md",
+            "Julia" => "reference-julia.md",
+        ],
         "Contributing" => "contributing.md",
         "License" => "license.md"
     ],
