@@ -46,6 +46,22 @@ open(joinpath(@__DIR__, "src", "license.md"), "w") do io
     end
 end
 
+open(joinpath(@__DIR__, "src", "contributing.md"), "w") do io
+  # Point to source license file
+  println(io, """
+  ```@meta
+  EditURL = "https://github.com/trixi-framework/libtrixi/blob/main/CONTRIBUTING.md"
+  ```
+  """)
+  # Write the modified contents
+  println(io, "# Contributing")
+  println(io, "")
+  for line in eachline(joinpath(dirname(@__DIR__), "CONTRIBUTING.md"))
+    line = replace(line, "[LICENSE.md](LICENSE.md)" => "[License](@ref)")
+    println(io, "> ", line)
+  end
+end
+
 # Make documentation
 makedocs(
     # Specify modules for which docstrings should be shown
@@ -68,6 +84,7 @@ makedocs(
                         "C/Fortran" => "reference-c-fortran.md",
                         "Julia" => "reference-julia.md",
                        ],
+        "Contributing" => "contributing.md",
         "License" => "license.md"
     ],
     linkcheck_ignore = [doxygen_url]
