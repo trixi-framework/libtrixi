@@ -101,6 +101,7 @@ if( USE_PACKAGE_COMPILER )
                                 ${JULIA_PROJECT_PATH}
                                 ${CMAKE_BINARY_DIR}/prefix-pc
                         DEPENDS ${PC_INIT_BUILD}
+                                ${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib/build.jl
                         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/build-pc )
 
     # Custom target for PackageCompiler.jl's libtrixi.so
