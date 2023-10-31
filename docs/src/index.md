@@ -11,9 +11,6 @@
 **Libtrixi** is an interface library for using
 [Trixi.jl](https://github.com/trixi-framework/Trixi.jl) from C/C++/Fortran.
 
-**Note: This project is in an early stage and the API is still under development. 
-Nevertheless, basic functionality is already implemented and actively tested.**
-
 
 ## Getting started
 
@@ -58,7 +55,9 @@ For building, `cmake` and its typical workflow is used.
 
     - Specifying the directory `install_directory` for later installation is optional.
     - Optional specification of build type sets some default compiler options for optimized
-      or debug code
+      or debug code.
+    - Building with t8code support is optional. It requires to pass
+      `-DT8CODE_PREFIX=<t8code_install_directory>`.
 
 3. Call make
 
@@ -81,7 +80,7 @@ For building, `cmake` and its typical workflow is used.
     This will install all provided files to the specified location.
 
 ### Setting up Julia
-After the library has been installed, you need to configure Julia for use with libtrixi. For
+Besides the library being installed, you need to configure Julia for use with libtrixi. For
 this, create a directory where all necessary files will be placed, e.g., `libtrixi-julia`.
 Then, you can use the
 [`utils/libtrixi-init-julia`](https://github.com/trixi-framework/libtrixi/tree/main/utils/libtrixi-init-julia)
