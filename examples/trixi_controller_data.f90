@@ -86,4 +86,5 @@ program trixi_controller_data_f
   call trixi_finalize()
 
   deallocate(data)
+  nullify(data)
 end program
