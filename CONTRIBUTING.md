@@ -1,13 +1,13 @@
 # Contributing
 
-libtrixi is an open-source project and we are very happy to accept contributions
+Libtrixi is an open-source project and we are very happy to accept contributions
 from the community. Please feel free to open issues or submit patches (preferably
 as pull requests) any time. For planned larger contributions, it is often
 beneficial to get in contact with one of the principal developers
 ([Benedict Geihe](https://www.mi.uni-koeln.de/NumSim/) or
 [Michael Schlottke-Lakemper](https://lakemper.eu)).
 
-libtrixi and its contributions are licensed under the MIT license (see
+Libtrixi and its contributions are licensed under the MIT license (see
 [LICENSE.md](LICENSE.md)). As a contributor, you certify that all your
 contributions are in conformance with the *Developer Certificate of Origin
 (Version 1.1)*, which is reproduced below.
