@@ -28,6 +28,40 @@ reference_c_fortran_text = read(joinpath(template_dir, "reference-c-fortran.tmpl
 reference_c_fortran_text = replace(reference_c_fortran_text, "{doxygen_url}" => doxygen_url)
 write(joinpath(@__DIR__, "src", "reference-c-fortran.md"), reference_c_fortran_text)
 
+# Copy some files from the top level directory to the docs and modify them
+# as necessary
+open(joinpath(@__DIR__, "src", "license.md"), "w") do io
+    # Point to source license file
+    println(io, """
+    ```@meta
+    EditURL = "https://github.com/trixi-framework/libtrixi/blob/main/LICENSE.md"
+    ```
+    """)
+    # Write the modified contents
+    println(io, "# License")
+    println(io, "")
+    for line in eachline(joinpath(dirname(@__DIR__), "LICENSE.md"))
+        line = replace(line, "[LICENSE.md](LICENSE.md)" => "[License](@ref)")
+        println(io, "> ", line)
+    end
+end
+
+open(joinpath(@__DIR__, "src", "contributing.md"), "w") do io
+  # Point to source license file
+  println(io, """
+  ```@meta
+  EditURL = "https://github.com/trixi-framework/libtrixi/blob/main/CONTRIBUTING.md"
+  ```
+  """)
+  # Write the modified contents
+  println(io, "# Contributing")
+  println(io, "")
+  for line in eachline(joinpath(dirname(@__DIR__), "CONTRIBUTING.md"))
+    line = replace(line, "[LICENSE.md](LICENSE.md)" => "[License](@ref)")
+    println(io, "> ", line)
+  end
+end
+
 # Make documentation
 makedocs(
     # Specify modules for which docstrings should be shown
@@ -46,10 +80,11 @@ makedocs(
         "Home" => "index.md",
         "Developers" => "developers.md",
         "Troubleshooting" => "troubleshooting.md",
-        "Reference" => [
-                        "C/Fortran" => "reference-c-fortran.md",
-                        "Julia" => "reference-julia.md",
-                       ],
+        "API Reference" => [
+            "C/Fortran" => "reference-c-fortran.md",
+            "Julia" => "reference-julia.md",
+        ],
+        "Contributing" => "contributing.md",
         "License" => "license.md"
     ],
     linkcheck_ignore = [doxygen_url]
