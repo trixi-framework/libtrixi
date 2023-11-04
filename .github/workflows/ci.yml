@@ -7,10 +7,12 @@ on:
     paths-ignore:
       - 'LICENSE.md'
       - 'README.md'
+      - 'docs/**'
   pull_request:
     paths-ignore:
       - 'LICENSE.md'
       - 'README.md'
+      - 'docs/**'
   workflow_dispatch:
     inputs:
       debug_enabled:
