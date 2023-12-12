@@ -269,6 +269,8 @@ echo "Install dependencies for configuration..."
 JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
     $julia_exec --project=. \
     -e "
+using Libdl
+dlopen("libnghttp2", RTLD_LAZY|RTLD_DEEPBIND|RTLD_GLOBAL)
 using Pkg
 Pkg.add([\"Preferences\", \"UUIDs\", \"MPIPreferences\", \"T8code\", \
          \"P4est\", \"HDF5\", \"MPI\"])"
