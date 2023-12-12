@@ -341,7 +341,11 @@ echo
 echo "Install LibTrixi.jl..."
 JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
     $julia_exec --project=. \
-    -e "using Pkg; Pkg.develop(path=\"$libtrixi_jl_path\")"
+    -e "
+using Libdl
+dlopen(\"libnghttp2\", RTLD_LAZY|RTLD_DEEPBIND|RTLD_GLOBAL)
+using Pkg
+Pkg.develop(path=\"$libtrixi_jl_path\")"
 [ $? -eq 0 ] || die "could not install LibTrixi.jl"
 echo
 
@@ -350,6 +354,8 @@ echo "Install Trixi.jl and OrdinaryDiffEq.jl..."
 JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
     $julia_exec --project=. \
     -e "
+using Libdl
+dlopen(\"libnghttp2\", RTLD_LAZY|RTLD_DEEPBIND|RTLD_GLOBAL)
 using Pkg
 Pkg.add([\"Trixi\", \"OrdinaryDiffEq\"])
 "
@@ -361,7 +367,11 @@ if [ $SKIP_PRECOMPILE -ne 1 ]; then
   echo "Precompile all packages ..."
   JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
       $julia_exec --project=. \
-      -e "using Pkg; Pkg.precompile(strict=true)"
+      -e "
+using Libdl
+dlopen(\"libnghttp2\", RTLD_LAZY|RTLD_DEEPBIND|RTLD_GLOBAL)
+using Pkg
+Pkg.precompile(strict=true)"
   [ $? -eq 0 ] || die "could not precompile packages"
   echo
 fi
