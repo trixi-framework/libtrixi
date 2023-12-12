@@ -371,6 +371,8 @@ if [ $SKIP_PRECOMPILE -ne 1 ]; then
 using Libdl
 dlopen(\"libnghttp2\", RTLD_LAZY|RTLD_DEEPBIND|RTLD_GLOBAL)
 using Pkg
+Pkg.Artifacts.download_artifact(Base.SHA1(\"88a5cf3dbd12839199aa9d803b9cd91bba4feb8c\"),
+\"https://github.com/JuliaBinaryWrappers/MKL_jll.jl/releases/download/MKL-v2024.0.0+0/MKL.v2024.0.0.x86_64-linux-gnu.tar.gz\")
 Pkg.precompile(strict=true)"
   [ $? -eq 0 ] || die "could not precompile packages"
   echo
