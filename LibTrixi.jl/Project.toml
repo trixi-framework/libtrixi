@@ -14,7 +14,7 @@ Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 julia = "1.8"
 MPI = "0.20.13"
 OrdinaryDiffEq = "6.53.2"
-Trixi = "0.5.29"
+Trixi = "0.5.29, 0.6"
 Pkg = "1.8"
 
 [preferences.OrdinaryDiffEq]
