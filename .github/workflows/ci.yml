@@ -53,7 +53,7 @@ jobs:
 
       - name: Enable t8code cache
         id: cache-t8code
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./t8code-local
           key: ${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.t8code_version }}
