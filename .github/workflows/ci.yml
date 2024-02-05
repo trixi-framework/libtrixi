@@ -39,6 +39,12 @@ jobs:
           - '1.10'
         t8code_version:
           - '1.4.1'
+        include:
+          - os: ubuntu-latest
+            test_type: package-compiler
+            arch: x64
+            julia_version: '1.9.3'  # 1.9.4: missing nghttp2 symbols in libcurl
+            t8code_version: '1.4.1'
     env:
       # Necessary for HDF5 to play nice with Julia
       LD_PRELOAD: /lib/x86_64-linux-gnu/libcurl.so.4
@@ -158,8 +164,8 @@ jobs:
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl .
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_t8code_2d_dgsem_advection_amr.jl .
 
-      - name: Initialize project directory
-        if: ${{ matrix.test_type == 'package-compiler' }}
+      - name: Initialize project directory (test_type == 'package-compiler')
+        if: ${{ matrix.test_type == 'package-compiler' && matrix.julia_version != '1.10' }}
         # Note that we set the Julia depot to `~/.julia` *ONLY* to make use of the
         # julia-actions/cache above (which unfortunately hardcoded the `~/.julia`
         # directory). For this reason, we also need to use `--force`
@@ -176,7 +182,7 @@ jobs:
               --force
 
       - name: Configure (test_type == 'package-compiler')
-        if: ${{ matrix.test_type == 'package-compiler' }}
+        if: ${{ matrix.test_type == 'package-compiler' && matrix.julia_version != '1.10' }}
         run: |
           mkdir build
           cd build
@@ -186,7 +192,7 @@ jobs:
                    -DJULIA_PROJECT_PATH=$PWD/../libtrixi-julia
 
       - name: Build (test_type == 'package-compiler')
-        if: ${{ matrix.test_type == 'package-compiler' }}
+        if: ${{ matrix.test_type == 'package-compiler' && matrix.julia_version != '1.10' }}
         run: |
           cd build
           make -j2
@@ -233,8 +239,8 @@ jobs:
         env:
           LIBTRIXI_DEBUG: all
 
-      - name: Run examples
-        if: ${{ matrix.test_type == 'package-compiler' }}
+      - name: Run examples (test_type == 'package-compiler')
+        if: ${{ matrix.test_type == 'package-compiler' && matrix.julia_version != '1.10' }}
         run: |
           cd build/examples
           mpirun -n 2 trixi_controller_simple_c \
