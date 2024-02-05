@@ -32,13 +32,18 @@ jobs:
         test_type:
           - regular
           - coverage
-          - package-compiler
         arch:
           - x64
         julia_version:
-          - '1.9'
+          - '1.10'
         t8code_version:
           - '1.4.1'
+        include:
+          - os: ubuntu-latest
+            test_type: package-compiler
+            arch: x64
+            julia_version: '1.9.3'  # 1.9.4: missing nghttp2 symbols in libcurl
+            t8code_version: '1.4.1'
     env:
       # Necessary for HDF5 to play nice with Julia
       LD_PRELOAD: /lib/x86_64-linux-gnu/libcurl.so.4
@@ -158,7 +163,7 @@ jobs:
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl .
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_t8code_2d_dgsem_advection_amr.jl .
 
-      - name: Initialize project directory
+      - name: Initialize project directory (test_type == 'package-compiler')
         if: ${{ matrix.test_type == 'package-compiler' }}
         # Note that we set the Julia depot to `~/.julia` *ONLY* to make use of the
         # julia-actions/cache above (which unfortunately hardcoded the `~/.julia`
@@ -233,7 +238,7 @@ jobs:
         env:
           LIBTRIXI_DEBUG: all
 
-      - name: Run examples
+      - name: Run examples (test_type == 'package-compiler')
         if: ${{ matrix.test_type == 'package-compiler' }}
         run: |
           cd build/examples
