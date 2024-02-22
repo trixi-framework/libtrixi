@@ -63,10 +63,10 @@ program trixi_controller_data_f
 
       ! allocate memory
       if ( associated(data) ) deallocate(data)
-      allocate( data(nelements*nvariables) )
+      allocate( data(nelements) )
 
-      ! get averaged cell values for each variable
-      call trixi_load_cell_averages(data, handle)
+      ! get averaged cell values for first variable
+      call trixi_load_cell_averages(data, 1, handle)
     end if
   end do
 

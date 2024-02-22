@@ -100,10 +100,8 @@ function trixi_nvariables_jl(simstate)
 end
 
 
-function trixi_load_cell_averages_jl(data, simstate)
+function trixi_load_cell_averages_jl(data, index, simstate)
     mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
-    n_elements = nelements(solver, cache)
-    n_variables = nvariables(equations)
     n_nodes = nnodes(solver)
     n_dims = ndims(mesh)
 
@@ -113,15 +111,13 @@ function trixi_load_cell_averages_jl(data, simstate)
     # all permutations of nodes indices for arbitrary dimension
     node_cis = CartesianIndices(ntuple(i -> n_nodes, n_dims))
 
-    # temporary storage for mean value on current element for all variables
-    u_mean = get_node_vars(u, equations, solver, node_cis[1], 1)
-
     for element in eachelement(solver, cache)
 
         # compute mean value using nodal dg values and quadrature
-        u_mean = zero(u_mean)
+        u_mean = zero(eltype(u))
         for node_ci in node_cis
-            u_node_prim = cons2prim(get_node_vars(u, equations, solver, node_ci, element), equations)
+            u_node_prim = cons2prim(get_node_vars(u, equations, solver, node_ci, element),
+                                    equations)[index]
             weight = 1.
             for node_index in Tuple(node_ci)
                 weight *= solver.basis.weights[node_index]
@@ -132,11 +128,8 @@ function trixi_load_cell_averages_jl(data, simstate)
         # normalize to unit element
         u_mean = u_mean / 2^n_dims
 
-        # copy to provided array
-        # all element values for first variable, then for second, ...
-        for ivar = 0:n_variables-1
-            data[element + ivar * n_elements] = u_mean[ivar+1]
-        end
+        # write to provided array
+        data[element] = u_mean
     end
 
     return nothing

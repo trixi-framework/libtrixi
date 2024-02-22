@@ -554,26 +554,27 @@ int trixi_nvariables(int handle) {
 /** 
  * @anchor trixi_load_cell_averages_api_c
  *
- * @brief Return cell averaged values
+ * @brief Return cell averaged solution state
  *
- * Cell averaged values for each cell and each primitive variable are stored in a
- * contiguous array, where cell values for the first variable appear first and values for
- * the other variables subsequently (structure-of-arrays layout).
+ * Cell averaged values for the primitive variable at position index for each cell are
+ * stored in the given array `data`.
  *
  * The given array has to be of correct size and memory has to be allocated beforehand.
  *
  * @param[in]  handle  simulation handle
+ * @param[in]  index   index of variable
  * @param[out] data    cell averaged values for all cells and all primitive variables
  */
-void trixi_load_cell_averages(double * data, int handle) {
+void trixi_load_cell_averages(double * data, int index, int handle) {
 
     // Get function pointer
-    void (*load_cell_averages)(double *, int) =
+    void (*load_cell_averages)(double *, int, int) =
         trixi_function_pointers[TRIXI_FTPR_LOAD_CELL_AVERAGES];
 
     // Call function
-    load_cell_averages(data, handle);
+    load_cell_averages(data, index, handle);
 }
+
 
 
 

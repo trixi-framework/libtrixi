@@ -32,7 +32,7 @@ int trixi_ndofs(int handle);
 int trixi_ndofs_global(int handle);
 int trixi_nvariables(int handle);
 double trixi_calculate_dt(int handle);
-void trixi_load_cell_averages(double * data, int handle);
+void trixi_load_cell_averages(double * data, int index, int handle);
 
 // T8code
 #if !defined(T8_H) && !defined(T8_FOREST_GENERAL_H)

@@ -87,10 +87,10 @@ end
     @test nvariables_c == nvariables_jl
 
     # compare cell averaged values
-    data_c = zeros(nvariables_c * nelements_c)
-    trixi_load_cell_averages(pointer(data_c), handle)
-    data_jl = zeros(nvariables_jl * nelements_jl)
-    trixi_load_cell_averages_jl(data_jl, simstate_jl)
+    data_c = zeros(nelements_c)
+    trixi_load_cell_averages(pointer(data_c), 1, handle)
+    data_jl = zeros(nelements_jl)
+    trixi_load_cell_averages_jl(data_jl, 1, simstate_jl)
     @test data_c == data_jl
 end
 

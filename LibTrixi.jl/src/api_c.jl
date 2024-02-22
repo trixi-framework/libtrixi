@@ -358,19 +358,18 @@ trixi_nvariables_cfptr() = @cfunction(trixi_nvariables, Cint, (Cint,))
 
 
 """
-    trixi_load_cell_averages(data::Ptr{Cdouble}, simstate_handle::Cint)::Cvoid
+    trixi_load_cell_averages(data::Ptr{Cdouble}, index::Cint, simstate_handle::Cint)::Cvoid
 
 Return cell averaged solution state.
 
-Cell averaged values for each cell and each primitive variable are stored in a contiguous
-array, where cell values for the first variable appear first and values for the other
-variables subsequently (structure-of-arrays layout).
+Cell averaged values for the primitive variable at position `index` for each cell are stored
+in the given array `data`.
 
 The given array has to be of correct size and memory has to be allocated beforehand.
 """
 function trixi_load_cell_averages end
 
-Base.@ccallable function trixi_load_cell_averages(data::Ptr{Cdouble},
+Base.@ccallable function trixi_load_cell_averages(data::Ptr{Cdouble}, index::Cint,
                                                   simstate_handle::Cint)::Cvoid
     simstate = load_simstate(simstate_handle)
 
@@ -378,12 +377,12 @@ Base.@ccallable function trixi_load_cell_averages(data::Ptr{Cdouble},
     size = trixi_nvariables_jl(simstate) * trixi_nelements_jl(simstate)
     data_jl = unsafe_wrap(Array, data, size)
 
-    trixi_load_cell_averages_jl(data_jl, simstate)
+    trixi_load_cell_averages_jl(data_jl, index, simstate)
     return nothing
 end
 
 trixi_load_cell_averages_cfptr() =
-    @cfunction(trixi_load_cell_averages, Cvoid, (Ptr{Cdouble}, Cint,))
+    @cfunction(trixi_load_cell_averages, Cvoid, (Ptr{Cdouble}, Cint, Cint,))
 
 
 """

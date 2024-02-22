@@ -63,13 +63,13 @@ module simulationRun_suite
     call check(error, nvariables, 4)
 
     ! Check cell averaged values
-    size = nelements*nvariables
+    size = nelements
     allocate(data(size))
-    call trixi_load_cell_averages(data, handle)
+    call trixi_load_cell_averages(data, 1, handle)
     call check(error, data(1), 1.0_dp)
-    call check(error, data(929), 2.6605289164377273_dp)
+    call check(error, data(94), 0.88263491354796_dp)
     call check(error, data(size), 1e-5_dp)
-    
+
     ! Finalize Trixi simulation
     call trixi_finalize_simulation(handle)
     
