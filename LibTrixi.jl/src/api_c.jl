@@ -313,6 +313,36 @@ trixi_nelements_global_cfptr() = @cfunction(trixi_nelements_global, Cint, (Cint,
 
 
 """
+    trixi_ndofs(simstate_handle::Cint)::Cint
+
+Return number of degrees of freedom (all quadrature points on all cells of current rank).
+"""
+function trixi_ndofs end
+
+Base.@ccallable function trixi_ndofs(simstate_handle::Cint)::Cint
+    simstate = load_simstate(simstate_handle)
+    return trixi_ndofs_jl(simstate)
+end
+
+trixi_ndofs_cfptr() = @cfunction(trixi_ndofs, Cint, (Cint,))
+
+
+"""
+    trixi_ndofs_global(simstate_handle::Cint)::Cint
+
+Return number of global eldegrees of freedom (all quadrature points on all cells).
+"""
+function trixi_ndofs_global end
+
+Base.@ccallable function trixi_ndofs_global(simstate_handle::Cint)::Cint
+    simstate = load_simstate(simstate_handle)
+    return trixi_ndofs_global_jl(simstate)
+end
+
+trixi_ndofs_global_cfptr() = @cfunction(trixi_ndofs_global, Cint, (Cint,))
+
+
+"""
     trixi_nvariables(simstate_handle::Cint)::Cint
 
 Return number of variables.

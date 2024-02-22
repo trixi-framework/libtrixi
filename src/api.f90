@@ -272,6 +272,32 @@ module LibTrixi
     end function
 
     !>
+    !! @fn LibTrixi::trixi_ndofs::trixi_ndofs(handle)
+    !!
+    !! @brief Return number of local degrees of freedom
+    !!
+    !! @param[in]  handle  simulation handle
+    !!
+    !! @see @ref trixi_ndofs_api_c "trixi_ndofs (C API)"
+    integer(c_int) function trixi_ndofs(handle) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int
+      integer(c_int), value, intent(in) :: handle
+    end function
+
+    !>
+    !! @fn LibTrixi::trixi_ndofs_global::trixi_ndofs_global(handle)
+    !!
+    !! @brief Return number of global degrees of freedom
+    !!
+    !! @param[in]  handle  simulation handle
+    !!
+    !! @see @ref trixi_ndofs_global_api_c "trixi_ndofs_global (C API)"
+    integer(c_int) function trixi_ndofs_global(handle) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int
+      integer(c_int), value, intent(in) :: handle
+    end function
+
+    !>
     !! @fn LibTrixi::trixi_nvariables::trixi_nvariables(handle)
     !!
     !! @brief Return number of (conservative) variables

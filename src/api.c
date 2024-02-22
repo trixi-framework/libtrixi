@@ -15,6 +15,8 @@ enum {
     TRIXI_FTPR_NDIMS,
     TRIXI_FPTR_NELEMENTS,
     TRIXI_FPTR_NELEMENTS_GLOBAL,
+    TRIXI_FPTR_NDOFS,
+    TRIXI_FPTR_NDOFS_GLOBAL,
     TRIXI_FTPR_NVARIABLES,
     TRIXI_FTPR_LOAD_CELL_AVERAGES,
     TRIXI_FTPR_VERSION_LIBRARY,
@@ -44,6 +46,8 @@ static const char* trixi_function_pointer_names[] = {
     [TRIXI_FTPR_NDIMS]                  = "trixi_ndims_cfptr",
     [TRIXI_FPTR_NELEMENTS]              = "trixi_nelements_cfptr",
     [TRIXI_FPTR_NELEMENTS_GLOBAL]       = "trixi_nelements_global_cfptr",
+    [TRIXI_FPTR_NDOFS]                  = "trixi_ndofs_cfptr",
+    [TRIXI_FPTR_NDOFS_GLOBAL]           = "trixi_ndofs_global_cfptr",
     [TRIXI_FTPR_NVARIABLES]             = "trixi_nvariables_cfptr",
     [TRIXI_FTPR_LOAD_CELL_AVERAGES]     = "trixi_load_cell_averages_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY]        = "trixi_version_library_cfptr",
@@ -485,6 +489,48 @@ int trixi_nelements_global(int handle) {
 
     // Call function
     return nelements_global(handle);
+}
+
+
+/**
+ * @anchor trixi_ndofs_api_c
+ *
+ * @brief Return number of local degrees of freedom.
+ *
+ * These usually differ from the global count when doing parallel computations.
+ *
+ * @param[in]  handle  simulation handle
+ *
+ * @see trixi_ndofs_global_api_c
+ */
+int trixi_ndofs(int handle) {
+
+    // Get function pointer
+    int (*ndofs)(int) = trixi_function_pointers[TRIXI_FPTR_NDOFS];
+
+    // Call function
+    return ndofs(handle);
+}
+
+
+/**
+ * @anchor trixi_ndofs_global_api_c
+ *
+ * @brief Return number of global degrees of freedom.
+ *
+ * These usually differ from the local count when doing parallel computations.
+ *
+ * @param[in]  handle  simulation handle
+ *
+ * @see trixi_ndofs_api_c
+ */
+int trixi_ndofs_global(int handle) {
+
+    // Get function pointer
+    int (*ndofs_global)(int) = trixi_function_pointers[TRIXI_FPTR_NDOFS_GLOBAL];
+
+    // Call function
+    return ndofs_global(handle);
 }
 
 
