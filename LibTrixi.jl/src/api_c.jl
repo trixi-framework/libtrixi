@@ -386,6 +386,35 @@ trixi_load_cell_averages_cfptr() =
 
 
 """
+    trixi_load_prim(data::Ptr{Cdouble}, index::Cint, simstate_handle::Cint)::Cvoid
+
+Return primitive variable.
+
+The values for the primitive variable at position `index` at every degree of freedom for
+the simulation given by `simstate_handle` is stored in the given array `data`.
+
+The given array has to be of correct size and memory has to be allocated beforehand.
+"""
+function trixi_load_prim end
+
+Base.@ccallable function trixi_load_prim(data::Ptr{Cdouble}, index::Cint,
+                                         simstate_handle::Cint)::Cvoid
+    simstate = load_simstate(simstate_handle)
+
+    # convert C to Julia array
+    size = trixi_ndofs_jl(simstate)
+    data_jl = unsafe_wrap(Array, data, size)
+
+    trixi_load_prim_jl(data_jl, index, simstate)
+    return nothing
+end
+
+trixi_load_prim_cfptr() =
+    @cfunction(trixi_load_prim, Cvoid, (Ptr{Cdouble}, Cint, Cint,))
+
+
+
+"""
     trixi_get_t8code_forest(simstate_handle::Cint)::::Ptr{Trixi.t8_forest}
 
 Return t8code forest of the current T8codeMesh.

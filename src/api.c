@@ -19,6 +19,7 @@ enum {
     TRIXI_FPTR_NDOFS_GLOBAL,
     TRIXI_FTPR_NVARIABLES,
     TRIXI_FTPR_LOAD_CELL_AVERAGES,
+    TRIXI_FTPR_LOAD_PRIM,
     TRIXI_FTPR_VERSION_LIBRARY,
     TRIXI_FTPR_VERSION_LIBRARY_MAJOR,
     TRIXI_FTPR_VERSION_LIBRARY_MINOR,
@@ -50,6 +51,7 @@ static const char* trixi_function_pointer_names[] = {
     [TRIXI_FPTR_NDOFS_GLOBAL]           = "trixi_ndofs_global_cfptr",
     [TRIXI_FTPR_NVARIABLES]             = "trixi_nvariables_cfptr",
     [TRIXI_FTPR_LOAD_CELL_AVERAGES]     = "trixi_load_cell_averages_cfptr",
+    [TRIXI_FTPR_LOAD_PRIM]              = "trixi_load_prim_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY]        = "trixi_version_library_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY_MAJOR]  = "trixi_version_library_major_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY_MINOR]  = "trixi_version_library_minor_cfptr",
@@ -576,6 +578,29 @@ void trixi_load_cell_averages(double * data, int index, int handle) {
 }
 
 
+/**
+ * @anchor trixi_load_prim_api_c
+ *
+ * @brief Return primitive variable
+ *
+ * The values for the primitive variable at position index at every degree of freedom for
+ * the simulation given by simstate_handle is stored in the given array data.
+ *
+ * The given array has to be of correct size and memory has to be allocated beforehand.
+ *
+ * @param[in]  handle  simulation handle
+ * @param[in]  index   index of variable
+ * @param[out] data    cell averaged values for all cells and all primitive variables
+ */
+void trixi_load_prim(double * data, int index, int handle) {
+
+    // Get function pointer
+    void (*load_prim)(double *, int, int) =
+        trixi_function_pointers[TRIXI_FTPR_LOAD_PRIM];
+
+    // Call function
+    load_prim(data, index, handle);
+}
 
 
 /******************************************************************************************/

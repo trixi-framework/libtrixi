@@ -136,6 +136,31 @@ function trixi_load_cell_averages_jl(data, index, simstate)
 end
 
 
+function trixi_load_prim_jl(data, index, simstate)
+    mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
+    n_nodes_per_dim = nnodes(solver)
+    n_dims = ndims(mesh)
+    n_nodes = n_nodes_per_dim^n_dims
+
+    u_ode = simstate.integrator.u
+    u = wrap_array(u_ode, mesh, equations, solver, cache)
+
+    # all permutations of nodes indices for arbitrary dimension
+    node_cis = CartesianIndices(ntuple(i -> n_nodes_per_dim, n_dims))
+    node_lis = LinearIndices(node_cis)
+
+    for element in eachelement(solver, cache)
+        for node_ci in node_cis
+            node_vars = get_node_vars(u, equations, solver, node_ci, element)
+            node_index = (element-1) * n_nodes + node_lis[node_ci]
+            data[node_index] = cons2prim(node_vars, equations)[index]
+        end
+    end
+
+    return nothing
+end
+
+
 function trixi_get_t8code_forest_jl(simstate)
     mesh, _, _, _ = Trixi.mesh_equations_solver_cache(simstate.semi)
     return mesh.forest

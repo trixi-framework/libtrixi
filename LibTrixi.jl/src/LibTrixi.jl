@@ -43,6 +43,9 @@ export trixi_nvariables,
 export trixi_load_cell_averages,
        trixi_load_cell_averages_cfptr,
        trixi_load_cell_averages_jl
+export trixi_load_prim,
+       trixi_load_prim_cfptr,
+       trixi_load_prim_jl
 export trixi_version_library,
        trixi_version_library_cfptr,
        trixi_version_library_jl
