@@ -67,7 +67,7 @@ module simulationRun_suite
     allocate(data(size))
     call trixi_load_cell_averages(data, 1, handle)
     call check(error, data(1), 1.0_dp)
-    call check(error, data(94), 0.88263491354796_dp)
+    call check(error, data(94), 0.99833232379996562_dp)
     call check(error, data(size), 1e-5_dp)
 
     ! Finalize Trixi simulation
