@@ -88,7 +88,7 @@ end
 
     # compare cell averaged values
     data_c = zeros(nelements_c)
-    trixi_load_cell_averages(pointer(data_c), 1, handle)
+    trixi_load_cell_averages(pointer(data_c), Int32(1), handle)
     data_jl = zeros(nelements_jl)
     trixi_load_cell_averages_jl(data_jl, 1, simstate_jl)
     @test data_c == data_jl
