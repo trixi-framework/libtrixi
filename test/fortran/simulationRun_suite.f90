@@ -22,7 +22,8 @@ module simulationRun_suite
 
   subroutine test_simulationRun(error)
     type(error_type), allocatable, intent(out) :: error
-    integer :: handle, ndims, nelements, nelements_global, nvariables, size
+    integer :: handle, ndims, nelements, nelements_global, nvariables, ndofs_global, &
+               ndofs_element, ndofs, size
     logical :: finished_status
     ! dp as defined in test-drive
     integer, parameter :: dp = selected_real_kind(15)
@@ -76,6 +77,14 @@ module simulationRun_suite
     size = nelements
     allocate(data(size))
     call trixi_load_cell_averages(data, 1, handle)
+    call check(error, data(1), 1.0_dp)
+    call check(error, data(94), 0.99833232379996562_dp)
+    call check(error, data(size), 1.0_dp)
+
+    ! Check primitive variable values
+    size = ndofs
+    allocate(data(size))
+    call trixi_load_prim(data, 1, handle)
     call check(error, data(1), 1.0_dp)
     call check(error, data(94), 0.99833232379996562_dp)
     call check(error, data(size), 1.0_dp)
