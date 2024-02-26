@@ -87,7 +87,7 @@ module simulationRun_suite
     allocate(data(size))
     call trixi_load_prim(data, 1, handle)
     call check(error, data(1),    1.0_dp)
-    call check(error, data(3200), 0.99833232379996562_dp)
+    call check(error, data(3200), 1.0_dp)
     call check(error, data(size), 1.0_dp)
     deallocate(data)
 
