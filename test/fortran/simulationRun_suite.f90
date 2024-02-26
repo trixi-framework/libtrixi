@@ -61,7 +61,7 @@ module simulationRun_suite
 
     ! Check number of dofs
     ndofs_element = trixi_ndofs_element(handle)
-    call check(error, ndofs_element, 16)
+    call check(error, ndofs_element, 25)
 
     ndofs = trixi_ndofs(handle)
     call check(error, ndofs, nelements * ndofs_element)
@@ -77,16 +77,16 @@ module simulationRun_suite
     size = nelements
     allocate(data(size))
     call trixi_load_cell_averages(data, 1, handle)
-    call check(error, data(1), 1.0_dp)
-    call check(error, data(94), 0.99833232379996562_dp)
+    call check(error, data(1),    1.0_dp)
+    call check(error, data(94),   0.99833232379996562_dp)
     call check(error, data(size), 1.0_dp)
 
     ! Check primitive variable values
     size = ndofs
     allocate(data(size))
     call trixi_load_prim(data, 1, handle)
-    call check(error, data(1), 1.0_dp)
-    call check(error, data(94), 0.99833232379996562_dp)
+    call check(error, data(1),    1.0_dp)
+    call check(error, data(3200), 0.99833232379996562_dp)
     call check(error, data(size), 1.0_dp)
 
     ! Finalize Trixi simulation

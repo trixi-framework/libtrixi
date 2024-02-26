@@ -136,22 +136,11 @@ TEST(CInterfaceTest, SimulationRun) {
     trixi_load_prim(rho.data(), 1, handle);
     trixi_load_prim(energy.data(), 4, handle);
     // check memory boarders
-    if (nranks == 1) {
-        EXPECT_DOUBLE_EQ(rho[0],          1.0);
-        EXPECT_DOUBLE_EQ(rho[ndofs-1],    1.0);
-        EXPECT_DOUBLE_EQ(energy[0],       1.0e-5);
-        EXPECT_DOUBLE_EQ(energy[ndofs-1], 1.0e-5);
-    }
-    else if (nranks == 2) {
-        EXPECT_DOUBLE_EQ(rho[0],          1.0);
-        EXPECT_DOUBLE_EQ(rho[ndofs-1],    1.0);
-        EXPECT_DOUBLE_EQ(energy[0],       1.0e-5);
-        EXPECT_DOUBLE_EQ(energy[ndofs-1], 1.0e-5);
-    }
-    else {
-        FAIL() << "Test cannot be run with " << nranks << " ranks.";
-    }
-    
+    EXPECT_DOUBLE_EQ(rho[0],          1.0);
+    EXPECT_DOUBLE_EQ(rho[ndofs-1],    1.0);
+    EXPECT_DOUBLE_EQ(energy[0],       1.0e-5);
+    EXPECT_DOUBLE_EQ(energy[ndofs-1], 1.0e-5);
+
     // Finalize Trixi simulation
     trixi_finalize_simulation(handle);
 
