@@ -58,6 +58,16 @@ module simulationRun_suite
     nelements_global = trixi_nelements_global(handle)
     call check(error, nelements_global, 256)
 
+    ! Check number of dofs
+    ndofs_element = trixi_ndofs_element(handle)
+    call check(error, ndofs_element, 16)
+
+    ndofs = trixi_ndofs(handle)
+    call check(error, ndofs, nelements * ndofs_element)
+
+    ndofs_global = trixi_ndofs_global(handle)
+    call check(error, ndofs_global, nelements_global * ndofs_element)
+
     ! Check number of variables
     nvariables = trixi_nvariables(handle)
     call check(error, nvariables, 4)

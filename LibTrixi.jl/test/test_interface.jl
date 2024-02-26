@@ -81,6 +81,19 @@ end
     nelements_global_jl = trixi_nelements_global_jl(simstate_jl)
     @test nelements_global_c == nelements_global_jl
 
+    # compare number of dofs
+    ndofs_c = trixi_ndofs(handle)
+    ndofs_jl = trixi_ndofs_jl(simstate_jl)
+    @test ndofs_c == ndofs_jl
+
+    ndofs_global_c = trixi_ndofs_global(handle)
+    ndofs_global_jl = trixi_ndofs_global_jl(simstate_jl)
+    @test ndofs_global_c == ndofs_global_jl
+
+    ndofs_element_c = trixi_ndofs_element(handle)
+    ndofs_element_jl = trixi_ndofs_element_jl(simstate_jl)
+    @test ndofs_element_c == ndofs_element_jl
+
     # compare number of variables
     nvariables_c = trixi_nvariables(handle)
     nvariables_jl = trixi_nvariables_jl(simstate_jl)
@@ -91,6 +104,13 @@ end
     trixi_load_cell_averages(pointer(data_c), Int32(1), handle)
     data_jl = zeros(nelements_jl)
     trixi_load_cell_averages_jl(data_jl, 1, simstate_jl)
+    @test data_c == data_jl
+
+    # compare primitive variable values on all dofs
+    data_c = zeros(ndofs_c)
+    trixi_load_prim(pointer(data_c), Int32(1), handle)
+    data_jl = zeros(ndofs_jl)
+    trixi_load_prim_jl(data_jl, 1, simstate_jl)
     @test data_c == data_jl
 end
 

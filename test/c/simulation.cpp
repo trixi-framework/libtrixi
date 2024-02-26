@@ -62,6 +62,15 @@ TEST(CInterfaceTest, SimulationRun) {
     int nelements_global = trixi_nelements_global(handle);
     EXPECT_EQ(nelements * nranks, nelements_global);
 
+    // Check number of dofs
+    int ndofs = trixi_ndofs(handle);
+    int ndofs_global = trixi_ndofs_global(handle);
+    EXPECT_EQ(ndofs * nranks, ndofs_global);
+
+    int ndofs_element = trixi_ndofs_element(handle);
+    EXPECT_EQ(nelements * ndofs_element, ndofs);
+    EXPECT_EQ(nelements_global * ndofs_element, ndofs_global);
+
     // Check number of variables
     int nvariables = trixi_nvariables(handle);
     EXPECT_EQ(nvariables, 4);
@@ -116,6 +125,25 @@ TEST(CInterfaceTest, SimulationRun) {
             EXPECT_NEAR(v2_averages[33],              0.14037267400591, 1e-14);
             EXPECT_NEAR(v1_averages[34],              0.14037267400591, 1e-14);
         }
+    }
+    else {
+        FAIL() << "Test cannot be run with " << nranks << " ranks.";
+    }
+
+    // Check primitive variable values on all dofs
+    std::vector<double> rho(ndofs);
+    std::vector<double> energy(ndofs);
+    trixi_load_prim(rho.data(), 1, handle);
+    trixi_load_prim(energy.data(), 4, handle);
+    if (nranks == 1) {
+        // check memory boarders (densities at the beginning, energies at the end)
+        EXPECT_DOUBLE_EQ(rho[0],         1.0);
+        EXPECT_DOUBLE_EQ(rho[ndofs-1],         1.0);
+        EXPECT_DOUBLE_EQ(energy[0], 1.0e-5);
+        EXPECT_DOUBLE_EQ(energy[ndofs-1], 1.0e-5);
+    }
+    else if (nranks == 2) {
+        
     }
     else {
         FAIL() << "Test cannot be run with " << nranks << " ranks.";
