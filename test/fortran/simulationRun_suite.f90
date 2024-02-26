@@ -80,6 +80,7 @@ module simulationRun_suite
     call check(error, data(1),    1.0_dp)
     call check(error, data(94),   0.99833232379996562_dp)
     call check(error, data(size), 1.0_dp)
+    deallocate(data)
 
     ! Check primitive variable values
     size = ndofs
@@ -88,6 +89,7 @@ module simulationRun_suite
     call check(error, data(1),    1.0_dp)
     call check(error, data(3200), 0.99833232379996562_dp)
     call check(error, data(size), 1.0_dp)
+    deallocate(data)
 
     ! Finalize Trixi simulation
     call trixi_finalize_simulation(handle)
