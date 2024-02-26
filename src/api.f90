@@ -297,11 +297,14 @@ module LibTrixi
       integer(c_int), value, intent(in) :: handle
     end function
 
-    !! @anchor trixi_ndofs_element_api_c
+    !>
+    !! @fn LibTrixi::trixi_ndofs_element::trixi_ndofs_element(handle)
     !!
     !! @brief Return number of degrees of freedom per element (cell).
     !!
     !! @param[in]  handle  simulation handle
+    !!
+    !! @see @ref trixi_ndofs_element_api_c "trixi_ndofs_element (C API)"
     integer(c_int) function trixi_ndofs_element(handle) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int
       integer(c_int), value, intent(in) :: handle
