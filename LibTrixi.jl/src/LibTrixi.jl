@@ -1,7 +1,7 @@
 module LibTrixi
 
 using OrdinaryDiffEq: OrdinaryDiffEq, step!, check_error, DiscreteCallback
-using Trixi: Trixi, summary_callback, mesh_equations_solver_cache, nelements,
+using Trixi: Trixi, summary_callback, mesh_equations_solver_cache, ndims, nelements,
              nelementsglobal, ndofs, ndofsglobal, nvariables, nnodes, wrap_array,
              eachelement, cons2prim, get_node_vars, eachnode
 using MPI: MPI, run_init_hooks, set_default_error_handler_return
@@ -37,6 +37,9 @@ export trixi_ndofs,
 export trixi_ndofs_global,
        trixi_ndofs_global_cfptr,
        trixi_ndofs_global_jl
+export trixi_ndofs_element,
+       trixi_ndofs_element_cfptr,
+       trixi_ndofs_element_jl
 export trixi_nvariables,
        trixi_nvariables_cfptr,
        trixi_nvariables_jl
