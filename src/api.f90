@@ -337,6 +337,23 @@ module LibTrixi
       integer(c_int), value, intent(in) :: handle
     end subroutine
 
+    !>
+    !! @fn LibTrixi::trixi_load_prim::trixi_load_prim(data, index, handle)
+    !!
+    !! @brief Return primitive variable values
+    !!
+    !! @param[in]  handle  simulation handle
+    !! @param[in]  index   index of variable
+    !! @param[out] data    primitive variable values for all degrees of freedom
+    !!
+    !! @see @ref trixi_load_prim_api_c "trixi_load_prim (C API)"
+    subroutine trixi_load_prim(data, index, handle) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int, c_double
+      real(c_double), dimension(*), intent(in) :: data
+      integer(c_int), value, intent(in) :: index
+      integer(c_int), value, intent(in) :: handle
+    end subroutine
+
 
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
