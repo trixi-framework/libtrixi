@@ -20,6 +20,7 @@ enum {
     TRIXI_FTPR_NVARIABLES,
     TRIXI_FTPR_LOAD_CELL_AVERAGES,
     TRIXI_FTPR_LOAD_PRIM,
+    TRIXI_FTPR_STORE_IN_DATABASE,
     TRIXI_FTPR_VERSION_LIBRARY,
     TRIXI_FTPR_VERSION_LIBRARY_MAJOR,
     TRIXI_FTPR_VERSION_LIBRARY_MINOR,
@@ -52,6 +53,7 @@ static const char* trixi_function_pointer_names[] = {
     [TRIXI_FTPR_NVARIABLES]             = "trixi_nvariables_cfptr",
     [TRIXI_FTPR_LOAD_CELL_AVERAGES]     = "trixi_load_cell_averages_cfptr",
     [TRIXI_FTPR_LOAD_PRIM]              = "trixi_load_prim_cfptr",
+    [TRIXI_FTPR_STORE_IN_DATABASE]      = "trixi_store_in_database_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY]        = "trixi_version_library_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY_MAJOR]  = "trixi_version_library_major_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY_MINOR]  = "trixi_version_library_minor_cfptr",
@@ -601,6 +603,38 @@ void trixi_load_prim(double * data, int index, int handle) {
     // Call function
     load_prim(data, index, handle);
 }
+
+
+/**
+ * @anchor trixi_store_in_database_api_c
+ *
+ * @brief Store data vector in current simulation's database
+ *
+ * A reference to the passed data array data will be stored in the database of the
+ * simulation given by simstate_handle at given index. The database object has to be
+ * created in init_simstate() of the running libelixir and can be used throughout the
+ * simulation.
+ *
+ * The database object has to exist, has to be of type `LibTrixiDataBaseType`, and has to
+ * hold enough data references such that access at `index` is valid.
+ *
+ * The size of data has to match size.
+ *
+ * @param[in]  data    data vector to store
+ * @param[in]  size    size of given data vector
+ * @param[in]  index   index in database where data vector will be stored
+ * @param[in]  handle  simulation handle
+ */
+void trixi_store_in_database(double * data, int size, int index, int handle) {
+
+    // Get function pointer
+    void (*store_in_database)(double *, int, int, int) =
+        trixi_function_pointers[TRIXI_FTPR_STORE_IN_DATABASE];
+
+    // Call function
+    store_in_database(data, size, index, handle);
+}
+
 
 
 /******************************************************************************************/

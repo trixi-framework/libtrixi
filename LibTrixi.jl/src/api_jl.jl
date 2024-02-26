@@ -161,6 +161,15 @@ function trixi_load_prim_jl(data, index, simstate)
 end
 
 
+function trixi_store_in_database_jl(data, index, simstate)
+    simstate.data[index] = Ref(data)
+    if show_debug_output()
+        println("New data vector stored at index ", index)
+    end
+    return nothing
+end
+
+
 function trixi_get_t8code_forest_jl(simstate)
     mesh, _, _, _ = Trixi.mesh_equations_solver_cache(simstate.semi)
     return mesh.forest

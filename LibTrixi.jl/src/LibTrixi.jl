@@ -46,6 +46,9 @@ export trixi_load_cell_averages,
 export trixi_load_prim,
        trixi_load_prim_cfptr,
        trixi_load_prim_jl
+export trixi_store_in_database,
+       trixi_store_in_database_cfptr,
+       trixi_store_in_database_jl
 export trixi_version_library,
        trixi_version_library_cfptr,
        trixi_version_library_jl
@@ -72,6 +75,7 @@ export trixi_eval_julia,
        trixi_eval_julia_jl
 
 export SimulationState, store_simstate, load_simstate, delete_simstate!
+export LibTrixiDataBaseType
 
 
 # global storage of name and version information of loaded packages

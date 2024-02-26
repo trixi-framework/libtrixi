@@ -413,6 +413,37 @@ trixi_load_prim_cfptr() =
     @cfunction(trixi_load_prim, Cvoid, (Ptr{Cdouble}, Cint, Cint,))
 
 
+"""
+    trixi_store_in_database(data::Ptr{Cdouble}, size::Cint, index::Cint,
+                            simstate_handle::Cint)::Cvoid
+
+Store data vector in current simulation's database.
+
+A reference to the passed data array `data` will be stored in the database of the simulation
+given by `simstate_handle` at given `index`. The database object has to be created in
+`init_simstate()` of the running libelixir and can be used throughout the simulation.
+
+The database object has to exist, has to be of type `LibTrixiDataBaseType`, and has to hold
+enough data references such that access at `index` is valid.
+
+The size of `data` has to match `size`.
+"""
+function trixi_store_in_database end
+
+Base.@ccallable function trixi_store_in_database(data::Ptr{Cdouble}, size::Cint,
+                                                 index::Cint, simstate_handle::Cint)::Cvoid
+    simstate = load_simstate(simstate_handle)
+
+    # convert C to Julia array
+    data_jl = unsafe_wrap(Array, data, size)
+
+    trixi_store_in_database_jl(data_jl, index, simstate)
+    return nothing
+end
+
+trixi_store_in_database_cfptr() =
+    @cfunction(trixi_store_in_database, Cvoid, (Ptr{Cdouble}, Cint, Cint, Cint,))
+
 
 """
     trixi_get_t8code_forest(simstate_handle::Cint)::::Ptr{Trixi.t8_forest}

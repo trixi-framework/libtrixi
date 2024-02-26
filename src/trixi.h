@@ -34,6 +34,7 @@ int trixi_nvariables(int handle);
 double trixi_calculate_dt(int handle);
 void trixi_load_cell_averages(double * data, int index, int handle);
 void trixi_load_prim(double * data, int index, int handle);
+void trixi_store_in_database(double * data, int size, int index, int handle);
 
 // T8code
 #if !defined(T8_H) && !defined(T8_FOREST_GENERAL_H)
