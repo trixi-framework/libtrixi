@@ -4,9 +4,7 @@ using OrdinaryDiffEq
 using Libdl
 
 # TODO: hard-coded path for SO
-so_handle = dlopen("/home/bene/trixi/libtrixi/build/examples/libsource_terms.so")
-println("")
-println(pwd())
+so_handle = dlopen("./lib/libsource_terms.so")
 println("Opened library ", dlpath(so_handle))
 source_term_fptr = dlsym(so_handle, "source_term_wave")
 println("Obtained function pointer ", source_term_fptr)
