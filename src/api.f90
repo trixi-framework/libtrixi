@@ -347,7 +347,7 @@ module LibTrixi
     !!
     !! @brief Get coordinates of all nodes (degrees of freedom).
     !!
-    !! The coordinates of all nodes (degress of freedom in the DG method) are stored dimension-
+    !! The coordinates of all nodes (degrees of freedom in the DG method) are stored dimension-
     !! wise in the provided array `x`, i.e. x-coordinates will be in the beginning and so on.
     !! The given array has to be of correct size, i.e. number of nodes times dimension, and
     !! memory has to be allocated beforehand.
