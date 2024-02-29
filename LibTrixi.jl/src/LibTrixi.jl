@@ -3,7 +3,7 @@ module LibTrixi
 using OrdinaryDiffEq: OrdinaryDiffEq, step!, check_error, DiscreteCallback
 using Trixi: Trixi, summary_callback, mesh_equations_solver_cache, nelements,
              nelementsglobal, ndofs, ndofsglobal, nvariables, nnodes, wrap_array,
-             eachelement, cons2prim, get_node_vars, eachnode
+             eachelement, cons2prim, get_node_vars, get_node_coords, eachnode
 using MPI: MPI, run_init_hooks, set_default_error_handler_return
 using Pkg
 
@@ -73,6 +73,13 @@ export trixi_get_t8code_forest,
 export trixi_eval_julia,
        trixi_eval_julia_cfptr,
        trixi_eval_julia_jl
+export trixi_get_time,
+       trixi_get_time_cfptr,
+       trixi_get_time_jl
+export trixi_load_node_coordinates,
+       trixi_load_node_coordinates_cfptr,
+       trixi_load_node_coordinates_jl
+
 
 export SimulationState, store_simstate, load_simstate, delete_simstate!
 export LibTrixiDataBaseType

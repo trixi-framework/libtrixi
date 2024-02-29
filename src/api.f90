@@ -327,6 +327,41 @@ module LibTrixi
       integer(c_int), value, intent(in) :: handle
     end subroutine
 
+    !>
+    !! @fn LibTrixi::trixi_get_time::trixi_get_time(handle)
+    !!
+    !! @brief Return current physical time.
+    !!
+    !! @param[in]  handle  simulation handle
+    !!
+    !! @return  physical time
+    !!
+    !! @see @ref trixi_get_time_api_c "trixi_get_time (C API)"
+    real(c_double) function trixi_get_time(handle) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int, c_double
+      integer(c_int), value, intent(in) :: handle
+    end function
+
+    !>
+    !! @fn LibTrixi::trixi_load_node_coordinates::trixi_load_node_coordinates(handle, x)
+    !!
+    !! @brief Get coordinates of all nodes (degrees of freedom).
+    !!
+    !! The coordinates of all nodes (degress of freedom in the DG method) are stored dimension-
+    !! wise in the provided array `x`, i.e. x-coordinates will be in the beginning and so on.
+    !! The given array has to be of correct size, i.e. number of nodes times dimension, and
+    !! memory has to be allocated beforehand.
+    !!
+    !! @param[in]   handle  simulation handle
+    !! @param[out]  x       node coordinates
+    !!
+    !! @see @ref trixi_load_node_coordinates_api_c "trixi_load_node_coordinates (C API)"
+    subroutine trixi_load_node_coordinates(handle, x) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int, c_double
+      integer(c_int), value, intent(in) :: handle
+      real(c_double), dimension(*), intent(out) :: x
+    end subroutine
+
 
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
