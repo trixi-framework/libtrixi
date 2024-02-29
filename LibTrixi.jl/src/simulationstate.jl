@@ -6,7 +6,7 @@ Data structure to store a simulation state consisting of
 - the time integrator
 - an optional array of data vectors
 """
-const LibTrixiDataBaseType = Array{Ref{Vector{Float64}}}
+const LibTrixiDataBaseType = Vector{Ref{Vector{Float64}}}
 
 mutable struct SimulationState{SemiType, IntegratorType}
     semi::SemiType
