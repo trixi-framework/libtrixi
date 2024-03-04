@@ -37,24 +37,6 @@ function initial_condition_baroclinic_instability(x, t,
     return prim2cons(SVector(rho, v1, v2, v3, p), equations)
 end
 
-# Steady state for RHS correction below
-function steady_state_baroclinic_instability(x, t, equations::CompressibleEulerEquations3D)
-    lon, lat, r = cartesian_to_sphere(x)
-    radius_earth = 6.371229e6
-    # Make sure that the r is not smaller than radius_earth
-    z = max(r - radius_earth, 0.0)
-
-    # Unperturbed basic state
-    rho, u, p = basic_state_baroclinic_instability_longitudinal_velocity(lon, lat, z)
-
-    # Convert spherical velocity to Cartesian
-    v1 = -sin(lon) * u
-    v2 = cos(lon) * u
-    v3 = 0.0
-
-    return prim2cons(SVector(rho, v1, v2, v3, p), equations)
-end
-
 function cartesian_to_sphere(x)
     r = norm(x)
     lambda = atan(x[2], x[1])
