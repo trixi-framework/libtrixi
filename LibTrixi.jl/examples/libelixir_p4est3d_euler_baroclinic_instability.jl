@@ -1,5 +1,9 @@
 # An idealized baroclinic instability test case
 #
+# Note that this libelixir is based on the original baroclinic instability elixir by
+# Erik Faulhaber for Trixi.jl
+# Source: https://github.com/trixi-framework/Trixi.jl/blob/main/examples/p4est_3d_dgsem/elixir_euler_baroclinic_instability.jl
+#
 # References:
 # - Paul A. Ullrich, Thomas Melvin, Christiane Jablonowski, Andrew Staniforth (2013)
 #   A proposed baroclinic wave test case for deep- and shallow-atmosphere dynamical cores
