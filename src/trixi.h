@@ -30,6 +30,7 @@ int trixi_nelements(int handle);
 int trixi_nelements_global(int handle);
 int trixi_ndofs(int handle);
 int trixi_ndofs_global(int handle);
+int trixi_ndofs_element(int handle);
 int trixi_nvariables(int handle);
 double trixi_calculate_dt(int handle);
 void trixi_load_cell_averages(double * data, int index, int handle);

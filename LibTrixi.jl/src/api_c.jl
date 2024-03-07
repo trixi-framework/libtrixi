@@ -343,6 +343,21 @@ trixi_ndofs_global_cfptr() = @cfunction(trixi_ndofs_global, Cint, (Cint,))
 
 
 """
+    trixi_ndofs_element(simstate_handle::Cint)::Cint
+
+Return number of degrees of freedom per element (cell).
+"""
+function trixi_ndofs_element end
+
+Base.@ccallable function trixi_ndofs_element(simstate_handle::Cint)::Cint
+    simstate = load_simstate(simstate_handle)
+    return trixi_ndofs_element_jl(simstate)
+end
+
+trixi_ndofs_element_cfptr() = @cfunction(trixi_ndofs_element, Cint, (Cint,))
+
+
+"""
     trixi_nvariables(simstate_handle::Cint)::Cint
 
 Return number of variables.

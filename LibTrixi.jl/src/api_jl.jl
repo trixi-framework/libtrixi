@@ -94,6 +94,12 @@ function trixi_ndofs_global_jl(simstate)
 end
 
 
+function trixi_ndofs_element_jl(simstate)
+    mesh, _, solver, _ = mesh_equations_solver_cache(simstate.semi)
+    return nnodes(solver)^ndims(mesh)
+end
+
+
 function trixi_nvariables_jl(simstate)
     _, equations, _, _ = mesh_equations_solver_cache(simstate.semi)
     return nvariables(equations)
