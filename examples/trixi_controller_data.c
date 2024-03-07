@@ -48,14 +48,14 @@ int main ( int argc, char *argv[] ) {
             // Allocate memory
             data = realloc( data, sizeof(double) * nelements );
 
-            // Get averaged cell values for first variable
-            trixi_load_cell_averages(data, 1, handle);
+            // Get element averaged values for first variable
+            trixi_load_element_averaged_primitive_vars(handle, 1, data);
         }
     }
 
     // Print first variable
     for (int i = 0; i < nelements; ++i) {
-        printf("u[cell %3d] = %f\n", i, data[i]);
+        printf("u[element %3d] = %f\n", i, data[i]);
     }
 
     // Finalize Trixi simulation
