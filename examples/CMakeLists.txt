@@ -5,7 +5,8 @@ set ( EXAMPLES
       trixi_controller_mpi.f90
       trixi_controller_data.c
       trixi_controller_data.f90
-      trixi_controller_t8code.c )
+      trixi_controller_t8code.c
+      trixi_controller_source_terms.c )
 
 if ( NOT T8CODE_FOUND )
     list( FILTER EXAMPLES EXCLUDE REGEX ".*(t|T)8(c|C)(o|O)(d|D)(e|E).*" )
@@ -33,7 +34,7 @@ foreach ( EXAMPLE ${EXAMPLES} )
     # set libraries to link
     target_link_libraries(
         ${TARGET_NAME}
-        PRIVATE MPI::MPI_${EXAMPLE_LANG} ${PROJECT_NAME}
+        PRIVATE MPI::MPI_${EXAMPLE_LANG} ${PROJECT_NAME} m
     )
     if ( NOT USE_PACKAGE_COMPILER )
         target_link_libraries( ${TARGET_NAME} PRIVATE ${PROJECT_NAME}_tls )

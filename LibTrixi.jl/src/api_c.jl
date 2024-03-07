@@ -428,6 +428,72 @@ trixi_load_prim_cfptr() =
     @cfunction(trixi_load_prim, Cvoid, (Ptr{Cdouble}, Cint, Cint,))
 
 
+"""
+    trixi_store_in_database(data::Ptr{Cdouble}, size::Cint, index::Cint,
+                            simstate_handle::Cint)::Cvoid
+
+Store data vector in current simulation's database.
+
+A reference to the passed data array `data` will be stored in the database of the simulation
+given by `simstate_handle` at given `index`. The database object has to be created in
+`init_simstate()` of the running libelixir and can be used throughout the simulation.
+
+The database object has to exist, has to be of type `LibTrixiDataBaseType`, and has to hold
+enough data references such that access at `index` is valid.
+
+The size of `data` has to match `size`.
+"""
+function trixi_store_in_database end
+
+Base.@ccallable function trixi_store_in_database(data::Ptr{Cdouble}, size::Cint,
+                                                 index::Cint, simstate_handle::Cint)::Cvoid
+    simstate = load_simstate(simstate_handle)
+
+    # convert C to Julia array
+    data_jl = unsafe_wrap(Array, data, size)
+
+    trixi_store_in_database_jl(data_jl, index, simstate)
+    return nothing
+end
+
+trixi_store_in_database_cfptr() =
+    @cfunction(trixi_store_in_database, Cvoid, (Ptr{Cdouble}, Cint, Cint, Cint,))
+
+"""
+    trixi_get_time(simstate_handle::Cint)::Cdouble
+
+Return current physical time.
+"""
+function trixi_get_time end
+
+Base.@ccallable function trixi_get_time(simstate_handle::Cint)::Cdouble
+    simstate = load_simstate(simstate_handle)
+    return trixi_get_time_jl(simstate)
+end
+
+trixi_get_time_cfptr() = @cfunction(trixi_get_time, Cdouble, (Cint,))
+
+
+"""
+    trixi_load_node_coordinates(simstate_handle::Cint, x::Ptr{Cdouble})::Cvoid
+
+Get coordinates of all nodes (degrees of freedom).
+"""
+function trixi_load_node_coordinates end
+
+Base.@ccallable function trixi_load_node_coordinates(simstate_handle::Cint,
+                                                     x::Ptr{Cdouble})::Cvoid
+    simstate = load_simstate(simstate_handle)
+
+    # convert C to Julia array
+    size = trixi_ndofs_jl(simstate) * trixi_ndims_jl(simstate)
+    x_jl = unsafe_wrap(Array, x, size)
+
+    return trixi_load_node_coordinates_jl(simstate, x_jl)
+end
+
+trixi_load_node_coordinates_cfptr() = @cfunction(trixi_load_node_coordinates, Cvoid, (Cint, Ptr{Cdouble},))
+
 
 """
     trixi_get_t8code_forest(simstate_handle::Cint)::::Ptr{Trixi.t8_forest}
