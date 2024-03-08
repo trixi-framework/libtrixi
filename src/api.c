@@ -624,19 +624,19 @@ void trixi_load_prim(double * data, int index, int handle) {
  *
  * The size of data has to match size.
  *
- * @param[in]  data    data vector to store
- * @param[in]  size    size of given data vector
- * @param[in]  index   index in database where data vector will be stored
  * @param[in]  handle  simulation handle
+ * @param[in]  index   index in database where data vector will be stored
+ * @param[in]  size    size of given data vector
+ * @param[in]  data    data vector to store
  */
-void trixi_store_in_database(double * data, int size, int index, int handle) {
+void trixi_store_in_database(int handle, int index, int size, const double * data) {
 
     // Get function pointer
-    void (*store_in_database)(double *, int, int, int) =
+    void (*store_in_database)(int, int, int, const double *) =
         trixi_function_pointers[TRIXI_FTPR_STORE_IN_DATABASE];
 
     // Call function
-    store_in_database(data, size, index, handle);
+    store_in_database(handle, index, size, data);
 }
 
 

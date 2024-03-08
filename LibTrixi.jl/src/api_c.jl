@@ -430,19 +430,19 @@ The size of `data` has to match `size`.
 """
 function trixi_store_in_database end
 
-Base.@ccallable function trixi_store_in_database(data::Ptr{Cdouble}, size::Cint,
-                                                 index::Cint, simstate_handle::Cint)::Cvoid
+Base.@ccallable function trixi_store_in_database(simstate_handle::Cint, index::Cint,
+                                                 size::Cint, data::Ptr{Cdouble})::Cvoid
     simstate = load_simstate(simstate_handle)
 
     # convert C to Julia array
     data_jl = unsafe_wrap(Array, data, size)
 
-    trixi_store_in_database_jl(data_jl, index, simstate)
+    trixi_store_in_database_jl(simstate, index, data_jl)
     return nothing
 end
 
 trixi_store_in_database_cfptr() =
-    @cfunction(trixi_store_in_database, Cvoid, (Ptr{Cdouble}, Cint, Cint, Cint,))
+    @cfunction(trixi_store_in_database, Cvoid, (Cint, Cint, Cint, Ptr{Cdouble},))
 
 """
     trixi_get_time(simstate_handle::Cint)::Cdouble

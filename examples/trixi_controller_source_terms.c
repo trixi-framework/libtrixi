@@ -58,9 +58,9 @@ int main ( int argc, char *argv[] ) {
     double * du4 = calloc( sizeof(double), ndofs );
 
     // Store source term vectors in Trixi
-    trixi_store_in_database(du1, ndofs, 1, handle);
-    trixi_store_in_database(du2, ndofs, 2, handle);
-    trixi_store_in_database(du4, ndofs, 3, handle);
+    trixi_store_in_database(handle, 1, ndofs, du1);
+    trixi_store_in_database(handle, 2, ndofs, du2);
+    trixi_store_in_database(handle, 3, ndofs, du4);
 
     // Get node coordinates
     double * x = calloc( sizeof(double), 2*ndofs );

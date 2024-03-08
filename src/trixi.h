@@ -32,9 +32,7 @@ int trixi_ndofs(int handle);
 int trixi_ndofs_global(int handle);
 int trixi_nvariables(int handle);
 double trixi_calculate_dt(int handle);
-void trixi_load_cell_averages(double * data, int index, int handle);
-void trixi_load_prim(double * data, int index, int handle);
-void trixi_store_in_database(double * data, int size, int index, int handle);
+void trixi_store_in_database(int handle, int index, int size, const double * data);
 double trixi_get_time(int handle);
 void trixi_load_node_coordinates(int handle, double* x);
 

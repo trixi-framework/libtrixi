@@ -161,7 +161,7 @@ function trixi_load_prim_jl(data, index, simstate)
 end
 
 
-function trixi_store_in_database_jl(data, index, simstate)
+function trixi_store_in_database_jl(simstate, index, data)
     simstate.data[index] = Ref(data)
     if show_debug_output()
         println("New data vector stored at index ", index)
