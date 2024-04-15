@@ -1,4 +1,0 @@
-[default]
-extend-ignore-identifiers-re = [
-    "PNGs" # https://github.com/crate-ci/typos/issues/967
-]
