@@ -30,7 +30,7 @@ jobs:
       doxygen_dir: ${{ steps.determine_doxygen_dir.outputs.doxygen_dir }}
     steps:
       - uses: actions/checkout@v4
-      - uses: julia-actions/setup-julia@v1
+      - uses: julia-actions/setup-julia@v2
         with:
           version: '1.10'
           show-versioninfo: true
