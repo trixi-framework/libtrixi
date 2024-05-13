@@ -53,9 +53,9 @@ int main ( int argc, char *argv[] ) {
     int ndofs = trixi_ndofs( handle );
 
     // Allocate memory for source terms
-    double * du1 = calloc( sizeof(double), ndofs );
-    double * du2 = calloc( sizeof(double), ndofs );
-    double * du4 = calloc( sizeof(double), ndofs );
+    double * du1 = calloc( ndofs, sizeof(double) );
+    double * du2 = calloc( ndofs, sizeof(double) );
+    double * du4 = calloc( ndofs, sizeof(double) );
 
     // Store source term vectors in Trixi
     trixi_store_in_database(handle, 1, ndofs, du1);
@@ -63,7 +63,7 @@ int main ( int argc, char *argv[] ) {
     trixi_store_in_database(handle, 3, ndofs, du4);
 
     // Get node coordinates
-    double * x = calloc( sizeof(double), 2*ndofs );
+    double * x = calloc( 2*ndofs, sizeof(double) );
     trixi_load_node_coordinates( handle, x );
 
     // Main loop
