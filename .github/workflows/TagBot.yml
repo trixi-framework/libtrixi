@@ -32,3 +32,4 @@ jobs:
           ssh: ${{ secrets.DOCUMENTER_KEY }}
           subdir: LibTrixi.jl
           tag_prefix: NO_PREFIX
+          changelog_ignore: dependencies

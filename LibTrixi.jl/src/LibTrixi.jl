@@ -28,30 +28,30 @@ export trixi_ndims,
 export trixi_nelements,
        trixi_nelements_cfptr,
        trixi_nelements_jl
-export trixi_nelements_global,
-       trixi_nelements_global_cfptr,
-       trixi_nelements_global_jl
+export trixi_nelementsglobal,
+       trixi_nelementsglobal_cfptr,
+       trixi_nelementsglobal_jl
 export trixi_ndofs,
        trixi_ndofs_cfptr,
        trixi_ndofs_jl
-export trixi_ndofs_global,
-       trixi_ndofs_global_cfptr,
-       trixi_ndofs_global_jl
-export trixi_ndofs_element,
-       trixi_ndofs_element_cfptr,
-       trixi_ndofs_element_jl
+export trixi_ndofsglobal,
+       trixi_ndofsglobal_cfptr,
+       trixi_ndofsglobal_jl
+export trixi_ndofselement,
+       trixi_ndofselement_cfptr,
+       trixi_ndofselement_jl
 export trixi_nvariables,
        trixi_nvariables_cfptr,
        trixi_nvariables_jl
-export trixi_load_cell_averages,
-       trixi_load_cell_averages_cfptr,
-       trixi_load_cell_averages_jl
-export trixi_load_prim,
-       trixi_load_prim_cfptr,
-       trixi_load_prim_jl
 export trixi_store_in_database,
        trixi_store_in_database_cfptr,
        trixi_store_in_database_jl
+export trixi_load_primitive_vars,
+       trixi_load_primitive_vars_cfptr,
+       trixi_load_primitive_vars_jl
+export trixi_load_element_averaged_primitive_vars,
+       trixi_load_element_averaged_primitive_vars_cfptr,
+       trixi_load_element_averaged_primitive_vars_jl
 export trixi_version_library,
        trixi_version_library_cfptr,
        trixi_version_library_jl

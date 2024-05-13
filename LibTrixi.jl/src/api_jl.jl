@@ -76,7 +76,7 @@ function trixi_nelements_jl(simstate)
 end
 
 
-function trixi_nelements_global_jl(simstate)
+function trixi_nelementsglobal_jl(simstate)
     _, _, solver, cache = mesh_equations_solver_cache(simstate.semi)
     return nelementsglobal(solver, cache)
 end
@@ -88,13 +88,13 @@ function trixi_ndofs_jl(simstate)
 end
 
 
-function trixi_ndofs_global_jl(simstate)
+function trixi_ndofsglobal_jl(simstate)
     mesh, _, solver, cache = mesh_equations_solver_cache(simstate.semi)
     return ndofsglobal(mesh, solver, cache)
 end
 
 
-function trixi_ndofs_element_jl(simstate)
+function trixi_ndofselement_jl(simstate)
     mesh, _, solver, _ = mesh_equations_solver_cache(simstate.semi)
     return nnodes(solver)^ndims(mesh)
 end
@@ -106,43 +106,7 @@ function trixi_nvariables_jl(simstate)
 end
 
 
-function trixi_load_cell_averages_jl(data, index, simstate)
-    mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
-    n_nodes = nnodes(solver)
-    n_dims = ndims(mesh)
-
-    u_ode = simstate.integrator.u
-    u = wrap_array(u_ode, mesh, equations, solver, cache)
-
-    # all permutations of nodes indices for arbitrary dimension
-    node_cis = CartesianIndices(ntuple(i -> n_nodes, n_dims))
-
-    for element in eachelement(solver, cache)
-
-        # compute mean value using nodal dg values and quadrature
-        u_mean = zero(eltype(u))
-        for node_ci in node_cis
-            u_node_prim = cons2prim(get_node_vars(u, equations, solver, node_ci, element),
-                                    equations)[index]
-            weight = 1.
-            for node_index in Tuple(node_ci)
-                weight *= solver.basis.weights[node_index]
-            end
-            u_mean += u_node_prim * weight
-        end
-
-        # normalize to unit element
-        u_mean = u_mean / 2^n_dims
-
-        # write to provided array
-        data[element] = u_mean
-    end
-
-    return nothing
-end
-
-
-function trixi_load_prim_jl(data, index, simstate)
+function trixi_load_primitive_vars_jl(simstate, variable_id, data)
     mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
     n_nodes_per_dim = nnodes(solver)
     n_dims = ndims(mesh)
@@ -159,8 +123,44 @@ function trixi_load_prim_jl(data, index, simstate)
         for node_ci in node_cis
             node_vars = get_node_vars(u, equations, solver, node_ci, element)
             node_index = (element-1) * n_nodes + node_lis[node_ci]
-            data[node_index] = cons2prim(node_vars, equations)[index]
+            data[node_index] = cons2prim(node_vars, equations)[variable_id]
         end
+    end
+
+    return nothing
+end
+
+
+function trixi_load_element_averaged_primitive_vars_jl(simstate, variable_id, data)
+    mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
+    n_nodes = nnodes(solver)
+    n_dims = ndims(mesh)
+
+    u_ode = simstate.integrator.u
+    u = wrap_array(u_ode, mesh, equations, solver, cache)
+
+    # all permutations of nodes indices for arbitrary dimension
+    node_cis = CartesianIndices(ntuple(i -> n_nodes, n_dims))
+
+    for element in eachelement(solver, cache)
+
+        # compute mean value using nodal dg values and quadrature
+        u_mean = zero(eltype(u))
+        for node_ci in node_cis
+            u_node_prim = cons2prim(get_node_vars(u, equations, solver, node_ci, element),
+                                    equations)[variable_id]
+            weight = 1.
+            for node_index in Tuple(node_ci)
+                weight *= solver.basis.weights[node_index]
+            end
+            u_mean += u_node_prim * weight
+        end
+
+        # normalize to unit element
+        u_mean = u_mean / 2^n_dims
+
+        # write to provided array
+        data[element] = u_mean
     end
 
     return nothing

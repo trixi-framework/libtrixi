@@ -248,7 +248,7 @@ module LibTrixi
     !>
     !! @fn LibTrixi::trixi_nelements::trixi_nelements(handle)
     !!
-    !! @brief Return number of local elements (cells)
+    !! @brief Return number of local elements
     !!
     !! @param[in]  handle  simulation handle
     !!
@@ -259,14 +259,14 @@ module LibTrixi
     end function
 
     !>
-    !! @fn LibTrixi::trixi_nelements_global::trixi_nelements_global(handle)
+    !! @fn LibTrixi::trixi_nelementsglobal::trixi_nelementsglobal(handle)
     !!
-    !! @brief Return number of global elements (cells)
+    !! @brief Return global number of elements
     !!
     !! @param[in]  handle  simulation handle
     !!
-    !! @see @ref trixi_nelements_global_api_c "trixi_nelements_global (C API)"
-    integer(c_int) function trixi_nelements_global(handle) bind(c)
+    !! @see @ref trixi_nelementsglobal_api_c "trixi_nelementsglobal (C API)"
+    integer(c_int) function trixi_nelementsglobal(handle) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int
       integer(c_int), value, intent(in) :: handle
     end function
@@ -285,24 +285,27 @@ module LibTrixi
     end function
 
     !>
-    !! @fn LibTrixi::trixi_ndofs_global::trixi_ndofs_global(handle)
+    !! @fn LibTrixi::trixi_ndofsglobal::trixi_ndofsglobal(handle)
     !!
-    !! @brief Return number of global degrees of freedom
+    !! @brief Return global number of degrees of freedom
     !!
     !! @param[in]  handle  simulation handle
     !!
-    !! @see @ref trixi_ndofs_global_api_c "trixi_ndofs_global (C API)"
-    integer(c_int) function trixi_ndofs_global(handle) bind(c)
+    !! @see @ref trixi_ndofsglobal_api_c "trixi_ndofsglobal (C API)"
+    integer(c_int) function trixi_ndofsglobal(handle) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int
       integer(c_int), value, intent(in) :: handle
     end function
 
-    !! @anchor trixi_ndofs_element_api_c
+    !>
+    !! @fn LibTrixi::trixi_ndofselement::trixi_ndofselement(handle)
     !!
-    !! @brief Return number of degrees of freedom per element (cell).
+    !! @brief Return number of degrees of freedom per element.
     !!
     !! @param[in]  handle  simulation handle
-    integer(c_int) function trixi_ndofs_element(handle) bind(c)
+    !!
+    !! @see @ref trixi_ndofselement_api_c "trixi_ndofselement (C API)"
+    integer(c_int) function trixi_ndofselement(handle) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int
       integer(c_int), value, intent(in) :: handle
     end function
@@ -321,20 +324,20 @@ module LibTrixi
     end function
 
     !>
-    !! @fn LibTrixi::trixi_load_cell_averages::trixi_load_cell_averages(data, index, handle)
+    !! @fn LibTrixi::trixi_load_primitive_vars::trixi_load_primitive_vars(handle, variable_id, data)
     !!
-    !! @brief Return cell averaged values
+    !! @brief Load primitive variable
     !!
-    !! @param[in]  handle  simulation handle
-    !! @param[in]  index   index of variable
-    !! @param[out] data    cell averaged values for all cells and all variables
+    !! @param[in]  handle       simulation handle
+    !! @param[in]  variable_id  index of variable
+    !! @param[out] data         primitive variable values for all degrees of freedom
     !!
-    !! @see @ref trixi_load_cell_averages_api_c "trixi_load_cell_averages (C API)"
-    subroutine trixi_load_cell_averages(data, index, handle) bind(c)
+    !! @see @ref trixi_load_primitive_vars_api_c "trixi_load_primitive_vars (C API)"
+    subroutine trixi_load_primitive_vars(handle, variable_id, data) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int, c_double
-      real(c_double), dimension(*), intent(in) :: data
-      integer(c_int), value, intent(in) :: index
       integer(c_int), value, intent(in) :: handle
+      integer(c_int), value, intent(in) :: variable_id
+      real(c_double), dimension(*), intent(in) :: data
     end subroutine
 
     !>
@@ -373,20 +376,20 @@ module LibTrixi
     end subroutine
 
     !>
-    !! @fn LibTrixi::trixi_load_prim::trixi_load_prim(data, index, handle)
+    !! @fn LibTrixi::trixi_load_element_averaged_primitive_vars::trixi_load_element_averaged_primitive_vars(handle, variable_id, data)
     !!
-    !! @brief Return primitive variable values
+    !! @brief Load element averages for primitive variable
     !!
-    !! @param[in]  handle  simulation handle
-    !! @param[in]  index   index of variable
-    !! @param[out] data    primitive variable values for all degrees of freedom
+    !! @param[in]  handle       simulation handle
+    !! @param[in]  variable_id  index of variable
+    !! @param[out] data         averaged values for all elements
     !!
-    !! @see @ref trixi_load_prim_api_c "trixi_load_prim (C API)"
-    subroutine trixi_load_prim(data, index, handle) bind(c)
+    !! @see @ref trixi_load_element_averaged_primitive_vars_api_c "trixi_load_element_averaged_primitive_vars (C API)"
+    subroutine trixi_load_element_averaged_primitive_vars(handle, variable_id, data) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int, c_double
-      real(c_double), dimension(*), intent(in) :: data
-      integer(c_int), value, intent(in) :: index
       integer(c_int), value, intent(in) :: handle
+      integer(c_int), value, intent(in) :: variable_id
+      real(c_double), dimension(*), intent(in) :: data
     end subroutine
 
 
