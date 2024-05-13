@@ -17,6 +17,7 @@ enum {
     TRIXI_FPTR_NELEMENTS_GLOBAL,
     TRIXI_FPTR_NDOFS,
     TRIXI_FPTR_NDOFS_GLOBAL,
+    TRIXI_FPTR_NDOFS_ELEMENT,
     TRIXI_FTPR_NVARIABLES,
     TRIXI_FTPR_LOAD_CELL_AVERAGES,
     TRIXI_FTPR_LOAD_PRIM,
@@ -52,6 +53,7 @@ static const char* trixi_function_pointer_names[] = {
     [TRIXI_FPTR_NELEMENTS_GLOBAL]       = "trixi_nelements_global_cfptr",
     [TRIXI_FPTR_NDOFS]                  = "trixi_ndofs_cfptr",
     [TRIXI_FPTR_NDOFS_GLOBAL]           = "trixi_ndofs_global_cfptr",
+    [TRIXI_FPTR_NDOFS_ELEMENT]          = "trixi_ndofs_element_cfptr",
     [TRIXI_FTPR_NVARIABLES]             = "trixi_nvariables_cfptr",
     [TRIXI_FTPR_LOAD_CELL_AVERAGES]     = "trixi_load_cell_averages_cfptr",
     [TRIXI_FTPR_LOAD_PRIM]              = "trixi_load_prim_cfptr",
@@ -539,6 +541,23 @@ int trixi_ndofs_global(int handle) {
 
     // Call function
     return ndofs_global(handle);
+}
+
+
+/**
+ * @anchor trixi_ndofs_element_api_c
+ *
+ * @brief Return number of degrees of freedom per element (cell).
+ *
+ * @param[in]  handle  simulation handle
+ */
+int trixi_ndofs_element(int handle) {
+
+    // Get function pointer
+    int (*ndofs_element)(int) = trixi_function_pointers[TRIXI_FPTR_NDOFS_ELEMENT];
+
+    // Call function
+    return ndofs_element(handle);
 }
 
 

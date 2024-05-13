@@ -22,7 +22,8 @@ module simulationRun_suite
 
   subroutine test_simulationRun(error)
     type(error_type), allocatable, intent(out) :: error
-    integer :: handle, ndims, nelements, nelements_global, nvariables, size
+    integer :: handle, ndims, nelements, nelements_global, nvariables, ndofs_global, &
+               ndofs_element, ndofs, size
     logical :: finished_status
     ! dp as defined in test-drive
     integer, parameter :: dp = selected_real_kind(15)
@@ -58,6 +59,16 @@ module simulationRun_suite
     nelements_global = trixi_nelements_global(handle)
     call check(error, nelements_global, 256)
 
+    ! Check number of dofs
+    ndofs_element = trixi_ndofs_element(handle)
+    call check(error, ndofs_element, 25)
+
+    ndofs = trixi_ndofs(handle)
+    call check(error, ndofs, nelements * ndofs_element)
+
+    ndofs_global = trixi_ndofs_global(handle)
+    call check(error, ndofs_global, nelements_global * ndofs_element)
+
     ! Check number of variables
     nvariables = trixi_nvariables(handle)
     call check(error, nvariables, 4)
@@ -66,9 +77,19 @@ module simulationRun_suite
     size = nelements
     allocate(data(size))
     call trixi_load_cell_averages(data, 1, handle)
-    call check(error, data(1), 1.0_dp)
-    call check(error, data(94), 0.99833232379996562_dp)
+    call check(error, data(1),    1.0_dp)
+    call check(error, data(94),   0.99833232379996562_dp)
     call check(error, data(size), 1.0_dp)
+    deallocate(data)
+
+    ! Check primitive variable values
+    size = ndofs
+    allocate(data(size))
+    call trixi_load_prim(data, 1, handle)
+    call check(error, data(1),    1.0_dp)
+    call check(error, data(3200), 1.0_dp)
+    call check(error, data(size), 1.0_dp)
+    deallocate(data)
 
     ! Finalize Trixi simulation
     call trixi_finalize_simulation(handle)
