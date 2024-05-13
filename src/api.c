@@ -43,33 +43,6 @@ static void* trixi_function_pointers[TRIXI_NUM_FPTRS];
 // List of function names to obtain C function pointers from Julia
 // OBS! If any name is longer than 250 characters, adjust buffer sizes in setup.c
 static const char* trixi_function_pointer_names[] = {
-<<<<<<< HEAD
-    [TRIXI_FTPR_INITIALIZE_SIMULATION]  = "trixi_initialize_simulation_cfptr",
-    [TRIXI_FTPR_CALCULATE_DT]           = "trixi_calculate_dt_cfptr",
-    [TRIXI_FTPR_IS_FINISHED]            = "trixi_is_finished_cfptr",
-    [TRIXI_FTPR_STEP]                   = "trixi_step_cfptr",
-    [TRIXI_FTPR_FINALIZE_SIMULATION]    = "trixi_finalize_simulation_cfptr",
-    [TRIXI_FTPR_NDIMS]                  = "trixi_ndims_cfptr",
-    [TRIXI_FPTR_NELEMENTS]              = "trixi_nelements_cfptr",
-    [TRIXI_FPTR_NELEMENTS_GLOBAL]       = "trixi_nelements_global_cfptr",
-    [TRIXI_FPTR_NDOFS]                  = "trixi_ndofs_cfptr",
-    [TRIXI_FPTR_NDOFS_GLOBAL]           = "trixi_ndofs_global_cfptr",
-    [TRIXI_FPTR_NDOFS_ELEMENT]          = "trixi_ndofs_element_cfptr",
-    [TRIXI_FTPR_NVARIABLES]             = "trixi_nvariables_cfptr",
-    [TRIXI_FTPR_LOAD_CELL_AVERAGES]     = "trixi_load_cell_averages_cfptr",
-    [TRIXI_FTPR_LOAD_PRIM]              = "trixi_load_prim_cfptr",
-    [TRIXI_FTPR_STORE_IN_DATABASE]      = "trixi_store_in_database_cfptr",
-    [TRIXI_FTPR_VERSION_LIBRARY]        = "trixi_version_library_cfptr",
-    [TRIXI_FTPR_VERSION_LIBRARY_MAJOR]  = "trixi_version_library_major_cfptr",
-    [TRIXI_FTPR_VERSION_LIBRARY_MINOR]  = "trixi_version_library_minor_cfptr",
-    [TRIXI_FTPR_VERSION_LIBRARY_PATCH]  = "trixi_version_library_patch_cfptr",
-    [TRIXI_FTPR_VERSION_JULIA]          = "trixi_version_julia_cfptr",
-    [TRIXI_FTPR_VERSION_JULIA_EXTENDED] = "trixi_version_julia_extended_cfptr",
-    [TRIXI_FTPR_EVAL_JULIA]             = "trixi_eval_julia_cfptr",
-    [TRIXI_FTPR_GET_T8CODE_FOREST]      = "trixi_get_t8code_forest_cfptr",
-    [TRIXI_FPTR_GET_TIME]               = "trixi_get_time_cfptr",
-    [TRIXI_FPTR_LOAD_NODE_COORDINATES]  = "trixi_load_node_coordinates_cfptr"
-=======
     [TRIXI_FTPR_INITIALIZE_SIMULATION]                = "trixi_initialize_simulation_cfptr",
     [TRIXI_FTPR_CALCULATE_DT]                         = "trixi_calculate_dt_cfptr",
     [TRIXI_FTPR_IS_FINISHED]                          = "trixi_is_finished_cfptr",
@@ -84,6 +57,7 @@ static const char* trixi_function_pointer_names[] = {
     [TRIXI_FTPR_NVARIABLES]                           = "trixi_nvariables_cfptr",
     [TRIXI_FTPR_LOAD_PRIMITIVE_VARS]                  = "trixi_load_primitive_vars_cfptr",
     [TRIXI_FTPR_LOAD_ELEMENT_AVERAGED_PRIMITIVE_VARS] = "trixi_load_element_averaged_primitive_vars_cfptr",
+    [TRIXI_FTPR_STORE_IN_DATABASE]                    = "trixi_store_in_database_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY]                      = "trixi_version_library_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY_MAJOR]                = "trixi_version_library_major_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY_MINOR]                = "trixi_version_library_minor_cfptr",
@@ -91,8 +65,9 @@ static const char* trixi_function_pointer_names[] = {
     [TRIXI_FTPR_VERSION_JULIA]                        = "trixi_version_julia_cfptr",
     [TRIXI_FTPR_VERSION_JULIA_EXTENDED]               = "trixi_version_julia_extended_cfptr",
     [TRIXI_FTPR_EVAL_JULIA]                           = "trixi_eval_julia_cfptr",
-    [TRIXI_FTPR_GET_T8CODE_FOREST]                    = "trixi_get_t8code_forest_cfptr"
->>>>>>> more-data-access
+    [TRIXI_FTPR_GET_T8CODE_FOREST]                    = "trixi_get_t8code_forest_cfptr",
+    [TRIXI_FPTR_GET_TIME]                             = "trixi_get_time_cfptr",
+    [TRIXI_FPTR_LOAD_NODE_COORDINATES]                = "trixi_load_node_coordinates_cfptr"
 };
 
 // Track initialization/finalization status to prevent unhelpful errors
