@@ -335,7 +335,10 @@ fi
 [ $? -eq 0 ] || die "could not configure system HDF5 library for Julia"
 echo
 
-# Install remaining dependencies
+# Install Trixi.jl and OrdinaryDiffEq.jl first
+# Rationale: By first installing Trixi.jl, we ensure that we use its latest version,
+# even if it does not play nicely with the latest version of OrdinaryDiffEq.jl.
+# xref: https://github.com/trixi-framework/libtrixi/issues/190
 echo "Install Trixi.jl and OrdinaryDiffEq.jl..."
 JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
     $julia_exec --project=. \
