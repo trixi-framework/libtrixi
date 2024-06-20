@@ -11,6 +11,14 @@ if ( NOT T8CODE_FOUND )
     list( FILTER EXAMPLES EXCLUDE REGEX ".*(t|T)8(c|C)(o|O)(d|D)(e|E).*" )
 endif()
 
+# example standalone library with callback
+add_library ( source_terms SHARED
+    source_terms.h
+    source_terms.c
+)
+install( TARGETS source_terms )
+
+
 foreach ( EXAMPLE ${EXAMPLES} )
 
     get_filename_component ( EXAMPLE_EXT ${EXAMPLE} EXT )
