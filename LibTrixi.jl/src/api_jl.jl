@@ -77,8 +77,8 @@ end
 
 
 function trixi_nelements_global_jl(simstate)
-    _, _, solver, cache = mesh_equations_solver_cache(simstate.semi)
-    return nelementsglobal(solver, cache)
+    mesh, _, solver, cache = mesh_equations_solver_cache(simstate.semi)
+    return nelementsglobal(mesh, solver, cache)
 end
 
 
