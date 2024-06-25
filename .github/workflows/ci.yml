@@ -54,7 +54,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Enable Julia cache
-        uses: julia-actions/cache@v1
+        uses: julia-actions/cache@v2
 
       - name: Enable t8code cache
         id: cache-t8code
