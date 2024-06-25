@@ -22,7 +22,8 @@ module simulationRun_suite
 
   subroutine test_simulationRun(error)
     type(error_type), allocatable, intent(out) :: error
-    integer :: handle, ndims, nelements, nelements_global, nvariables, size
+    integer :: handle, ndims, nelements, nelementsglobal, nvariables, ndofsglobal, &
+               ndofselement, ndofs, size
     logical :: finished_status
     ! dp as defined in test-drive
     integer, parameter :: dp = selected_real_kind(15)
@@ -55,21 +56,41 @@ module simulationRun_suite
     nelements = trixi_nelements(handle)
     call check(error, nelements, 256)
 
-    nelements_global = trixi_nelements_global(handle)
-    call check(error, nelements_global, 256)
+    nelementsglobal = trixi_nelementsglobal(handle)
+    call check(error, nelementsglobal, 256)
+
+    ! Check number of dofs
+    ndofselement = trixi_ndofselement(handle)
+    call check(error, ndofselement, 25)
+
+    ndofs = trixi_ndofs(handle)
+    call check(error, ndofs, nelements * ndofselement)
+
+    ndofsglobal = trixi_ndofsglobal(handle)
+    call check(error, ndofsglobal, nelementsglobal * ndofselement)
 
     ! Check number of variables
     nvariables = trixi_nvariables(handle)
     call check(error, nvariables, 4)
 
-    ! Check cell averaged values
-    size = nelements*nvariables
+    ! Check primitive variable values
+    size = ndofs
     allocate(data(size))
-    call trixi_load_cell_averages(data, handle)
-    call check(error, data(1), 1.0_dp)
-    call check(error, data(929), 2.6605289164377273_dp)
-    call check(error, data(size), 1e-5_dp)
-    
+    call trixi_load_primitive_vars(handle, 1, data)
+    call check(error, data(1),    1.0_dp)
+    call check(error, data(3200), 1.0_dp)
+    call check(error, data(size), 1.0_dp)
+    deallocate(data)
+
+    ! Check element averaged values
+    size = nelements
+    allocate(data(size))
+    call trixi_load_element_averaged_primitive_vars(handle, 1, data)
+    call check(error, data(1),    1.0_dp)
+    call check(error, data(94),   0.99833232379996562_dp)
+    call check(error, data(size), 1.0_dp)
+    deallocate(data)
+
     ! Finalize Trixi simulation
     call trixi_finalize_simulation(handle)
     
