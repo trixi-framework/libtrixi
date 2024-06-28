@@ -1,12 +1,21 @@
 """
     SimulationState
 
-Data structure to store a simulation state that consists of a semidiscretization
-plus the time integrator.
+Data structure to store a simulation state consisting of
+- a semidiscretization
+- the time integrator
+- an optional array of data vectors
 """
+const LibTrixiDataBaseType = Vector{Ref{Vector{Float64}}}
+
 mutable struct SimulationState{SemiType, IntegratorType}
     semi::SemiType
     integrator::IntegratorType
+    data::LibTrixiDataBaseType
+
+    function SimulationState(semi, integrator, data = nothing)
+        return new{typeof(semi), typeof(integrator)}(semi, integrator, data)
+    end
 end
 
 # Global variables to store different simulation states

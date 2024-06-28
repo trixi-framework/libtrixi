@@ -167,6 +167,47 @@ function trixi_load_element_averaged_primitive_vars_jl(simstate, variable_id, da
 end
 
 
+function trixi_store_in_database_jl(simstate, index, data)
+    simstate.data[index] = Ref(data)
+    if show_debug_output()
+        println("New data vector stored at index ", index)
+    end
+    return nothing
+end
+
+
+function trixi_get_time_jl(simstate)
+    return simstate.integrator.t
+end
+
+
+function trixi_load_node_coordinates_jl(simstate, x)
+    mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
+
+    n_nodes_per_dim = nnodes(solver)
+    n_dims = ndims(mesh)
+    n_nodes = n_nodes_per_dim^n_dims
+    n_dofs = ndofs(mesh, solver, cache)
+
+    # all permutations of nodes indices for arbitrary dimension
+    node_cis = CartesianIndices(ntuple(i -> n_nodes_per_dim, n_dims))
+    node_lis = LinearIndices(node_cis)
+
+    for element in eachelement(solver, cache)
+        for node_ci in node_cis
+            x_local = get_node_coords(cache.elements.node_coordinates, equations, solver,
+                                      node_ci, element)
+            node_index = (element-1) * n_nodes + node_lis[node_ci]
+            for d in 1:n_dims
+                x[(d-1)*n_dofs + node_index] = x_local[d]
+            end
+        end
+    end
+
+    return nothing
+end
+
+
 function trixi_get_t8code_forest_jl(simstate)
     mesh, _, _, _ = Trixi.mesh_equations_solver_cache(simstate.semi)
     return mesh.forest
