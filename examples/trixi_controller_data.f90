@@ -63,16 +63,16 @@ program trixi_controller_data_f
 
       ! allocate memory
       if ( associated(data) ) deallocate(data)
-      allocate( data(nelements*nvariables) )
+      allocate( data(nelements) )
 
-      ! get averaged cell values for each variable
-      call trixi_load_cell_averages(data, handle)
+      ! get element averaged values for first variable
+      call trixi_load_element_averaged_primitive_vars(handle, 1, data)
     end if
   end do
 
   ! print first variable
   do i = 1,nelements
-    print "('u[cell  ', i4, '] = ', e14.8)", i, data(i)
+    print "('u[element  ', i4, '] = ', e14.8)", i, data(i)
   end do
 
   ! Finalize Trixi simulation

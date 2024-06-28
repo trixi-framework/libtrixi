@@ -27,10 +27,17 @@ void trixi_step(int handle);
 // Simulation data
 int trixi_ndims(int handle);
 int trixi_nelements(int handle);
-int trixi_nelements_global(int handle);
+int trixi_nelementsglobal(int handle);
+int trixi_ndofs(int handle);
+int trixi_ndofsglobal(int handle);
+int trixi_ndofselement(int handle);
 int trixi_nvariables(int handle);
 double trixi_calculate_dt(int handle);
-void trixi_load_cell_averages(double * data, int handle);
+void trixi_store_in_database(int handle, int index, int size, const double * data);
+double trixi_get_time(int handle);
+void trixi_load_node_coordinates(int handle, double* x);
+void trixi_load_primitive_vars(int handle, int variable_id, double * data);
+void trixi_load_element_averaged_primitive_vars(int handle, int variable_id, double * data);
 
 // T8code
 #if !defined(T8_H) && !defined(T8_FOREST_GENERAL_H)

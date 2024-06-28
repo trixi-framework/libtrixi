@@ -59,63 +59,88 @@ TEST(CInterfaceTest, SimulationRun) {
 
     // Check number of elements
     int nelements = trixi_nelements(handle);
-    int nelements_global = trixi_nelements_global(handle);
-    EXPECT_EQ(nelements * nranks, nelements_global);
+    int nelementsglobal = trixi_nelementsglobal(handle);
+    EXPECT_EQ(nelements * nranks, nelementsglobal);
+
+    // Check number of dofs
+    int ndofs = trixi_ndofs(handle);
+    int ndofsglobal = trixi_ndofsglobal(handle);
+    EXPECT_EQ(ndofs * nranks, ndofsglobal);
+
+    int ndofselement = trixi_ndofselement(handle);
+    EXPECT_EQ(nelements * ndofselement, ndofs);
+    EXPECT_EQ(nelementsglobal * ndofselement, ndofsglobal);
 
     // Check number of variables
     int nvariables = trixi_nvariables(handle);
     EXPECT_EQ(nvariables, 4);
 
-    // Check cell averaged values
-    int size = nelements * nvariables;
-    std::vector<double> cell_averages(size);
-    trixi_load_cell_averages(cell_averages.data(), handle);
+    // Check primitive variable values on all dofs
+    std::vector<double> rho(ndofs);
+    std::vector<double> energy(ndofs);
+    trixi_load_primitive_vars(handle, 1, rho.data());
+    trixi_load_primitive_vars(handle, 4, energy.data());
+    // check memory boarders
+    EXPECT_DOUBLE_EQ(rho[0],          1.0);
+    EXPECT_DOUBLE_EQ(rho[ndofs-1],    1.0);
+    EXPECT_DOUBLE_EQ(energy[0],       1.0e-5);
+    EXPECT_DOUBLE_EQ(energy[ndofs-1], 1.0e-5);
+
+    // Check element averaged values
+    std::vector<double> rho_averages(nelements);
+    std::vector<double> v1_averages(nelements);
+    std::vector<double> v2_averages(nelements);
+    std::vector<double> e_averages(nelements);
+    trixi_load_element_averaged_primitive_vars(handle, 1, rho_averages.data());
+    trixi_load_element_averaged_primitive_vars(handle, 2, v1_averages.data());
+    trixi_load_element_averaged_primitive_vars(handle, 3, v2_averages.data());
+    trixi_load_element_averaged_primitive_vars(handle, 4, e_averages.data());
     if (nranks == 1) {
         // check memory boarders (densities at the beginning, energies at the end)
-        EXPECT_DOUBLE_EQ(cell_averages[0],              1.0);
-        EXPECT_DOUBLE_EQ(cell_averages[size-1],         1.0e-5);
+        EXPECT_DOUBLE_EQ(rho_averages[0],         1.0);
+        EXPECT_DOUBLE_EQ(e_averages[nelements-1], 1.0e-5);
         // check values somewhere near the center (expect symmetries)
         // densities
-        EXPECT_NEAR(cell_averages[93],                  0.88263491354796, 1e-14);
-        EXPECT_NEAR(cell_averages[94],                  0.88263491354796, 1e-14);
-        EXPECT_NEAR(cell_averages[161],                 0.88263491354796, 1e-14);
-        EXPECT_NEAR(cell_averages[162],                 0.88263491354796, 1e-14);
+        EXPECT_NEAR(rho_averages[ 93],            0.88263491354796, 1e-14);
+        EXPECT_NEAR(rho_averages[ 94],            0.88263491354796, 1e-14);
+        EXPECT_NEAR(rho_averages[161],            0.88263491354796, 1e-14);
+        EXPECT_NEAR(rho_averages[162],            0.88263491354796, 1e-14);
         // velocities
-        EXPECT_NEAR(cell_averages[ 93+  nelements],    -0.14037267400591, 1e-14);
-        EXPECT_NEAR(cell_averages[ 94+2*nelements],    -0.14037267400591, 1e-14);
-        EXPECT_NEAR(cell_averages[161+2*nelements],     0.14037267400591, 1e-14);
-        EXPECT_NEAR(cell_averages[162+  nelements],     0.14037267400591, 1e-14);
+        EXPECT_NEAR(v1_averages[ 93],            -0.14037267400591, 1e-14);
+        EXPECT_NEAR(v2_averages[ 94],            -0.14037267400591, 1e-14);
+        EXPECT_NEAR(v2_averages[161],             0.14037267400591, 1e-14);
+        EXPECT_NEAR(v1_averages[162],             0.14037267400591, 1e-14);
     }
     else if (nranks == 2) {
         if (rank == 0) {
             // check memory boarders (densities at the beginning, energies at the end)
-            EXPECT_DOUBLE_EQ(cell_averages[0],          1.0);
-            EXPECT_DOUBLE_EQ(cell_averages[size-1],     1.0e-5);
+            EXPECT_DOUBLE_EQ(rho_averages[0],         1.0);
+            EXPECT_DOUBLE_EQ(e_averages[nelements-1], 1.0e-5);
             // check values somewhere near the center (expect symmetries)
             // densities
-            EXPECT_NEAR(cell_averages[93],              0.88263491354796, 1e-14);
-            EXPECT_NEAR(cell_averages[94],              0.88263491354796, 1e-14);
+            EXPECT_NEAR(rho_averages[93],             0.88263491354796, 1e-14);
+            EXPECT_NEAR(rho_averages[94],             0.88263491354796, 1e-14);
             // velocities
-            EXPECT_NEAR(cell_averages[93+  nelements], -0.14037267400591, 1e-14);
-            EXPECT_NEAR(cell_averages[94+2*nelements], -0.14037267400591, 1e-14);
+            EXPECT_NEAR(v1_averages[93],             -0.14037267400591, 1e-14);
+            EXPECT_NEAR(v2_averages[94],             -0.14037267400591, 1e-14);
         }
         else {
             // check memory boarders (densities at the beginning, energies at the end)
-            EXPECT_DOUBLE_EQ(cell_averages[0],          1.0);
-            EXPECT_DOUBLE_EQ(cell_averages[size-1],     1.0e-5);
+            EXPECT_DOUBLE_EQ(rho_averages[0],         1.0);
+            EXPECT_DOUBLE_EQ(e_averages[nelements-1], 1.0e-5);
             // check values somewhere near the center (expect symmetries)
             // densities
-            EXPECT_NEAR(cell_averages[33],              0.88263491354796, 1e-14);
-            EXPECT_NEAR(cell_averages[34],              0.88263491354796, 1e-14);
+            EXPECT_NEAR(rho_averages[33],             0.88263491354796, 1e-14);
+            EXPECT_NEAR(rho_averages[34],             0.88263491354796, 1e-14);
             // velocities
-            EXPECT_NEAR(cell_averages[33+2*nelements],  0.14037267400591, 1e-14);
-            EXPECT_NEAR(cell_averages[34+  nelements],  0.14037267400591, 1e-14);
+            EXPECT_NEAR(v2_averages[33],              0.14037267400591, 1e-14);
+            EXPECT_NEAR(v1_averages[34],              0.14037267400591, 1e-14);
         }
     }
     else {
         FAIL() << "Test cannot be run with " << nranks << " ranks.";
     }
-    
+
     // Finalize Trixi simulation
     trixi_finalize_simulation(handle);
 

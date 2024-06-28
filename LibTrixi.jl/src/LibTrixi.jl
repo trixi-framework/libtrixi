@@ -1,9 +1,9 @@
 module LibTrixi
 
 using OrdinaryDiffEq: OrdinaryDiffEq, step!, check_error, DiscreteCallback
-using Trixi: Trixi, summary_callback, mesh_equations_solver_cache, nelements,
-             nelementsglobal, nvariables, nnodes, wrap_array, eachelement, cons2prim,
-             get_node_vars, eachnode
+using Trixi: Trixi, summary_callback, mesh_equations_solver_cache, ndims, nelements,
+             nelementsglobal, ndofs, ndofsglobal, nvariables, nnodes, wrap_array,
+             eachelement, cons2prim, get_node_vars, get_node_coords, eachnode
 using MPI: MPI, run_init_hooks, set_default_error_handler_return
 using Pkg
 
@@ -28,15 +28,30 @@ export trixi_ndims,
 export trixi_nelements,
        trixi_nelements_cfptr,
        trixi_nelements_jl
-export trixi_nelements_global,
-       trixi_nelements_global_cfptr,
-       trixi_nelements_global_jl
+export trixi_nelementsglobal,
+       trixi_nelementsglobal_cfptr,
+       trixi_nelementsglobal_jl
+export trixi_ndofs,
+       trixi_ndofs_cfptr,
+       trixi_ndofs_jl
+export trixi_ndofsglobal,
+       trixi_ndofsglobal_cfptr,
+       trixi_ndofsglobal_jl
+export trixi_ndofselement,
+       trixi_ndofselement_cfptr,
+       trixi_ndofselement_jl
 export trixi_nvariables,
        trixi_nvariables_cfptr,
        trixi_nvariables_jl
-export trixi_load_cell_averages,
-       trixi_load_cell_averages_cfptr,
-       trixi_load_cell_averages_jl
+export trixi_store_in_database,
+       trixi_store_in_database_cfptr,
+       trixi_store_in_database_jl
+export trixi_load_primitive_vars,
+       trixi_load_primitive_vars_cfptr,
+       trixi_load_primitive_vars_jl
+export trixi_load_element_averaged_primitive_vars,
+       trixi_load_element_averaged_primitive_vars_cfptr,
+       trixi_load_element_averaged_primitive_vars_jl
 export trixi_version_library,
        trixi_version_library_cfptr,
        trixi_version_library_jl
@@ -61,8 +76,16 @@ export trixi_get_t8code_forest,
 export trixi_eval_julia,
        trixi_eval_julia_cfptr,
        trixi_eval_julia_jl
+export trixi_get_time,
+       trixi_get_time_cfptr,
+       trixi_get_time_jl
+export trixi_load_node_coordinates,
+       trixi_load_node_coordinates_cfptr,
+       trixi_load_node_coordinates_jl
+
 
 export SimulationState, store_simstate, load_simstate, delete_simstate!
+export LibTrixiDataBaseType
 
 
 # global storage of name and version information of loaded packages
