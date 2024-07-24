@@ -19,6 +19,9 @@ enum {
     TRIXI_FPTR_NDOFS_GLOBAL,
     TRIXI_FPTR_NDOFS_ELEMENT,
     TRIXI_FTPR_NVARIABLES,
+    TRIXI_FPTR_NNODES,
+    TRIXI_FPTR_LOAD_NODE_REFERENCE_COORDINATES,
+    TRIXI_FPTR_LOAD_NODE_WEIGHTS,
     TRIXI_FTPR_LOAD_PRIMITIVE_VARS,
     TRIXI_FTPR_LOAD_ELEMENT_AVERAGED_PRIMITIVE_VARS,
     TRIXI_FTPR_VERSION_LIBRARY,
@@ -52,6 +55,9 @@ static const char* trixi_function_pointer_names[] = {
     [TRIXI_FPTR_NDOFS_GLOBAL]                         = "trixi_ndofsglobal_cfptr",
     [TRIXI_FPTR_NDOFS_ELEMENT]                        = "trixi_ndofselement_cfptr",
     [TRIXI_FTPR_NVARIABLES]                           = "trixi_nvariables_cfptr",
+    [TRIXI_FPTR_NNODES]                               = "trixi_nnodes_cfptr",
+    [TRIXI_FPTR_LOAD_NODE_REFERENCE_COORDINATES]      = "trixi_load_node_reference_coordinates_cfptr",
+    [TRIXI_FPTR_LOAD_NODE_WEIGHTS]                    = "trixi_load_node_weights_cfptr",
     [TRIXI_FTPR_LOAD_PRIMITIVE_VARS]                  = "trixi_load_primitive_vars_cfptr",
     [TRIXI_FTPR_LOAD_ELEMENT_AVERAGED_PRIMITIVE_VARS] = "trixi_load_element_averaged_primitive_vars_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY]                      = "trixi_version_library_cfptr",
@@ -573,12 +579,73 @@ int trixi_nvariables(int handle) {
 
 
 /**
+ * @anchor trixi_nnodes_api_c
+ *
+ * @brief Return number of quadrature nodes per dimension.
+ *
+ * @param[in]  handle  simulation handle
+ */
+int trixi_nnodes(int handle) {
+
+    // Get function pointer
+    int (*nnodes)(int) = trixi_function_pointers[TRIXI_FPTR_NNODES];
+
+    // Call function
+    return nnodes(handle);
+}
+
+
+/**
+ * @anchor trixi_load_node_reference_coordinates_api_c
+ *
+ * @brief Get reference coordinates of 1D quadrature nodes.
+ *
+ * The reference coordinates in [-1,1] of the quadrature nodes in the current DG scheme are
+ * stored in the provided array `node_coords`. The given array has to be of correct size,
+ * i.e. `nnodes`, and memory has to be allocated beforehand.
+ *
+ * @param[in]   handle       simulation handle
+ * @param[out]  node_coords  node reference coordinates
+ */
+void trixi_load_node_reference_coordinates(int handle, double* node_coords) {
+
+    // Get function pointer
+    void (*load_node_reference_coordinates)(int, double *) = trixi_function_pointers[TRIXI_FPTR_LOAD_NODE_REFERENCE_COORDINATES];
+
+    // Call function
+    return load_node_reference_coordinates(handle, node_coords);
+}
+
+
+/**
+ * @anchor trixi_load_node_weights_api_c
+ *
+ * @brief Get weights of 1D quadrature nodes.
+ *
+ * The weights of the quadrature nodes in the current DG scheme are stored in the provided
+ * array `node_weights`. The given array has to be of correct size, i.e. `nnodes`, and
+ * memory has to be allocated beforehand.
+ *
+ * @param[in]   handle        simulation handle
+ * @param[out]  node_weights  node weights
+ */
+void trixi_load_node_weights(int handle, double* node_weights) {
+
+    // Get function pointer
+    void (*load_node_weights)(int, double *) = trixi_function_pointers[TRIXI_FPTR_LOAD_NODE_WEIGHTS];
+
+    // Call function
+    return load_node_weights(handle, node_weights);
+}
+
+
+/**
  * @anchor trixi_load_primitive_vars_api_c
  *
  * @brief Load primitive variable
  *
  * The values for the primitive variable at position `variable_id` at every degree of
- * freedom for are stored in the given array `data`.
+ * freedom are stored in the given array `data`.
  *
  * The given array has to be of correct size (ndofs) and memory has to be allocated
  * beforehand.

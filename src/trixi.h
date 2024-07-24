@@ -32,7 +32,10 @@ int trixi_ndofs(int handle);
 int trixi_ndofsglobal(int handle);
 int trixi_ndofselement(int handle);
 int trixi_nvariables(int handle);
+int trixi_nnodes(int handle);
 double trixi_calculate_dt(int handle);
+void trixi_load_node_reference_coordinates(int handle, double* node_coords);
+void trixi_load_node_weights(int handle, double* node_weights);
 void trixi_load_primitive_vars(int handle, int variable_id, double * data);
 void trixi_load_element_averaged_primitive_vars(int handle, int variable_id, double * data);
 

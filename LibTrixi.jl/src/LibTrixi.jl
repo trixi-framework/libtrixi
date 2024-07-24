@@ -43,6 +43,15 @@ export trixi_ndofselement,
 export trixi_nvariables,
        trixi_nvariables_cfptr,
        trixi_nvariables_jl
+export trixi_nnodes,
+       trixi_nnodes_cfptr,
+       trixi_nnodes_jl
+export trixi_load_node_reference_coordinates,
+       trixi_load_node_reference_coordinates_cfptr,
+       trixi_load_node_reference_coordinates_jl
+export trixi_load_node_weights,
+       trixi_load_node_weights_cfptr,
+       trixi_load_node_weights_jl
 export trixi_load_primitive_vars,
        trixi_load_primitive_vars_cfptr,
        trixi_load_primitive_vars_jl
