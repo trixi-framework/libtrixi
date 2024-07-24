@@ -106,6 +106,28 @@ function trixi_nvariables_jl(simstate)
 end
 
 
+function trixi_nnodes_jl(simstate)
+    _, _, solver, _ = mesh_equations_solver_cache(simstate.semi)
+    return nnodes(solver)
+end
+
+
+function trixi_load_node_reference_coordinates_jl(simstate, data)
+    _, _, solver, _ = mesh_equations_solver_cache(simstate.semi)
+    for i in eachnode(solver)
+        data[i] = solver.basis.nodes[i]
+    end
+end
+
+
+function trixi_load_node_weights_jl(simstate, data)
+    _, _, solver, _ = mesh_equations_solver_cache(simstate.semi)
+    for i in eachnode(solver)
+        data[i] = solver.basis.weights[i]
+    end
+end
+
+
 function trixi_load_primitive_vars_jl(simstate, variable_id, data)
     mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
     n_nodes_per_dim = nnodes(solver)
@@ -178,33 +200,6 @@ end
 
 function trixi_get_time_jl(simstate)
     return simstate.integrator.t
-end
-
-
-function trixi_load_node_coordinates_jl(simstate, x)
-    mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
-
-    n_nodes_per_dim = nnodes(solver)
-    n_dims = ndims(mesh)
-    n_nodes = n_nodes_per_dim^n_dims
-    n_dofs = ndofs(mesh, solver, cache)
-
-    # all permutations of nodes indices for arbitrary dimension
-    node_cis = CartesianIndices(ntuple(i -> n_nodes_per_dim, n_dims))
-    node_lis = LinearIndices(node_cis)
-
-    for element in eachelement(solver, cache)
-        for node_ci in node_cis
-            x_local = get_node_coords(cache.elements.node_coordinates, equations, solver,
-                                      node_ci, element)
-            node_index = (element-1) * n_nodes + node_lis[node_ci]
-            for d in 1:n_dims
-                x[(d-1)*n_dofs + node_index] = x_local[d]
-            end
-        end
-    end
-
-    return nothing
 end
 
 

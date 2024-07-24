@@ -75,6 +75,21 @@ TEST(CInterfaceTest, SimulationRun) {
     int nvariables = trixi_nvariables(handle);
     EXPECT_EQ(nvariables, 4);
 
+    // Check number of quadrature nodes
+    int nnodes = trixi_nnodes(handle);
+    EXPECT_EQ(nnodes, 5);
+
+    // Check quadrature, integrate f(x) = x^4 over [-1,1]
+    std::vector<double> nodes(nnodes);
+    std::vector<double> weights(nnodes);
+    trixi_load_node_reference_coordinates(handle, nodes.data());
+    trixi_load_node_weights(handle, weights.data());
+    double integral = 0.0;
+    for (int i = 0; i < nnodes; ++i) {
+        integral += weights[i] * nodes[i] * nodes[i] * nodes[i]* nodes[i];
+    }
+    EXPECT_NEAR(integral, 0.4, 1e-17);
+
     // Check primitive variable values on all dofs
     std::vector<double> rho(ndofs);
     std::vector<double> energy(ndofs);
