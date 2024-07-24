@@ -106,6 +106,28 @@ function trixi_nvariables_jl(simstate)
 end
 
 
+function trixi_nnodes_jl(simstate)
+    _, _, solver, _ = mesh_equations_solver_cache(simstate.semi)
+    return nnodes(solver)
+end
+
+
+function trixi_load_node_reference_coordinates_jl(simstate, data)
+    _, _, solver, _ = mesh_equations_solver_cache(simstate.semi)
+    for i in eachnode(solver)
+        data[i] = solver.basis.nodes[i]
+    end
+end
+
+
+function trixi_load_node_weights_jl(simstate, data)
+    _, _, solver, _ = mesh_equations_solver_cache(simstate.semi)
+    for i in eachnode(solver)
+        data[i] = solver.basis.weights[i]
+    end
+end
+
+
 function trixi_load_primitive_vars_jl(simstate, variable_id, data)
     mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
     n_nodes_per_dim = nnodes(solver)

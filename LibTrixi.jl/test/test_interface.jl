@@ -99,6 +99,25 @@ end
     nvariables_jl = trixi_nvariables_jl(simstate_jl)
     @test nvariables_c == nvariables_jl
 
+    # compare number of quadrature nodes
+    nnodes_c = trixi_nnodes(handle)
+    nnodes_jl = trixi_nnodes_jl(simstate_jl)
+    @test nnodes_c == nnodes_jl
+
+    # compare coordinates of quadrature nodes
+    data_c = zeros(nnodes_c)
+    trixi_load_node_reference_coordinates(handle, pointer(data_c))
+    data_jl = zeros(nnodes_jl)
+    trixi_load_node_reference_coordinates_jl(simstate_jl, data_jl)
+    @test data_c == data_jl
+
+    # compare weights of quadrature nodes
+    data_c = zeros(nnodes_c)
+    trixi_load_node_weights(handle, pointer(data_c))
+    data_jl = zeros(nnodes_jl)
+    trixi_load_node_weights_jl(simstate_jl, data_jl)
+    @test data_c == data_jl
+
     # compare element averaged values
     data_c = zeros(nelements_c)
     trixi_load_element_averaged_primitive_vars(handle, Int32(1), pointer(data_c))

@@ -373,13 +373,73 @@ trixi_nvariables_cfptr() = @cfunction(trixi_nvariables, Cint, (Cint,))
 
 
 """
+    trixi_nnodes(simstate_handle::Cint)::Cint
+
+Return number of quadrature nodes per dimension.
+"""
+function trixi_nnodes end
+
+Base.@ccallable function trixi_nnodes(simstate_handle::Cint)::Cint
+    simstate = load_simstate(simstate_handle)
+    return trixi_nnodes_jl(simstate)
+end
+
+trixi_nnodes_cfptr() = @cfunction(trixi_nnodes, Cint, (Cint,))
+
+
+"""
+    trixi_load_node_reference_coordinates(simstate_handle::Cint, data::Ptr{Cdouble})::Cvoid
+
+Get reference coordinates of 1D quadrature nodes.
+"""
+function trixi_load_node_reference_coordinates end
+
+Base.@ccallable function trixi_load_node_reference_coordinates(simstate_handle::Cint,
+                                                               data::Ptr{Cdouble})::Cvoid
+    simstate = load_simstate(simstate_handle)
+
+    # convert C to Julia array
+    size = trixi_nnodes_jl(simstate)
+    data_jl = unsafe_wrap(Array, data, size)
+
+    trixi_load_node_reference_coordinates_jl(simstate, data_jl)
+    return nothing
+end
+
+trixi_load_node_reference_coordinates_cfptr() =
+    @cfunction(trixi_load_node_reference_coordinates, Cvoid, (Cint, Ptr{Cdouble}))
+
+
+"""
+    trixi_load_node_weights(simstate_handle::Cint, data::Ptr{Cdouble})::Cvoid
+
+Get weights of 1D quadrature nodes.
+"""
+function trixi_load_node_weights end
+
+Base.@ccallable function trixi_load_node_weights(simstate_handle::Cint,
+                                                 data::Ptr{Cdouble})::Cvoid
+    simstate = load_simstate(simstate_handle)
+
+    # convert C to Julia array
+    size = trixi_nnodes_jl(simstate)
+    data_jl = unsafe_wrap(Array, data, size)
+
+    return trixi_load_node_weights_jl(simstate, data_jl)
+end
+
+trixi_load_node_weights_cfptr() =
+    @cfunction(trixi_load_node_weights, Cvoid, (Cint, Ptr{Cdouble}))
+
+
+"""
     trixi_load_primitive_vars(simstate_handle::Cint, variable_id::Cint,
                               data::Ptr{Cdouble})::Cvoid
 
 Load primitive variable.
 
 The values for the primitive variable at position `variable_id` at every degree of freedom
-for are stored in the given array `data`.
+are stored in the given array `data`.
 
 The given array has to be of correct size (ndofs) and memory has to be allocated beforehand.
 """

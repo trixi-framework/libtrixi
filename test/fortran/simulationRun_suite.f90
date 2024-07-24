@@ -23,12 +23,12 @@ module simulationRun_suite
   subroutine test_simulationRun(error)
     type(error_type), allocatable, intent(out) :: error
     integer :: handle, ndims, nelements, nelementsglobal, nvariables, ndofsglobal, &
-               ndofselement, ndofs, size
+               ndofselement, ndofs, size, nnodes, i
     logical :: finished_status
     ! dp as defined in test-drive
     integer, parameter :: dp = selected_real_kind(15)
-    real(dp) :: dt
-    real(dp), dimension(:), allocatable :: data
+    real(dp) :: dt, integral
+    real(dp), dimension(:), allocatable :: data, weights
 
     ! Initialize Trixi
     call trixi_initialize(julia_project_path)
@@ -72,6 +72,23 @@ module simulationRun_suite
     ! Check number of variables
     nvariables = trixi_nvariables(handle)
     call check(error, nvariables, 4)
+
+    ! Check number of quadrature nodes
+    nnodes = trixi_nnodes(handle)
+    call check(error, nnodes, 5)
+
+    ! Check quadrature, integrate f(x) = x^4 over [-1,1]
+    size = nnodes
+    allocate(data(size))
+    allocate(weights(size))
+    call trixi_load_node_reference_coordinates(handle, data)
+    call trixi_load_node_weights(handle, weights)
+    integral = 0.0_dp
+    do i = 1, size
+      integral = integral + weights(i) * data(i) * data(i) * data(i)* data(i)
+    end do
+    call check(error, integral, 0.4_dp)
+    deallocate(data)
 
     ! Check primitive variable values
     size = ndofs
