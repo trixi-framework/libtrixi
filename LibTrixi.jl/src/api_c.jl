@@ -492,6 +492,7 @@ end
 trixi_store_in_database_cfptr() =
     @cfunction(trixi_store_in_database, Cvoid, (Cint, Cint, Cint, Ptr{Cdouble},))
 
+
 """
     trixi_get_time(simstate_handle::Cint)::Cdouble
 
@@ -506,26 +507,6 @@ end
 
 trixi_get_time_cfptr() = @cfunction(trixi_get_time, Cdouble, (Cint,))
 
-
-"""
-    trixi_load_node_coordinates(simstate_handle::Cint, x::Ptr{Cdouble})::Cvoid
-
-Get coordinates of all nodes (degrees of freedom).
-"""
-function trixi_load_node_coordinates end
-
-Base.@ccallable function trixi_load_node_coordinates(simstate_handle::Cint,
-                                                     x::Ptr{Cdouble})::Cvoid
-    simstate = load_simstate(simstate_handle)
-
-    # convert C to Julia array
-    size = trixi_ndofs_jl(simstate) * trixi_ndims_jl(simstate)
-    x_jl = unsafe_wrap(Array, x, size)
-
-    return trixi_load_node_coordinates_jl(simstate, x_jl)
-end
-
-trixi_load_node_coordinates_cfptr() = @cfunction(trixi_load_node_coordinates, Cvoid, (Cint, Ptr{Cdouble},))
 
 """
     trixi_load_element_averaged_primitive_vars(simstate_handle::Cint, variable_id::Cint,
