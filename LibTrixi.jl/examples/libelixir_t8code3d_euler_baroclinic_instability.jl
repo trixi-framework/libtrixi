@@ -34,13 +34,9 @@ function Trixi.calc_sources!(du, u, t, source_terms::SourceTerm,
             x_local = Trixi.get_node_coords(node_coordinates, equations, dg,
                                       i, j, k, element)
             du_local = source_terms(u_local, i, j, k, element, t, equations)
-            du_local_ref = source_terms_baroclinic_instability(u_local, x_local, t,
-                                                               equations)
-            println(norm(du_local-du_local_ref))
-            #println((du_local[2]-u_local[1])^2+(du_local[3]-u_local[2])^2+(du_local[4]-u_local[3])^2+(du_local[5]-u_local[4])^2)
-            println(du_local)
-            println(du_local_ref)
-            Trixi.add_to_node_vars!(du, du_local_ref, equations, dg, i, j, k, element)
+            #du_local_ref = source_terms_baroclinic_instability(u_local, x_local, t,
+            #                                                   equations)
+            Trixi.add_to_node_vars!(du, du_local, equations, dg, i, j, k, element)
         end
     end
     return nothing
@@ -50,7 +46,6 @@ end
                                       equations::CompressibleEulerEquations3D)
     @unpack nnodesdim = source
     index_global = (element-1) * nnodesdim^3 + (k-1) * nnodesdim^2 + (j-1) * nnodesdim + i
-    println("*** Index ", index_global)
     # massive allocations occur when directly accessing source.database[1][][1]
     du2::Vector{Float64} = source.database[1][]
     du3::Vector{Float64} = source.database[2][]
@@ -259,8 +254,8 @@ function init_simstate()
     solver = DGSEM(polydeg = 3, surface_flux = surface_flux,
                    volume_integral = VolumeIntegralFluxDifferencing(volume_flux))
 
-    lat_lon_levels = 2
-    layers = 2
+    lat_lon_levels = 3
+    layers = 4
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_levels, layers, 6.371229e6, 30000.0,
                                        polydeg = 3, initial_refinement_level = 0)
 

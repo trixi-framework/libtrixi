@@ -128,7 +128,7 @@ int main ( int argc, char *argv[] ) {
     // Main loop
     printf("\n*** Trixi controller ***   Entering main loop\n");
     double t = 0.0;
-    //while ( !trixi_is_finished( handle ) ) {
+    while ( !trixi_is_finished( handle ) ) {
 
         // Get current time
         t = trixi_get_time( handle );
@@ -139,15 +139,13 @@ int main ( int argc, char *argv[] ) {
         trixi_load_primitive_vars( handle, 3, u3 );
         trixi_load_primitive_vars( handle, 4, u4 );
 
-        fprintf(stderr, "Tick: %f\n", t);
-
         // Compute source terms
         source_terms_baroclinic(nnodes, nodes, forest, t,
                                 u1, u2, u3, u4, du2, du3, du4, du5);
 
         // Perform next step
         trixi_step( handle );
-    //}
+    }
 
     // Finalize Trixi simulation
     printf("\n*** Trixi controller ***   Finalize Trixi simulation\n");
