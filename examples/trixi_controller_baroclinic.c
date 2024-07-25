@@ -37,9 +37,9 @@ void source_terms_baroclinic(int nnodes, double * nodes, t8_forest_t forest,
                 for (int j = 0; j < nnodes; ++j) {
                     for (int i = 0; i < nnodes; ++i, ++index) {
                         // Get global coordinates of local quad point
-                        local_coords[0] = 0.5 + 0.5 * nodes[i];
-                        local_coords[1] = 0.5 + 0.5 * nodes[j];
-                        local_coords[2] = 0.5 + 0.5 * nodes[k];
+                        local_coords[0] = nodes[i];
+                        local_coords[1] = nodes[j];
+                        local_coords[2] = nodes[k];
                         t8_forest_element_from_ref_coords(forest, itree, element, local_coords, 1, global_coords);
 
                         // The acutual computation of source terms
@@ -118,7 +118,7 @@ int main ( int argc, char *argv[] ) {
     trixi_load_node_reference_coordinates( handle, nodes );
 
     // Transform coordinates from [-1,1] to [0,1]
-    for (int i = 0; i < nnodes; ++i, ++index) {
+    for (int i = 0; i < nnodes; ++i) {
         nodes[i] = 0.5 * (nodes[i] + 1.0);
     }
 
