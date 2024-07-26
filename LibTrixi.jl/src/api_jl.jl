@@ -189,6 +189,20 @@ function trixi_load_element_averaged_primitive_vars_jl(simstate, variable_id, da
 end
 
 
+function trixi_store_in_database_jl(simstate, index, data)
+    simstate.data[index] = Ref(data)
+    if show_debug_output()
+        println("New data vector stored at index ", index)
+    end
+    return nothing
+end
+
+
+function trixi_get_time_jl(simstate)
+    return simstate.integrator.t
+end
+
+
 function trixi_get_t8code_forest_jl(simstate)
     mesh, _, _, _ = Trixi.mesh_equations_solver_cache(simstate.semi)
     return mesh.forest

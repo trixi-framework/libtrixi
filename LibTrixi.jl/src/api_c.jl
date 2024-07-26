@@ -462,6 +462,53 @@ trixi_load_primitive_vars_cfptr() =
 
 
 """
+    trixi_store_in_database(data::Ptr{Cdouble}, size::Cint, index::Cint,
+                            simstate_handle::Cint)::Cvoid
+
+Store data vector in current simulation's database.
+
+A reference to the passed data array `data` will be stored in the database of the simulation
+given by `simstate_handle` at given `index`. The database object has to be created in
+`init_simstate()` of the running libelixir and can be used throughout the simulation.
+
+The database object has to exist, has to be of type `LibTrixiDataBaseType`, and has to hold
+enough data references such that access at `index` is valid.
+
+The size of `data` has to match `size`.
+"""
+function trixi_store_in_database end
+
+Base.@ccallable function trixi_store_in_database(simstate_handle::Cint, index::Cint,
+                                                 size::Cint, data::Ptr{Cdouble})::Cvoid
+    simstate = load_simstate(simstate_handle)
+
+    # convert C to Julia array
+    data_jl = unsafe_wrap(Array, data, size)
+
+    trixi_store_in_database_jl(simstate, index, data_jl)
+    return nothing
+end
+
+trixi_store_in_database_cfptr() =
+    @cfunction(trixi_store_in_database, Cvoid, (Cint, Cint, Cint, Ptr{Cdouble},))
+
+
+"""
+    trixi_get_time(simstate_handle::Cint)::Cdouble
+
+Return current physical time.
+"""
+function trixi_get_time end
+
+Base.@ccallable function trixi_get_time(simstate_handle::Cint)::Cdouble
+    simstate = load_simstate(simstate_handle)
+    return trixi_get_time_jl(simstate)
+end
+
+trixi_get_time_cfptr() = @cfunction(trixi_get_time, Cdouble, (Cint,))
+
+
+"""
     trixi_load_element_averaged_primitive_vars(simstate_handle::Cint, variable_id::Cint,
                                             data::Ptr{Cdouble})::Cvoid
 
