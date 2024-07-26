@@ -18,6 +18,7 @@ program tester
     & select_suite, run_selected, get_argument
   use juliaCode_suite,     only : collect_juliaCode_suite
   use simulationRun_suite, only : collect_simulationRun_suite
+  use t8code_suite,        only : collect_t8code_suite
   use versionInfo_suite,   only : collect_versionInfo_suite
   implicit none
   integer :: stat, is
@@ -29,6 +30,7 @@ program tester
 
   testsuites = [ new_testsuite("juliaCode_suite",     collect_juliaCode_suite),     &
                  new_testsuite("simulationRun_suite", collect_simulationRun_suite), &
+                 new_testsuite("t8code_suite",        collect_t8code_suite), &
                  new_testsuite("versionInfo_suite",   collect_versionInfo_suite) ]
 
   call get_argument(1, suite_name)
