@@ -103,10 +103,10 @@ int main ( int argc, char *argv[] ) {
     double * du5 = calloc( ndofs, sizeof(double) );
 
     // Store source term vectors in Trixi
-    trixi_store_in_database(handle, 1, ndofs, du2);
-    trixi_store_in_database(handle, 2, ndofs, du3);
-    trixi_store_in_database(handle, 3, ndofs, du4);
-    trixi_store_in_database(handle, 4, ndofs, du5);
+    trixi_store_in_database( handle, 1, ndofs, du2 );
+    trixi_store_in_database( handle, 2, ndofs, du3 );
+    trixi_store_in_database( handle, 3, ndofs, du4 );
+    trixi_store_in_database( handle, 4, ndofs, du5 );
 
     // Get number of quadrature nodes
     int nnodes = trixi_nnodes( handle );
@@ -140,8 +140,8 @@ int main ( int argc, char *argv[] ) {
         trixi_load_primitive_vars( handle, 4, u4 );
 
         // Compute source terms
-        source_terms_baroclinic(nnodes, nodes, forest, t,
-                                u1, u2, u3, u4, du2, du3, du4, du5);
+        source_terms_baroclinic( nnodes, nodes, forest, t,
+                                 u1, u2, u3, u4, du2, du3, du4, du5 );
 
         // Perform next step
         trixi_step( handle );
