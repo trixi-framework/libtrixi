@@ -388,7 +388,7 @@ module LibTrixi
       use, intrinsic :: iso_c_binding, only: c_int, c_double
       integer(c_int), value, intent(in) :: handle
       integer(c_int), value, intent(in) :: variable_id
-      real(c_double), dimension(*), intent(in) :: data
+      real(c_double), dimension(*), intent(out) :: data
     end subroutine
 
     !>
@@ -420,6 +420,25 @@ module LibTrixi
       use, intrinsic :: iso_c_binding, only: c_int, c_double
       integer(c_int), value, intent(in) :: handle
       integer(c_int), value, intent(in) :: variable_id
+      real(c_double), dimension(*), intent(out) :: data
+    end subroutine
+
+    !>
+    !! @fn LibTrixi::trixi_store_in_database::trixi_store_in_database(handle, variable_id, data)
+    !!
+    !! @brief Store data vector in current simulation's database
+    !!
+    !! @param[in]  handle  simulation handle
+    !! @param[in]  index   index in database where data vector will be stored
+    !! @param[in]  size    size of given data vector
+    !! @param[in]  data    data vector to store
+    !!
+    !! @see @ref trixi_store_in_database_api_c "trixi_store_in_database (C API)"
+    subroutine trixi_store_in_database(handle, index, size, data) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int, c_double
+      integer(c_int), value, intent(in) :: handle
+      integer(c_int), value, intent(in) :: index
+      integer(c_int), value, intent(in) :: size
       real(c_double), dimension(*), intent(in) :: data
     end subroutine
 
