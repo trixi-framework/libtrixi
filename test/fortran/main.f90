@@ -30,7 +30,7 @@ program tester
 
   testsuites = [ new_testsuite("juliaCode_suite",     collect_juliaCode_suite),     &
                  new_testsuite("simulationRun_suite", collect_simulationRun_suite), &
-                 new_testsuite("t8code_suite",        collect_t8code_suite), &
+                 new_testsuite("t8code_suite",        collect_t8code_suite),        &
                  new_testsuite("versionInfo_suite",   collect_versionInfo_suite) ]
 
   call get_argument(1, suite_name)

@@ -2,7 +2,7 @@
 subroutine t8_print_forest_information(forest)
     use t8_mo_fortran_interface
     use, intrinsic :: iso_c_binding, only: c_ptr, c_int
-                  
+
     implicit none
 
     type(c_ptr) :: forest

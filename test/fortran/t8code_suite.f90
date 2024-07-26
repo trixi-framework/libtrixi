@@ -41,7 +41,7 @@ module t8code_suite
 
     ! Finalize Trixi simulation
     call trixi_finalize_simulation(handle)
-    
+
     ! Finalize Trixi
     call trixi_finalize()
   end subroutine test_t8code
