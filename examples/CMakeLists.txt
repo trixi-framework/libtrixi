@@ -6,6 +6,7 @@ set ( EXAMPLES
       trixi_controller_data.c
       trixi_controller_data.f90
       trixi_controller_t8code.c
+      trixi_controller_t8code.f90
       trixi_controller_baroclinic.c )
 
 if ( NOT T8CODE_FOUND )
