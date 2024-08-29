@@ -9,7 +9,6 @@
 #include <trixi.h>
 
 void source_terms_baroclinic(int nnodes, double * nodes, t8_forest_t forest,
-                             const double /*t*/,
                              const double * u1, const double * u2, const double * u3,
                              const double * u4,
                              double * du2, double * du3, double * du4, double * du5) {
@@ -127,11 +126,7 @@ int main ( int argc, char *argv[] ) {
     
     // Main loop
     printf("\n*** Trixi controller ***   Entering main loop\n");
-    double t = 0.0;
     while ( !trixi_is_finished( handle ) ) {
-
-        // Get current time
-        t = trixi_get_time( handle );
 
         // Get current state
         trixi_load_primitive_vars( handle, 1, u1 );
@@ -140,7 +135,7 @@ int main ( int argc, char *argv[] ) {
         trixi_load_primitive_vars( handle, 4, u4 );
 
         // Compute source terms
-        source_terms_baroclinic( nnodes, nodes, forest, t,
+        source_terms_baroclinic( nnodes, nodes, forest,
                                  u1, u2, u3, u4, du2, du3, du4, du5 );
 
         // Perform next step
