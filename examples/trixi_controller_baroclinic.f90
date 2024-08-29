@@ -41,7 +41,7 @@ subroutine source_terms_baroclinic( nnodes, nodes, forest, ndofs, &
             call t8_forest_element_from_ref_coords(forest, itree, element, & 
                                                    local_coords, 1, global_coords)
 
-            ! The acutual computation of source terms
+            ! The actual computation of source terms
             ele = sqrt( global_coords(1)*global_coords(1) + &
                         global_coords(2)*global_coords(2) + &
                         global_coords(3)*global_coords(3) )

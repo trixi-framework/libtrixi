@@ -41,7 +41,7 @@ void source_terms_baroclinic(int nnodes, double * nodes, t8_forest_t forest,
                         local_coords[2] = nodes[k];
                         t8_forest_element_from_ref_coords(forest, itree, element, local_coords, 1, global_coords);
 
-                        // The acutual computation of source terms
+                        // The actual computation of source terms
                         const double ele = sqrt( global_coords[0]*global_coords[0] +
                                                  global_coords[1]*global_coords[1] +
                                                  global_coords[2]*global_coords[2] );
