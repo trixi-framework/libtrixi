@@ -2,7 +2,7 @@
 
 [![Docs-stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://trixi-framework.github.io/libtrixi/stable)
 [![Docs-dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://trixi-framework.github.io/libtrixi/dev)
-[![Build Status](https://github.com/trixi-framework/libtrixi/workflows/CI/badge.svg)](https://github.com/trixi-framework/libtrixi/actions?query=workflow%3ACI)
+[![Build Status](https://github.com/trixi-framework/libtrixi/actions/workflows/ci.yml/badge.svg)](https://github.com/trixi-framework/libtrixi/actions?query=workflow%3ACI)
 [![Coveralls](https://coveralls.io/repos/github/trixi-framework/libtrixi/badge.svg)](https://coveralls.io/github/trixi-framework/libtrixi)
 [![Codecov](https://codecov.io/gh/trixi-framework/libtrixi/branch/main/graph/badge.svg)](https://codecov.io/gh/trixi-framework/libtrixi)
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg)](https://opensource.org/licenses/MIT)
