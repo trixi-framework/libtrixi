@@ -35,7 +35,7 @@ jobs:
         arch:
           - x64
         julia_version:
-          - '1.10'
+          - '1.11'
         t8code_version:
           - '2.0.0'
         include:
