@@ -104,7 +104,8 @@ jobs:
               -DT8CODE_BUILD_EXAMPLES=OFF \
               -DT8CODE_BUILD_BENCHMARKS=OFF \
               -DT8CODE_ENABLE_MPI=ON \
-              -DT8CODE_BUILD_FORTRAN_INTERFACE=ON
+              -DT8CODE_BUILD_FORTRAN_INTERFACE=ON \
+              ..
           make -j 2
           make install
 
