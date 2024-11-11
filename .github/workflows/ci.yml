@@ -96,7 +96,7 @@ jobs:
           tar xf T8CODE-${T8CODE_RELEASE}-Source.tar.gz
           mkdir build
           cd build
-          CC=mpicc CXX=mpicxx cmake \
+          CC=mpicc CXX=mpicxx cmake .. \
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_INSTALL_PREFIX="$PWD/../prefix" \
               -DT8CODE_BUILD_TESTS=OFF \
@@ -104,8 +104,7 @@ jobs:
               -DT8CODE_BUILD_EXAMPLES=OFF \
               -DT8CODE_BUILD_BENCHMARKS=OFF \
               -DT8CODE_ENABLE_MPI=ON \
-              -DT8CODE_BUILD_FORTRAN_INTERFACE=ON \
-              ..
+              -DT8CODE_BUILD_FORTRAN_INTERFACE=ON
           make -j 2
           make install
 
