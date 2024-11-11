@@ -37,13 +37,13 @@ jobs:
         julia_version:
           - '1.10'
         t8code_version:
-          - '2.0.0'
+          - '3.0.0'
         include:
           - os: ubuntu-latest
             test_type: package-compiler
             arch: x64
             julia_version: '1.9.3'  # 1.9.4: missing nghttp2 symbols in libcurl
-            t8code_version: '2.0.0'
+            t8code_version: '3.0.0'
     env:
       # Necessary for HDF5 to play nice with Julia
       LD_PRELOAD: /lib/x86_64-linux-gnu/libcurl.so.4
@@ -96,8 +96,15 @@ jobs:
           tar xf t8-${T8CODE_RELEASE}.tar.gz
           mkdir build
           cd build
-          CC=mpicc CXX=mpicxx ../t8-${T8CODE_RELEASE}/configure \
-              --prefix=$PWD/../prefix --enable-mpi
+          CC=mpicc CXX=mpicxx cmake \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_INSTALL_PREFIX="$PWD/../prefix" \
+              -DT8CODE_BUILD_TESTS=OFF \
+              -DT8CODE_BUILD_TUTORIALS=OFF \
+              -DT8CODE_BUILD_EXAMPLES=OFF \
+              -DT8CODE_BUILD_BENCHMARKS=OFF \
+              -DT8CODE_ENABLE_MPI=ON \
+              -DT8CODE_BUILD_FORTRAN_INTERFACE=ON
           make -j 2
           make install
 
@@ -108,7 +115,7 @@ jobs:
           cd build
           cmake .. -DCMAKE_INSTALL_PREFIX=../install \
                    -DCMAKE_BUILD_TYPE=Release \
-                   -DT8CODE_PREFIX=$PWD/../t8code-local/prefix \
+                   -DT8CODE_ROOT=$PWD/../t8code-local/prefix \
                    -DENABLE_TESTING=ON -DJULIA_PROJECT_PATH=../libtrixi-julia
 
       - name: Configure (test_type == 'coverage')
@@ -118,7 +125,7 @@ jobs:
           cd build
           cmake .. -DCMAKE_INSTALL_PREFIX=../install \
                    -DCMAKE_BUILD_TYPE=Debug \
-                   -DT8CODE_PREFIX=$PWD/../t8code-local/prefix \
+                   -DT8CODE_ROOT=$PWD/../t8code-local/prefix \
                    -DCMAKE_C_FLAGS="-cpp --coverage -O0" \
                    -DCMAKE_Fortran_FLAGS="-cpp --coverage -O0" \
                    -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
