@@ -46,6 +46,12 @@ function trixi_finalize_simulation_jl(simstate)
         end
     end
 
+    # finalize T8codeMesh explicitly
+    mesh, _, _, _ = mesh_equations_solver_cache(simstate.semi)
+    if mesh isa T8codeMesh
+        finalize(mesh)
+    end
+
     if show_debug_output()
         println("Simulation state finalized")
     end
