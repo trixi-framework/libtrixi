@@ -190,6 +190,7 @@ jobs:
         run: |
           cd build
           make -j2
+          du -hL ./prefix-pc/lib/libtrixi.so
 
       - name: Test external CMake project
         if: ${{ matrix.test_type == 'regular' }}
