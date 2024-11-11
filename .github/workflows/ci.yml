@@ -93,7 +93,7 @@ jobs:
           mkdir t8code-local
           cd t8code-local
           wget https://github.com/DLR-AMR/t8code/releases/download/v${T8CODE_RELEASE}/T8CODE-${T8CODE_RELEASE}-Source.tar.gz
-          tar xf t8-${T8CODE_RELEASE}.tar.gz
+          tar xf T8CODE-${T8CODE_RELEASE}-Source.tar.gz
           mkdir build
           cd build
           CC=mpicc CXX=mpicxx cmake \
