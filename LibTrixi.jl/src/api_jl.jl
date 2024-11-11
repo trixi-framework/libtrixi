@@ -48,7 +48,7 @@ function trixi_finalize_simulation_jl(simstate)
 
     # finalize T8codeMesh explicitly
     mesh, _, _, _ = mesh_equations_solver_cache(simstate.semi)
-    if mesh isa T8codeMesh
+    if mesh isa Trixi.T8codeMesh
         finalize(mesh)
     end
 
@@ -138,7 +138,7 @@ end
 
 
 function trixi_get_t8code_forest_jl(simstate)
-    mesh, _, _, _ = Trixi.mesh_equations_solver_cache(simstate.semi)
+    mesh, _, _, _ = mesh_equations_solver_cache(simstate.semi)
     return mesh.forest
 end
 
