@@ -31,9 +31,6 @@ foreach ( TEST ${TESTS} )
         ${TARGET_NAME}
         PRIVATE ${CMAKE_SOURCE_DIR}/src
     )
-    if ( T8CODE_FOUND )
-        target_include_directories( ${TARGET_NAME} PRIVATE ${T8CODE_ROOT}/include/t8_fortran_interface/ )
-    endif()
 
     # enable warnings
     target_compile_options( ${TARGET_NAME} PRIVATE -Wall -Wextra -Werror )
