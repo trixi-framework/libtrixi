@@ -96,7 +96,9 @@ jobs:
           tar xf T8CODE-${T8CODE_RELEASE}-Source.tar.gz
           mkdir build
           cd build
-          CC=mpicc CXX=mpicxx cmake \
+          cmake \
+              -DCMAKE_C_COMPILER=mpicc \
+              -DCMAKE_CXX_COMPILER=mpicxx \
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_INSTALL_PREFIX="$PWD/../prefix" \
               -DT8CODE_BUILD_TESTS=OFF \
