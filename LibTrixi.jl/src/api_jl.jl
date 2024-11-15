@@ -46,7 +46,9 @@ function trixi_finalize_simulation_jl(simstate)
         end
     end
 
-    # finalize T8codeMesh explicitly
+    # In course of garbage collection, MPI might get finalized before t8code related objects.
+    # This can lead to crashes because t8code allocates MPI related objects, e.g. shared
+    # memory arrays. The workaround is to finalize T8codeMesh explicitly in advance.
     mesh, _, _, _ = mesh_equations_solver_cache(simstate.semi)
     if mesh isa Trixi.T8codeMesh
         finalize(mesh)
