@@ -285,7 +285,7 @@ trixi_ndims_cfptr() = @cfunction(trixi_ndims, Cint, (Cint,))
 """
     trixi_nelements(simstate_handle::Cint)::Cint
 
-Return number of local elements.
+Return number of elements local to the MPI rank.
 """
 function trixi_nelements end
 
@@ -300,7 +300,7 @@ trixi_nelements_cfptr() = @cfunction(trixi_nelements, Cint, (Cint,))
 """
     trixi_nelementsglobal(simstate_handle::Cint)::Cint
 
-Return global number of elements.
+Return global number of elements on all MPI ranks.
 """
 function trixi_nelementsglobal end
 
@@ -330,7 +330,7 @@ trixi_ndofs_cfptr() = @cfunction(trixi_ndofs, Cint, (Cint,))
 """
     trixi_ndofsglobal(simstate_handle::Cint)::Cint
 
-Return global number of degrees of freedom (all quadrature points on all elements).
+Return global number of degrees of freedom (all quadrature points on all elements on all ranks).
 """
 function trixi_ndofsglobal end
 
