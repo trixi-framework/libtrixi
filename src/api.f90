@@ -248,7 +248,7 @@ module LibTrixi
     !>
     !! @fn LibTrixi::trixi_nelements::trixi_nelements(handle)
     !!
-    !! @brief Return number of local elements (cells)
+    !! @brief Return number of local elements
     !!
     !! @param[in]  handle  simulation handle
     !!
@@ -259,14 +259,53 @@ module LibTrixi
     end function
 
     !>
-    !! @fn LibTrixi::trixi_nelements_global::trixi_nelements_global(handle)
+    !! @fn LibTrixi::trixi_nelementsglobal::trixi_nelementsglobal(handle)
     !!
-    !! @brief Return number of global elements (cells)
+    !! @brief Return global number of elements
     !!
     !! @param[in]  handle  simulation handle
     !!
-    !! @see @ref trixi_nelements_global_api_c "trixi_nelements_global (C API)"
-    integer(c_int) function trixi_nelements_global(handle) bind(c)
+    !! @see @ref trixi_nelementsglobal_api_c "trixi_nelementsglobal (C API)"
+    integer(c_int) function trixi_nelementsglobal(handle) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int
+      integer(c_int), value, intent(in) :: handle
+    end function
+
+    !>
+    !! @fn LibTrixi::trixi_ndofs::trixi_ndofs(handle)
+    !!
+    !! @brief Return number of local degrees of freedom
+    !!
+    !! @param[in]  handle  simulation handle
+    !!
+    !! @see @ref trixi_ndofs_api_c "trixi_ndofs (C API)"
+    integer(c_int) function trixi_ndofs(handle) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int
+      integer(c_int), value, intent(in) :: handle
+    end function
+
+    !>
+    !! @fn LibTrixi::trixi_ndofsglobal::trixi_ndofsglobal(handle)
+    !!
+    !! @brief Return global number of degrees of freedom
+    !!
+    !! @param[in]  handle  simulation handle
+    !!
+    !! @see @ref trixi_ndofsglobal_api_c "trixi_ndofsglobal (C API)"
+    integer(c_int) function trixi_ndofsglobal(handle) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int
+      integer(c_int), value, intent(in) :: handle
+    end function
+
+    !>
+    !! @fn LibTrixi::trixi_ndofselement::trixi_ndofselement(handle)
+    !!
+    !! @brief Return number of degrees of freedom per element.
+    !!
+    !! @param[in]  handle  simulation handle
+    !!
+    !! @see @ref trixi_ndofselement_api_c "trixi_ndofselement (C API)"
+    integer(c_int) function trixi_ndofselement(handle) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int
       integer(c_int), value, intent(in) :: handle
     end function
@@ -285,18 +324,88 @@ module LibTrixi
     end function
 
     !>
-    !! @fn LibTrixi::trixi_load_cell_averages::trixi_load_cell_averages(data, handle)
+    !! @fn LibTrixi::trixi_nnodes::trixi_nnodes(handle)
     !!
-    !! @brief Return cell averaged values
+    !! @brief Return number of quadrature nodes per dimension.
     !!
     !! @param[in]  handle  simulation handle
-    !! @param[out] data    cell averaged values for all cells and all variables
     !!
-    !! @see @ref trixi_load_cell_averages_api_c "trixi_load_cell_averages (C API)"
-    subroutine trixi_load_cell_averages(data, handle) bind(c)
-      use, intrinsic :: iso_c_binding, only: c_int, c_double
-      real(c_double), dimension(*), intent(in) :: data
+    !! @see @ref trixi_nnodes_api_c "trixi_nnodes (C API)"
+    integer(c_int) function trixi_nnodes(handle) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int
       integer(c_int), value, intent(in) :: handle
+    end function
+
+    !>
+    !! @fn LibTrixi::trixi_load_node_reference_coordinates::trixi_load_node_reference_coordinates(handle, node_coords)
+    !!
+    !! @brief Get reference coordinates of 1D quadrature nodes.
+    !!
+    !! The reference coordinates in [-1,1] of the quadrature nodes in the current DG scheme are
+    !! stored in the provided array `node_coords`. The given array has to be of correct size,
+    !! i.e. `nnodes`, and memory has to be allocated beforehand.
+    !!
+    !! @param[in]   handle       simulation handle
+    !! @param[out]  node_coords  node reference coordinates
+    !!
+    !! @see @ref trixi_load_node_reference_coordinates_api_c "trixi_load_node_reference_coordinates (C API)"
+    subroutine trixi_load_node_reference_coordinates(handle, node_coords) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int, c_double
+      integer(c_int), value, intent(in) :: handle
+      real(c_double), dimension(*), intent(out) :: node_coords
+    end subroutine
+
+    !>
+    !! @fn LibTrixi::trixi_load_node_weights::trixi_load_node_weights(handle, node_weights)
+    !!
+    !! @brief Get weights of 1D quadrature nodes.
+    !!
+    !! The weights of the quadrature nodes in the current DG scheme are stored in the provided
+    !! array `node_weights`. The given array has to be of correct size, i.e. `nnodes`, and
+    !! memory has to be allocated beforehand.
+    !!
+    !! @param[in]   handle        simulation handle
+    !! @param[out]  node_weights  node weights
+    !!
+    !! @see @ref trixi_load_node_weights_api_c "trixi_load_node_weights (C API)"
+    subroutine trixi_load_node_weights(handle, node_weights) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int, c_double
+      integer(c_int), value, intent(in) :: handle
+      real(c_double), dimension(*), intent(out) :: node_weights
+    end subroutine
+
+    !>
+    !! @fn LibTrixi::trixi_load_primitive_vars::trixi_load_primitive_vars(handle, variable_id, data)
+    !!
+    !! @brief Load primitive variable
+    !!
+    !! @param[in]  handle       simulation handle
+    !! @param[in]  variable_id  index of variable
+    !! @param[out] data         primitive variable values for all degrees of freedom
+    !!
+    !! @see @ref trixi_load_primitive_vars_api_c "trixi_load_primitive_vars (C API)"
+    subroutine trixi_load_primitive_vars(handle, variable_id, data) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int, c_double
+      integer(c_int), value, intent(in) :: handle
+      integer(c_int), value, intent(in) :: variable_id
+      real(c_double), dimension(*), intent(in) :: data
+    end subroutine
+
+    !>
+    !! @fn LibTrixi::trixi_load_element_averaged_primitive_vars::trixi_load_element_averaged_primitive_vars(handle, variable_id, data)
+    !!
+    !! @brief Load element averages for primitive variable
+    !!
+    !! @param[in]  handle       simulation handle
+    !! @param[in]  variable_id  index of variable
+    !! @param[out] data         averaged values for all elements
+    !!
+    !! @see @ref trixi_load_element_averaged_primitive_vars_api_c "trixi_load_element_averaged_primitive_vars (C API)"
+    subroutine trixi_load_element_averaged_primitive_vars(handle, variable_id, data) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int, c_double
+      integer(c_int), value, intent(in) :: handle
+      integer(c_int), value, intent(in) :: variable_id
+      real(c_double), dimension(*), intent(in) :: data
     end subroutine
 
 

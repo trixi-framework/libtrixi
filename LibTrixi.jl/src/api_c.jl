@@ -285,7 +285,7 @@ trixi_ndims_cfptr() = @cfunction(trixi_ndims, Cint, (Cint,))
 """
     trixi_nelements(simstate_handle::Cint)::Cint
 
-Return number of local elements (cells).
+Return number of elements local to the MPI rank.
 """
 function trixi_nelements end
 
@@ -298,18 +298,63 @@ trixi_nelements_cfptr() = @cfunction(trixi_nelements, Cint, (Cint,))
 
 
 """
-    trixi_nelements_global(simstate_handle::Cint)::Cint
+    trixi_nelementsglobal(simstate_handle::Cint)::Cint
 
-Return number of global elements (cells).
+Return global number of elements on all MPI ranks.
 """
-function trixi_nelements_global end
+function trixi_nelementsglobal end
 
-Base.@ccallable function trixi_nelements_global(simstate_handle::Cint)::Cint
+Base.@ccallable function trixi_nelementsglobal(simstate_handle::Cint)::Cint
     simstate = load_simstate(simstate_handle)
-    return trixi_nelements_global_jl(simstate)
+    return trixi_nelementsglobal_jl(simstate)
 end
 
-trixi_nelements_global_cfptr() = @cfunction(trixi_nelements_global, Cint, (Cint,))
+trixi_nelementsglobal_cfptr() = @cfunction(trixi_nelementsglobal, Cint, (Cint,))
+
+
+"""
+    trixi_ndofs(simstate_handle::Cint)::Cint
+
+Return number of degrees of freedom (all quadrature points on all elements of current rank).
+"""
+function trixi_ndofs end
+
+Base.@ccallable function trixi_ndofs(simstate_handle::Cint)::Cint
+    simstate = load_simstate(simstate_handle)
+    return trixi_ndofs_jl(simstate)
+end
+
+trixi_ndofs_cfptr() = @cfunction(trixi_ndofs, Cint, (Cint,))
+
+
+"""
+    trixi_ndofsglobal(simstate_handle::Cint)::Cint
+
+Return global number of degrees of freedom (all quadrature points on all elements on all ranks).
+"""
+function trixi_ndofsglobal end
+
+Base.@ccallable function trixi_ndofsglobal(simstate_handle::Cint)::Cint
+    simstate = load_simstate(simstate_handle)
+    return trixi_ndofsglobal_jl(simstate)
+end
+
+trixi_ndofsglobal_cfptr() = @cfunction(trixi_ndofsglobal, Cint, (Cint,))
+
+
+"""
+    trixi_ndofselement(simstate_handle::Cint)::Cint
+
+Return number of degrees of freedom per element.
+"""
+function trixi_ndofselement end
+
+Base.@ccallable function trixi_ndofselement(simstate_handle::Cint)::Cint
+    simstate = load_simstate(simstate_handle)
+    return trixi_ndofselement_jl(simstate)
+end
+
+trixi_ndofselement_cfptr() = @cfunction(trixi_ndofselement, Cint, (Cint,))
 
 
 """
@@ -328,32 +373,122 @@ trixi_nvariables_cfptr() = @cfunction(trixi_nvariables, Cint, (Cint,))
 
 
 """
-    trixi_load_cell_averages(data::Ptr{Cdouble}, simstate_handle::Cint)::Cvoid
+    trixi_nnodes(simstate_handle::Cint)::Cint
 
-Return cell averaged solution state.
-
-Cell averaged values for each cell and each primitive variable are stored in a contiguous
-array, where cell values for the first variable appear first and values for the other
-variables subsequently (structure-of-arrays layout).
-
-The given array has to be of correct size and memory has to be allocated beforehand.
+Return number of quadrature nodes per dimension.
 """
-function trixi_load_cell_averages end
+function trixi_nnodes end
 
-Base.@ccallable function trixi_load_cell_averages(data::Ptr{Cdouble},
-                                                  simstate_handle::Cint)::Cvoid
+Base.@ccallable function trixi_nnodes(simstate_handle::Cint)::Cint
+    simstate = load_simstate(simstate_handle)
+    return trixi_nnodes_jl(simstate)
+end
+
+trixi_nnodes_cfptr() = @cfunction(trixi_nnodes, Cint, (Cint,))
+
+
+"""
+    trixi_load_node_reference_coordinates(simstate_handle::Cint, data::Ptr{Cdouble})::Cvoid
+
+Get reference coordinates of 1D quadrature nodes.
+"""
+function trixi_load_node_reference_coordinates end
+
+Base.@ccallable function trixi_load_node_reference_coordinates(simstate_handle::Cint,
+                                                               data::Ptr{Cdouble})::Cvoid
     simstate = load_simstate(simstate_handle)
 
     # convert C to Julia array
-    size = trixi_nvariables_jl(simstate) * trixi_nelements_jl(simstate)
+    size = trixi_nnodes_jl(simstate)
     data_jl = unsafe_wrap(Array, data, size)
 
-    trixi_load_cell_averages_jl(data_jl, simstate)
+    trixi_load_node_reference_coordinates_jl(simstate, data_jl)
     return nothing
 end
 
-trixi_load_cell_averages_cfptr() =
-    @cfunction(trixi_load_cell_averages, Cvoid, (Ptr{Cdouble}, Cint,))
+trixi_load_node_reference_coordinates_cfptr() =
+    @cfunction(trixi_load_node_reference_coordinates, Cvoid, (Cint, Ptr{Cdouble}))
+
+
+"""
+    trixi_load_node_weights(simstate_handle::Cint, data::Ptr{Cdouble})::Cvoid
+
+Get weights of 1D quadrature nodes.
+"""
+function trixi_load_node_weights end
+
+Base.@ccallable function trixi_load_node_weights(simstate_handle::Cint,
+                                                 data::Ptr{Cdouble})::Cvoid
+    simstate = load_simstate(simstate_handle)
+
+    # convert C to Julia array
+    size = trixi_nnodes_jl(simstate)
+    data_jl = unsafe_wrap(Array, data, size)
+
+    return trixi_load_node_weights_jl(simstate, data_jl)
+end
+
+trixi_load_node_weights_cfptr() =
+    @cfunction(trixi_load_node_weights, Cvoid, (Cint, Ptr{Cdouble}))
+
+
+"""
+    trixi_load_primitive_vars(simstate_handle::Cint, variable_id::Cint,
+                              data::Ptr{Cdouble})::Cvoid
+
+Load primitive variable.
+
+The values for the primitive variable at position `variable_id` at every degree of freedom
+are stored in the given array `data`.
+
+The given array has to be of correct size (ndofs) and memory has to be allocated beforehand.
+"""
+function trixi_load_primitive_vars end
+
+Base.@ccallable function trixi_load_primitive_vars(simstate_handle::Cint, variable_id::Cint,
+                                                   data::Ptr{Cdouble})::Cvoid
+    simstate = load_simstate(simstate_handle)
+
+    # convert C to Julia array
+    size = trixi_ndofs_jl(simstate)
+    data_jl = unsafe_wrap(Array, data, size)
+
+    trixi_load_primitive_vars_jl(simstate, variable_id, data_jl)
+    return nothing
+end
+
+trixi_load_primitive_vars_cfptr() =
+    @cfunction(trixi_load_primitive_vars, Cvoid, (Cint, Cint, Ptr{Cdouble}))
+
+
+"""
+    trixi_load_element_averaged_primitive_vars(simstate_handle::Cint, variable_id::Cint,
+                                            data::Ptr{Cdouble})::Cvoid
+
+Load element averages for primitive variable.
+
+Element averaged values for the primitive variable at position `variable_id` for each
+element are stored in the given array `data`.
+
+The given array has to be of correct size (nelements) and memory has to be allocated
+beforehand.
+"""
+function trixi_load_element_averaged_primitive_vars end
+
+Base.@ccallable function trixi_load_element_averaged_primitive_vars(simstate_handle::Cint,
+    variable_id::Cint, data::Ptr{Cdouble})::Cvoid
+    simstate = load_simstate(simstate_handle)
+
+    # convert C to Julia array
+    size = trixi_nelements_jl(simstate)
+    data_jl = unsafe_wrap(Array, data, size)
+
+    trixi_load_element_averaged_primitive_vars_jl(simstate, variable_id, data_jl)
+    return nothing
+end
+
+trixi_load_element_averaged_primitive_vars_cfptr() =
+    @cfunction(trixi_load_element_averaged_primitive_vars, Cvoid, (Cint, Cint, Ptr{Cdouble}))
 
 
 """
