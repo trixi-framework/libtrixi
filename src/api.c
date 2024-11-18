@@ -596,6 +596,7 @@ int trixi_nnodes(int handle) {
 
     // Call function
     return nnodes(handle);
+<<<<<<< HEAD
 }
 
 

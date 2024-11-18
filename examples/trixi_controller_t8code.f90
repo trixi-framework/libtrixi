@@ -1,6 +1,6 @@
 ! Print the local and global number of elements of a forest.
 subroutine t8_print_forest_information(forest)
-    use t8_mo_fortran_interface
+    use t8_fortran_interface_mod
     use, intrinsic :: iso_c_binding, only: c_ptr, c_int
 
     implicit none

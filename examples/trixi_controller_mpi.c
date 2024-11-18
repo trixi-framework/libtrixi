@@ -12,7 +12,7 @@ void init_mpi_external ( int argc, char *argv[] ) {
 
     int flag_init;
     ret = MPI_Initialized(&flag_init);
-    printf("[EXT] MPI Initialized: return %d, initialized %d, MPI_COMM_WORLD %p\n", ret, flag_init, MPI_COMM_WORLD);
+    printf("[EXT] MPI Initialized: return %d, initialized %d, MPI_COMM_WORLD %p\n", ret, flag_init, (void *) MPI_COMM_WORLD);
 
     if ( flag_init == 0 ) {
 

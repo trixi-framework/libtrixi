@@ -9,9 +9,9 @@ subroutine init_mpi_external
   comm = MPI_COMM_WORLD
 
   call MPI_Initialized(flag_init, ierror)
-  write(*, '(a,i1,a,l,a,i0)') "[EXT] MPI Initialized: return ", ierror, &
-                              ", initialized ", flag_init, &
-                              ", MPI_COMM_WORLD ", comm
+  write(*, '(a,i1,a,l1,a,i0)') "[EXT] MPI Initialized: return ", ierror, &
+                               ", initialized ", flag_init, &
+                               ", MPI_COMM_WORLD ", comm
 
   if (.not.(flag_init)) then
     requested_threadlevel = MPI_THREAD_SERIALIZED
