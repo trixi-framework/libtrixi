@@ -431,6 +431,26 @@ module LibTrixi
 
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !! t8code                                                                             !!
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !>
+    !! @fn LibTrixi::trixi_get_t8code_forest::trixi_get_t8code_forest(handle)
+    !!
+    !! @brief Get t8code forest
+    !!
+    !! @param[in]  handle       simulation handle
+    !!
+    !! @return t8code forest
+    !!
+    !! @see @ref trixi_get_t8code_forest_api_c "trixi_get_t8code_forest (C API)"
+    type (c_ptr) function trixi_get_t8code_forest(handle) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int, c_ptr
+      integer(c_int), value, intent(in) :: handle
+    end function
+
+
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     !! Misc                                                                               !!
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

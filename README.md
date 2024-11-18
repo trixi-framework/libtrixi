@@ -24,7 +24,7 @@ software packages need to be made available locally before installing libtrixi:
 * [CMake](https://cmake.org/)
 * MPI (e.g., [OpenMPI](https://www.open-mpi.org/) or [MPICH](https://www.mpich.org/))
 * [HDF5](https://www.hdfgroup.org/solutions/hdf5/)
-* [t8code](https://github.com/DLR-AMR/t8code)
+* [t8code](https://github.com/DLR-AMR/t8code) v3.0.0
 
 ### Get the sources
 
@@ -57,7 +57,7 @@ For building, `cmake` and its typical workflow is used.
     - Optional specification of build type sets some default compiler options for optimized
       or debug code.
     - Building with t8code support is optional. It requires to pass
-      `-DT8CODE_PREFIX=<t8code_install_directory>`.
+      `-DT8CODE_ROOT=<t8code_install_directory>`.
 
 3. Call make
 
@@ -214,8 +214,7 @@ aspects on how to use the C and Fortran APIs of libtrixi:
 - `trixi_controller_simple.(c|f90)`: basic usage
 - `trixi_controller_mpi.(c|f90)`: usage in the presence of MPI
 - `trixi_controller_data.(c|f90)`: simulation data access
-- `trixi_controller_t8code.c`: interacting with t8code
-  (there is no Fortran example yet as the Fortran interface of t8code is still under development)
+- `trixi_controller_t8code.(c|f90)`: interacting with t8code
 
 If you just want to test the Julia part of libtrixi, i.e., LibTrixi.jl, you can also run
 `trixi_controller_simple.jl` from Julia.

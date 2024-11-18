@@ -1,5 +1,7 @@
-# Specify the minimum version (3.9 required for regex submatches).
-cmake_minimum_required ( VERSION 3.9 )
+# Specify the minimum version
+#   3.9  required for regex submatches
+#   3.12 required for policy CMP0074 (using *_ROOT variables)
+cmake_minimum_required ( VERSION 3.12 )
 
 # Reconfigure if Project.toml has changed
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/LibTrixi.jl/Project.toml")
@@ -36,7 +38,7 @@ list ( APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/" )
 find_package( Julia REQUIRED )
 
 # Find t8code
-find_package( T8code )
+find_package( T8CODE CONFIG )
 if ( NOT T8CODE_FOUND )
     message( NOTICE "t8code not found: t8code examples will NOT be built")
 endif()
@@ -140,9 +142,6 @@ else()
 
     # Include directories
     target_include_directories( ${PROJECT_NAME} PRIVATE src ${JULIA_INCLUDE_DIRS} )
-    if ( T8CODE_FOUND )
-        target_include_directories( ${PROJECT_NAME} PRIVATE ${T8CODE_INCLUDE_DIR} )
-    endif()
 
     # Libraries to link
     target_link_libraries( ${PROJECT_NAME} PRIVATE ${JULIA_LIBRARY} )
