@@ -3,6 +3,10 @@ set ( TESTS
       simulationRun_suite
       versionInfo_suite )
 
+if ( T8CODE_FOUND )
+      list( APPEND TESTS t8code_suite )
+endif()
+
 set ( TEST_SRCS
       "main.f90"
 )
@@ -20,12 +24,18 @@ target_link_libraries(
     ${TARGET_NAME}
     PRIVATE MPI::MPI_Fortran ${PROJECT_NAME} ${PROJECT_NAME}_tls "test-drive::test-drive"
 )
+if ( T8CODE_FOUND )
+    target_link_libraries( ${TARGET_NAME} PRIVATE T8CODE::T8 )
+endif()
 
 # set include directories
 target_include_directories(
     ${TARGET_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/src
 )
+if ( T8CODE_FOUND )
+    target_include_directories( ${TARGET_NAME} PRIVATE ${T8CODE_ROOT}/include/t8_fortran_interface/ )
+endif()
 
 # enable warnings
 target_compile_options( ${TARGET_NAME} PRIVATE -cpp -Wall -Wextra -Werror -Wno-uninitialized )
