@@ -1,3 +1,5 @@
+const LibTrixiDataBaseType = Vector{Ref{Vector{Float64}}}
+
 """
     SimulationState
 
@@ -6,8 +8,6 @@ Data structure to store a simulation state consisting of
 - the time integrator
 - an optional array of data vectors
 """
-const LibTrixiDataBaseType = Vector{Ref{Vector{Float64}}}
-
 mutable struct SimulationState{SemiType, IntegratorType}
     semi::SemiType
     integrator::IntegratorType
