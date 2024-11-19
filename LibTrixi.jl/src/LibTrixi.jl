@@ -3,7 +3,7 @@ module LibTrixi
 using OrdinaryDiffEq: OrdinaryDiffEq, step!, check_error, DiscreteCallback
 using Trixi: Trixi, summary_callback, mesh_equations_solver_cache, ndims, nelements,
              nelementsglobal, ndofs, ndofsglobal, nvariables, nnodes, wrap_array,
-             eachelement, cons2prim, get_node_vars, get_node_coords, eachnode
+             eachelement, cons2prim, get_node_vars, eachnode
 using MPI: MPI, run_init_hooks, set_default_error_handler_return
 using Pkg
 
