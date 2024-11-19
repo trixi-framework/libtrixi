@@ -94,19 +94,6 @@ end
     ndofselement_jl = trixi_ndofselement_jl(simstate_jl)
     @test ndofselement_c == ndofselement_jl
 
-    # compare number of dofs
-    ndofs_c = trixi_ndofs(handle)
-    ndofs_jl = trixi_ndofs_jl(simstate_jl)
-    @test ndofs_c == ndofs_jl
-
-    ndofs_global_c = trixi_ndofs_global(handle)
-    ndofs_global_jl = trixi_ndofs_global_jl(simstate_jl)
-    @test ndofs_global_c == ndofs_global_jl
-
-    ndofs_element_c = trixi_ndofs_element(handle)
-    ndofs_element_jl = trixi_ndofs_element_jl(simstate_jl)
-    @test ndofs_element_c == ndofs_element_jl
-
     # compare number of variables
     nvariables_c = trixi_nvariables(handle)
     nvariables_jl = trixi_nvariables_jl(simstate_jl)

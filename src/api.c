@@ -562,65 +562,6 @@ int trixi_ndofselement(int handle) {
 
 
 /**
- * @anchor trixi_ndofs_api_c
- *
- * @brief Return number of local degrees of freedom.
- *
- * These usually differ from the global count when doing parallel computations.
- *
- * @param[in]  handle  simulation handle
- *
- * @see trixi_ndofs_global_api_c
- */
-int trixi_ndofs(int handle) {
-
-    // Get function pointer
-    int (*ndofs)(int) = trixi_function_pointers[TRIXI_FPTR_NDOFS];
-
-    // Call function
-    return ndofs(handle);
-}
-
-
-/**
- * @anchor trixi_ndofs_global_api_c
- *
- * @brief Return number of global degrees of freedom.
- *
- * These usually differ from the local count when doing parallel computations.
- *
- * @param[in]  handle  simulation handle
- *
- * @see trixi_ndofs_api_c
- */
-int trixi_ndofs_global(int handle) {
-
-    // Get function pointer
-    int (*ndofs_global)(int) = trixi_function_pointers[TRIXI_FPTR_NDOFS_GLOBAL];
-
-    // Call function
-    return ndofs_global(handle);
-}
-
-
-/**
- * @anchor trixi_ndofs_element_api_c
- *
- * @brief Return number of degrees of freedom per element (cell).
- *
- * @param[in]  handle  simulation handle
- */
-int trixi_ndofs_element(int handle) {
-
-    // Get function pointer
-    int (*ndofs_element)(int) = trixi_function_pointers[TRIXI_FPTR_NDOFS_ELEMENT];
-
-    // Call function
-    return ndofs_element(handle);
-}
-
-
-/**
  * @anchor trixi_nvariables_api_c
  *
  * @brief Return number of (conservative) variables

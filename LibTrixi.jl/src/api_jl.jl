@@ -110,24 +110,6 @@ function trixi_ndofselement_jl(simstate)
 end
 
 
-function trixi_ndofs_jl(simstate)
-    mesh, _, solver, cache = mesh_equations_solver_cache(simstate.semi)
-    return ndofs(mesh, solver, cache)
-end
-
-
-function trixi_ndofs_global_jl(simstate)
-    mesh, _, solver, cache = mesh_equations_solver_cache(simstate.semi)
-    return ndofsglobal(mesh, solver, cache)
-end
-
-
-function trixi_ndofs_element_jl(simstate)
-    mesh, _, solver, _ = mesh_equations_solver_cache(simstate.semi)
-    return nnodes(solver)^ndims(mesh)
-end
-
-
 function trixi_nvariables_jl(simstate)
     _, equations, _, _ = mesh_equations_solver_cache(simstate.semi)
     return nvariables(equations)

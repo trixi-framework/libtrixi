@@ -71,15 +71,6 @@ TEST(CInterfaceTest, SimulationRun) {
     EXPECT_EQ(nelements * ndofselement, ndofs);
     EXPECT_EQ(nelementsglobal * ndofselement, ndofsglobal);
 
-    // Check number of dofs
-    int ndofs = trixi_ndofs(handle);
-    int ndofs_global = trixi_ndofs_global(handle);
-    EXPECT_EQ(ndofs * nranks, ndofs_global);
-
-    int ndofs_element = trixi_ndofs_element(handle);
-    EXPECT_EQ(nelements * ndofs_element, ndofs);
-    EXPECT_EQ(nelements_global * ndofs_element, ndofs_global);
-
     // Check number of variables
     int nvariables = trixi_nvariables(handle);
     EXPECT_EQ(nvariables, 4);
