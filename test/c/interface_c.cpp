@@ -9,11 +9,6 @@ extern "C" {
 // Julia project path defined via cmake
 const char * julia_project_path = JULIA_PROJECT_PATH;
 
-// Example libexlixir
-const char * libelixir_path =
-  "../../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl";
-
-
 TEST(CInterfaceTest, JuliaProject) {
 
     // be evil

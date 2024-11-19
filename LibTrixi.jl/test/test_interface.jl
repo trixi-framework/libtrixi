@@ -67,6 +67,18 @@ end
     # compare finished status
     @test trixi_is_finished(handle) == 0
     @test !trixi_is_finished_jl(simstate_jl)
+
+    # manually increase databases (for testing only!)
+    push!(simstate_jl.data, Vector{Float64}())
+    push!(LibTrixi.simstates[handle].data, Vector{Float64}())
+    # store a vector
+    test_data = [1.0, 2.0, 3.0]
+    trixi_store_in_database(handle, 1, 3, pointer(test_data))
+    trixi_store_in_database_jl(simstate_jl, 1, test_data)
+    # check that references are the same
+    @test simstate_jl.data[1] == LibTrixi.simstates[handle].data[1]
+    # check for correct values
+    @test simstate_jl.data[1][] == LibTrixi.simstates[handle].data[1][] == test_data
 end
 
 

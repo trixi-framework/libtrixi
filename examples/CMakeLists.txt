@@ -34,7 +34,7 @@ foreach ( EXAMPLE ${EXAMPLES} )
     # set libraries to link
     target_link_libraries(
         ${TARGET_NAME}
-        PRIVATE MPI::MPI_${EXAMPLE_LANG} ${PROJECT_NAME} m
+        PRIVATE MPI::MPI_${EXAMPLE_LANG} ${PROJECT_NAME}
     )
     if ( NOT USE_PACKAGE_COMPILER )
         target_link_libraries( ${TARGET_NAME} PRIVATE ${PROJECT_NAME}_tls )
