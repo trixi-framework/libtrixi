@@ -48,6 +48,10 @@ TEST(CInterfaceTest, SimulationRun) {
     // Check time step length
     double dt = trixi_calculate_dt(handle);
     EXPECT_NEAR(dt, 0.0028566952356658794, 1e-17);
+
+    // Check time
+    double time = trixi_get_time(handle);
+    EXPECT_NEAR(dt, 0.028566952356658794, 1e-17);
     
     // Check finished status
     int finished_status = trixi_is_finished(handle);

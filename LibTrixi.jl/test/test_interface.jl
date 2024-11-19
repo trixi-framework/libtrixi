@@ -59,6 +59,11 @@ end
     dt_jl = trixi_calculate_dt_jl(simstate_jl)
     @test dt_c == dt_jl
 
+    # compare time
+    time_c = trixi_get_time(handle)
+    time_jl = trixi_get_time_jl(simstate_jl)
+    @test time_c == time_jl
+
     # compare finished status
     @test trixi_is_finished(handle) == 0
     @test !trixi_is_finished_jl(simstate_jl)
