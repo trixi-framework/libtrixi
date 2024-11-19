@@ -77,9 +77,22 @@ end
     nelements_jl = trixi_nelements_jl(simstate_jl)
     @test nelements_c == nelements_jl
 
-    nelements_global_c = trixi_nelements_global(handle)
-    nelements_global_jl = trixi_nelements_global_jl(simstate_jl)
-    @test nelements_global_c == nelements_global_jl
+    nelementsglobal_c = trixi_nelementsglobal(handle)
+    nelementsglobal_jl = trixi_nelementsglobal_jl(simstate_jl)
+    @test nelementsglobal_c == nelementsglobal_jl
+
+    # compare number of dofs
+    ndofs_c = trixi_ndofs(handle)
+    ndofs_jl = trixi_ndofs_jl(simstate_jl)
+    @test ndofs_c == ndofs_jl
+
+    ndofsglobal_c = trixi_ndofsglobal(handle)
+    ndofsglobal_jl = trixi_ndofsglobal_jl(simstate_jl)
+    @test ndofsglobal_c == ndofsglobal_jl
+
+    ndofselement_c = trixi_ndofselement(handle)
+    ndofselement_jl = trixi_ndofselement_jl(simstate_jl)
+    @test ndofselement_c == ndofselement_jl
 
     # compare number of dofs
     ndofs_c = trixi_ndofs(handle)
@@ -99,18 +112,37 @@ end
     nvariables_jl = trixi_nvariables_jl(simstate_jl)
     @test nvariables_c == nvariables_jl
 
-    # compare cell averaged values
+    # compare number of quadrature nodes
+    nnodes_c = trixi_nnodes(handle)
+    nnodes_jl = trixi_nnodes_jl(simstate_jl)
+    @test nnodes_c == nnodes_jl
+
+    # compare coordinates of quadrature nodes
+    data_c = zeros(nnodes_c)
+    trixi_load_node_reference_coordinates(handle, pointer(data_c))
+    data_jl = zeros(nnodes_jl)
+    trixi_load_node_reference_coordinates_jl(simstate_jl, data_jl)
+    @test data_c == data_jl
+
+    # compare weights of quadrature nodes
+    data_c = zeros(nnodes_c)
+    trixi_load_node_weights(handle, pointer(data_c))
+    data_jl = zeros(nnodes_jl)
+    trixi_load_node_weights_jl(simstate_jl, data_jl)
+    @test data_c == data_jl
+
+    # compare element averaged values
     data_c = zeros(nelements_c)
-    trixi_load_cell_averages(pointer(data_c), Int32(1), handle)
+    trixi_load_element_averaged_primitive_vars(handle, Int32(1), pointer(data_c))
     data_jl = zeros(nelements_jl)
-    trixi_load_cell_averages_jl(data_jl, 1, simstate_jl)
+    trixi_load_element_averaged_primitive_vars_jl(simstate_jl, 1, data_jl)
     @test data_c == data_jl
 
     # compare primitive variable values on all dofs
     data_c = zeros(ndofs_c)
-    trixi_load_prim(pointer(data_c), Int32(1), handle)
+    trixi_load_primitive_vars(handle, Int32(1), pointer(data_c))
     data_jl = zeros(ndofs_jl)
-    trixi_load_prim_jl(data_jl, 1, simstate_jl)
+    trixi_load_primitive_vars_jl(simstate_jl, 1, data_jl)
     @test data_c == data_jl
 end
 

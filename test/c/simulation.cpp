@@ -59,8 +59,17 @@ TEST(CInterfaceTest, SimulationRun) {
 
     // Check number of elements
     int nelements = trixi_nelements(handle);
-    int nelements_global = trixi_nelements_global(handle);
-    EXPECT_EQ(nelements * nranks, nelements_global);
+    int nelementsglobal = trixi_nelementsglobal(handle);
+    EXPECT_EQ(nelements * nranks, nelementsglobal);
+
+    // Check number of dofs
+    int ndofs = trixi_ndofs(handle);
+    int ndofsglobal = trixi_ndofsglobal(handle);
+    EXPECT_EQ(ndofs * nranks, ndofsglobal);
+
+    int ndofselement = trixi_ndofselement(handle);
+    EXPECT_EQ(nelements * ndofselement, ndofs);
+    EXPECT_EQ(nelementsglobal * ndofselement, ndofsglobal);
 
     // Check number of dofs
     int ndofs = trixi_ndofs(handle);
@@ -75,15 +84,41 @@ TEST(CInterfaceTest, SimulationRun) {
     int nvariables = trixi_nvariables(handle);
     EXPECT_EQ(nvariables, 4);
 
-    // Check cell averaged values
+    // Check number of quadrature nodes
+    int nnodes = trixi_nnodes(handle);
+    EXPECT_EQ(nnodes, 5);
+
+    // Check quadrature, integrate f(x) = x^4 over [-1,1]
+    std::vector<double> nodes(nnodes);
+    std::vector<double> weights(nnodes);
+    trixi_load_node_reference_coordinates(handle, nodes.data());
+    trixi_load_node_weights(handle, weights.data());
+    double integral = 0.0;
+    for (int i = 0; i < nnodes; ++i) {
+        integral += weights[i] * nodes[i] * nodes[i] * nodes[i]* nodes[i];
+    }
+    EXPECT_NEAR(integral, 0.4, 1e-17);
+
+    // Check primitive variable values on all dofs
+    std::vector<double> rho(ndofs);
+    std::vector<double> energy(ndofs);
+    trixi_load_primitive_vars(handle, 1, rho.data());
+    trixi_load_primitive_vars(handle, 4, energy.data());
+    // check memory boarders
+    EXPECT_DOUBLE_EQ(rho[0],          1.0);
+    EXPECT_DOUBLE_EQ(rho[ndofs-1],    1.0);
+    EXPECT_DOUBLE_EQ(energy[0],       1.0e-5);
+    EXPECT_DOUBLE_EQ(energy[ndofs-1], 1.0e-5);
+
+    // Check element averaged values
     std::vector<double> rho_averages(nelements);
     std::vector<double> v1_averages(nelements);
     std::vector<double> v2_averages(nelements);
     std::vector<double> e_averages(nelements);
-    trixi_load_cell_averages(rho_averages.data(), 1, handle);
-    trixi_load_cell_averages(v1_averages.data(), 2, handle);
-    trixi_load_cell_averages(v2_averages.data(), 3, handle);
-    trixi_load_cell_averages(e_averages.data(), 4, handle);
+    trixi_load_element_averaged_primitive_vars(handle, 1, rho_averages.data());
+    trixi_load_element_averaged_primitive_vars(handle, 2, v1_averages.data());
+    trixi_load_element_averaged_primitive_vars(handle, 3, v2_averages.data());
+    trixi_load_element_averaged_primitive_vars(handle, 4, e_averages.data());
     if (nranks == 1) {
         // check memory boarders (densities at the beginning, energies at the end)
         EXPECT_DOUBLE_EQ(rho_averages[0],         1.0);
@@ -129,17 +164,6 @@ TEST(CInterfaceTest, SimulationRun) {
     else {
         FAIL() << "Test cannot be run with " << nranks << " ranks.";
     }
-
-    // Check primitive variable values on all dofs
-    std::vector<double> rho(ndofs);
-    std::vector<double> energy(ndofs);
-    trixi_load_prim(rho.data(), 1, handle);
-    trixi_load_prim(energy.data(), 4, handle);
-    // check memory boarders
-    EXPECT_DOUBLE_EQ(rho[0],          1.0);
-    EXPECT_DOUBLE_EQ(rho[ndofs-1],    1.0);
-    EXPECT_DOUBLE_EQ(energy[0],       1.0e-5);
-    EXPECT_DOUBLE_EQ(energy[ndofs-1], 1.0e-5);
 
     // Finalize Trixi simulation
     trixi_finalize_simulation(handle);

@@ -19,8 +19,11 @@ enum {
     TRIXI_FPTR_NDOFS_GLOBAL,
     TRIXI_FPTR_NDOFS_ELEMENT,
     TRIXI_FTPR_NVARIABLES,
-    TRIXI_FTPR_LOAD_CELL_AVERAGES,
-    TRIXI_FTPR_LOAD_PRIM,
+    TRIXI_FPTR_NNODES,
+    TRIXI_FPTR_LOAD_NODE_REFERENCE_COORDINATES,
+    TRIXI_FPTR_LOAD_NODE_WEIGHTS,
+    TRIXI_FTPR_LOAD_PRIMITIVE_VARS,
+    TRIXI_FTPR_LOAD_ELEMENT_AVERAGED_PRIMITIVE_VARS,
     TRIXI_FTPR_VERSION_LIBRARY,
     TRIXI_FTPR_VERSION_LIBRARY_MAJOR,
     TRIXI_FTPR_VERSION_LIBRARY_MINOR,
@@ -40,28 +43,31 @@ static void* trixi_function_pointers[TRIXI_NUM_FPTRS];
 // List of function names to obtain C function pointers from Julia
 // OBS! If any name is longer than 250 characters, adjust buffer sizes in setup.c
 static const char* trixi_function_pointer_names[] = {
-    [TRIXI_FTPR_INITIALIZE_SIMULATION]  = "trixi_initialize_simulation_cfptr",
-    [TRIXI_FTPR_CALCULATE_DT]           = "trixi_calculate_dt_cfptr",
-    [TRIXI_FTPR_IS_FINISHED]            = "trixi_is_finished_cfptr",
-    [TRIXI_FTPR_STEP]                   = "trixi_step_cfptr",
-    [TRIXI_FTPR_FINALIZE_SIMULATION]    = "trixi_finalize_simulation_cfptr",
-    [TRIXI_FTPR_NDIMS]                  = "trixi_ndims_cfptr",
-    [TRIXI_FPTR_NELEMENTS]              = "trixi_nelements_cfptr",
-    [TRIXI_FPTR_NELEMENTS_GLOBAL]       = "trixi_nelements_global_cfptr",
-    [TRIXI_FPTR_NDOFS]                  = "trixi_ndofs_cfptr",
-    [TRIXI_FPTR_NDOFS_GLOBAL]           = "trixi_ndofs_global_cfptr",
-    [TRIXI_FPTR_NDOFS_ELEMENT]          = "trixi_ndofs_element_cfptr",
-    [TRIXI_FTPR_NVARIABLES]             = "trixi_nvariables_cfptr",
-    [TRIXI_FTPR_LOAD_CELL_AVERAGES]     = "trixi_load_cell_averages_cfptr",
-    [TRIXI_FTPR_LOAD_PRIM]              = "trixi_load_prim_cfptr",
-    [TRIXI_FTPR_VERSION_LIBRARY]        = "trixi_version_library_cfptr",
-    [TRIXI_FTPR_VERSION_LIBRARY_MAJOR]  = "trixi_version_library_major_cfptr",
-    [TRIXI_FTPR_VERSION_LIBRARY_MINOR]  = "trixi_version_library_minor_cfptr",
-    [TRIXI_FTPR_VERSION_LIBRARY_PATCH]  = "trixi_version_library_patch_cfptr",
-    [TRIXI_FTPR_VERSION_JULIA]          = "trixi_version_julia_cfptr",
-    [TRIXI_FTPR_VERSION_JULIA_EXTENDED] = "trixi_version_julia_extended_cfptr",
-    [TRIXI_FTPR_EVAL_JULIA]             = "trixi_eval_julia_cfptr",
-    [TRIXI_FTPR_GET_T8CODE_FOREST]      = "trixi_get_t8code_forest_cfptr"
+    [TRIXI_FTPR_INITIALIZE_SIMULATION]                = "trixi_initialize_simulation_cfptr",
+    [TRIXI_FTPR_CALCULATE_DT]                         = "trixi_calculate_dt_cfptr",
+    [TRIXI_FTPR_IS_FINISHED]                          = "trixi_is_finished_cfptr",
+    [TRIXI_FTPR_STEP]                                 = "trixi_step_cfptr",
+    [TRIXI_FTPR_FINALIZE_SIMULATION]                  = "trixi_finalize_simulation_cfptr",
+    [TRIXI_FTPR_NDIMS]                                = "trixi_ndims_cfptr",
+    [TRIXI_FPTR_NELEMENTS]                            = "trixi_nelements_cfptr",
+    [TRIXI_FPTR_NELEMENTS_GLOBAL]                     = "trixi_nelementsglobal_cfptr",
+    [TRIXI_FPTR_NDOFS]                                = "trixi_ndofs_cfptr",
+    [TRIXI_FPTR_NDOFS_GLOBAL]                         = "trixi_ndofsglobal_cfptr",
+    [TRIXI_FPTR_NDOFS_ELEMENT]                        = "trixi_ndofselement_cfptr",
+    [TRIXI_FTPR_NVARIABLES]                           = "trixi_nvariables_cfptr",
+    [TRIXI_FPTR_NNODES]                               = "trixi_nnodes_cfptr",
+    [TRIXI_FPTR_LOAD_NODE_REFERENCE_COORDINATES]      = "trixi_load_node_reference_coordinates_cfptr",
+    [TRIXI_FPTR_LOAD_NODE_WEIGHTS]                    = "trixi_load_node_weights_cfptr",
+    [TRIXI_FTPR_LOAD_PRIMITIVE_VARS]                  = "trixi_load_primitive_vars_cfptr",
+    [TRIXI_FTPR_LOAD_ELEMENT_AVERAGED_PRIMITIVE_VARS] = "trixi_load_element_averaged_primitive_vars_cfptr",
+    [TRIXI_FTPR_VERSION_LIBRARY]                      = "trixi_version_library_cfptr",
+    [TRIXI_FTPR_VERSION_LIBRARY_MAJOR]                = "trixi_version_library_major_cfptr",
+    [TRIXI_FTPR_VERSION_LIBRARY_MINOR]                = "trixi_version_library_minor_cfptr",
+    [TRIXI_FTPR_VERSION_LIBRARY_PATCH]                = "trixi_version_library_patch_cfptr",
+    [TRIXI_FTPR_VERSION_JULIA]                        = "trixi_version_julia_cfptr",
+    [TRIXI_FTPR_VERSION_JULIA_EXTENDED]               = "trixi_version_julia_extended_cfptr",
+    [TRIXI_FTPR_EVAL_JULIA]                           = "trixi_eval_julia_cfptr",
+    [TRIXI_FTPR_GET_T8CODE_FOREST]                    = "trixi_get_t8code_forest_cfptr"
 };
 
 // Track initialization/finalization status to prevent unhelpful errors
@@ -457,13 +463,13 @@ int trixi_ndims(int handle) {
 /**
  * @anchor trixi_nelements_api_c
  *
- * @brief Return number of local elements (cells).
+ * @brief Return number of local elements.
  *
  * These usually differ from the global count when doing parallel computations.
  *
  * @param[in]  handle  simulation handle
  *
- * @see trixi_nelements_global_api_c
+ * @see trixi_nelementsglobal_api_c
  */
 int trixi_nelements(int handle) {
 
@@ -476,9 +482,9 @@ int trixi_nelements(int handle) {
 
 
 /**
- * @anchor trixi_nelements_global_api_c
+ * @anchor trixi_nelementsglobal_api_c
  *
- * @brief Return number of global elements (cells).
+ * @brief Return global number of elements.
  *
  * These usually differ from the local count when doing parallel computations.
  *
@@ -486,13 +492,72 @@ int trixi_nelements(int handle) {
  *
  * @see trixi_nelements_api_c
  */
-int trixi_nelements_global(int handle) {
+int trixi_nelementsglobal(int handle) {
 
     // Get function pointer
-    int (*nelements_global)(int) = trixi_function_pointers[TRIXI_FPTR_NELEMENTS_GLOBAL];
+    int (*nelementsglobal)(int) = trixi_function_pointers[TRIXI_FPTR_NELEMENTS_GLOBAL];
 
     // Call function
-    return nelements_global(handle);
+    return nelementsglobal(handle);
+}
+
+
+/**
+ * @anchor trixi_ndofs_api_c
+ *
+ * @brief Return number of local degrees of freedom.
+ *
+ * These usually differ from the global count when doing parallel computations.
+ *
+ * @param[in]  handle  simulation handle
+ *
+ * @see trixi_ndofsglobal_api_c
+ */
+int trixi_ndofs(int handle) {
+
+    // Get function pointer
+    int (*ndofs)(int) = trixi_function_pointers[TRIXI_FPTR_NDOFS];
+
+    // Call function
+    return ndofs(handle);
+}
+
+
+/**
+ * @anchor trixi_ndofsglobal_api_c
+ *
+ * @brief Return global number of degrees of freedom.
+ *
+ * These usually differ from the local count when doing parallel computations.
+ *
+ * @param[in]  handle  simulation handle
+ *
+ * @see trixi_ndofs_api_c
+ */
+int trixi_ndofsglobal(int handle) {
+
+    // Get function pointer
+    int (*ndofsglobal)(int) = trixi_function_pointers[TRIXI_FPTR_NDOFS_GLOBAL];
+
+    // Call function
+    return ndofsglobal(handle);
+}
+
+
+/**
+ * @anchor trixi_ndofselement_api_c
+ *
+ * @brief Return number of degrees of freedom per element.
+ *
+ * @param[in]  handle  simulation handle
+ */
+int trixi_ndofselement(int handle) {
+
+    // Get function pointer
+    int (*ndofselement)(int) = trixi_function_pointers[TRIXI_FPTR_NDOFS_ELEMENT];
+
+    // Call function
+    return ndofselement(handle);
 }
 
 
@@ -572,53 +637,116 @@ int trixi_nvariables(int handle) {
 }
 
 
-/** 
- * @anchor trixi_load_cell_averages_api_c
+/**
+ * @anchor trixi_nnodes_api_c
  *
- * @brief Return cell averaged solution state
- *
- * Cell averaged values for the primitive variable at position index for each cell are
- * stored in the given array `data`.
- *
- * The given array has to be of correct size and memory has to be allocated beforehand.
+ * @brief Return number of quadrature nodes per dimension.
  *
  * @param[in]  handle  simulation handle
- * @param[in]  index   index of variable
- * @param[out] data    cell averaged values for all cells and all primitive variables
  */
-void trixi_load_cell_averages(double * data, int index, int handle) {
+int trixi_nnodes(int handle) {
 
     // Get function pointer
-    void (*load_cell_averages)(double *, int, int) =
-        trixi_function_pointers[TRIXI_FTPR_LOAD_CELL_AVERAGES];
+    int (*nnodes)(int) = trixi_function_pointers[TRIXI_FPTR_NNODES];
 
     // Call function
-    load_cell_averages(data, index, handle);
+    return nnodes(handle);
 }
 
 
 /**
- * @anchor trixi_load_prim_api_c
+ * @anchor trixi_load_node_reference_coordinates_api_c
  *
- * @brief Return primitive variable
+ * @brief Get reference coordinates of 1D quadrature nodes.
  *
- * The values for the primitive variable at position index at every degree of freedom for
- * the simulation given by simstate_handle is stored in the given array data.
+ * The reference coordinates in [-1,1] of the quadrature nodes in the current DG scheme are
+ * stored in the provided array `node_coords`. The given array has to be of correct size,
+ * i.e. `nnodes`, and memory has to be allocated beforehand.
  *
- * The given array has to be of correct size and memory has to be allocated beforehand.
- *
- * @param[in]  handle  simulation handle
- * @param[in]  index   index of variable
- * @param[out] data    cell averaged values for all cells and all primitive variables
+ * @param[in]   handle       simulation handle
+ * @param[out]  node_coords  node reference coordinates
  */
-void trixi_load_prim(double * data, int index, int handle) {
+void trixi_load_node_reference_coordinates(int handle, double* node_coords) {
 
     // Get function pointer
-    void (*load_prim)(double *, int, int) =
-        trixi_function_pointers[TRIXI_FTPR_LOAD_PRIM];
+    void (*load_node_reference_coordinates)(int, double *) = trixi_function_pointers[TRIXI_FPTR_LOAD_NODE_REFERENCE_COORDINATES];
 
     // Call function
-    load_prim(data, index, handle);
+    return load_node_reference_coordinates(handle, node_coords);
+}
+
+
+/**
+ * @anchor trixi_load_node_weights_api_c
+ *
+ * @brief Get weights of 1D quadrature nodes.
+ *
+ * The weights of the quadrature nodes in the current DG scheme are stored in the provided
+ * array `node_weights`. The given array has to be of correct size, i.e. `nnodes`, and
+ * memory has to be allocated beforehand.
+ *
+ * @param[in]   handle        simulation handle
+ * @param[out]  node_weights  node weights
+ */
+void trixi_load_node_weights(int handle, double* node_weights) {
+
+    // Get function pointer
+    void (*load_node_weights)(int, double *) = trixi_function_pointers[TRIXI_FPTR_LOAD_NODE_WEIGHTS];
+
+    // Call function
+    return load_node_weights(handle, node_weights);
+}
+
+
+/**
+ * @anchor trixi_load_primitive_vars_api_c
+ *
+ * @brief Load primitive variable
+ *
+ * The values for the primitive variable at position `variable_id` at every degree of
+ * freedom are stored in the given array `data`.
+ *
+ * The given array has to be of correct size (ndofs) and memory has to be allocated
+ * beforehand.
+ *
+ * @param[in]  handle       simulation handle
+ * @param[in]  variable_id  index of variable
+ * @param[out] data         values for all degrees of freedom
+ */
+void trixi_load_primitive_vars(int handle, int variable_id, double * data) {
+
+    // Get function pointer
+    void (*load_primitive_vars)(int, int, double *) =
+        trixi_function_pointers[TRIXI_FTPR_LOAD_PRIMITIVE_VARS];
+
+    // Call function
+    load_primitive_vars(handle, variable_id, data);
+}
+
+
+/**
+ * @anchor trixi_load_element_averaged_primitive_vars_api_c
+ *
+ * @brief Load element averages for primitive variable
+ *
+ * Element averaged values for the primitive variable at position `variable_id` for each
+ * element are stored in the given array `data`.
+ *
+ * The given array has to be of correct size (nelements) and memory has to be allocated
+ * beforehand.
+ *
+ * @param[in]  handle       simulation handle
+ * @param[in]  variable_id  index of variable
+ * @param[out] data         element averaged values for all elements
+ */
+void trixi_load_element_averaged_primitive_vars(int handle, int variable_id, double * data) {
+
+    // Get function pointer
+    void (*load_element_averaged_primitive_vars)(int, int, double *) =
+        trixi_function_pointers[TRIXI_FTPR_LOAD_ELEMENT_AVERAGED_PRIMITIVE_VARS];
+
+    // Call function
+    load_element_averaged_primitive_vars(handle, variable_id, data);
 }
 
 

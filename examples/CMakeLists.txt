@@ -5,7 +5,8 @@ set ( EXAMPLES
       trixi_controller_mpi.f90
       trixi_controller_data.c
       trixi_controller_data.f90
-      trixi_controller_t8code.c )
+      trixi_controller_t8code.c
+      trixi_controller_t8code.f90 )
 
 if ( NOT T8CODE_FOUND )
     list( FILTER EXAMPLES EXCLUDE REGEX ".*(t|T)8(c|C)(o|O)(d|D)(e|E).*" )
@@ -47,7 +48,7 @@ foreach ( EXAMPLE ${EXAMPLES} )
         target_link_libraries( ${TARGET_NAME} PRIVATE ${PROJECT_NAME}_tls )
     endif()
     if ( T8CODE_FOUND )
-        target_link_libraries( ${TARGET_NAME} PRIVATE ${T8CODE_LIBRARIES} )
+        target_link_libraries( ${TARGET_NAME} PRIVATE T8CODE::T8 )
     endif()
 
     # set include directories
@@ -56,7 +57,7 @@ foreach ( EXAMPLE ${EXAMPLES} )
         PRIVATE ${CMAKE_SOURCE_DIR}/src
     )
     if ( T8CODE_FOUND )
-        target_include_directories( ${TARGET_NAME} PRIVATE ${T8CODE_INCLUDE_DIR} )
+        target_include_directories( ${TARGET_NAME} PRIVATE ${T8CODE_ROOT}/include/t8_fortran_interface/ )
     endif()
 
     # set runtime path for installed binaries
