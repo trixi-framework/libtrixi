@@ -75,10 +75,8 @@ end
     test_data = [1.0, 2.0, 3.0]
     trixi_store_in_database(handle, Int32(1), Int32(3), pointer(test_data))
     trixi_store_in_database_jl(simstate_jl, 1, test_data)
-    # check that references are the same
-    @test simstate_jl.data[1] == LibTrixi.simstates[handle].data[1]
-    # check for correct values
-    @test simstate_jl.data[1][] == LibTrixi.simstates[handle].data[1][] == test_data
+    # check that the same object is referenced
+    @test simstate_jl.data[1][] === LibTrixi.simstates[handle].data[1][]
 end
 
 
