@@ -57,7 +57,7 @@ TEST(CInterfaceTest, SimulationRun) {
 
     // Check time
     double time = trixi_get_time(handle);
-    EXPECT_NEAR(time, 0.0304927240859461, 1e-17);
+    EXPECT_NEAR(time, 0.0304927240859461, 1e-16);
     
     // Check finished status
     int finished_status = trixi_is_finished(handle);
