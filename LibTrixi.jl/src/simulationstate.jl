@@ -13,7 +13,7 @@ mutable struct SimulationState{SemiType, IntegratorType}
     integrator::IntegratorType
     data::LibTrixiDataBaseType
 
-    function SimulationState(semi, integrator, data = nothing)
+    function SimulationState(semi, integrator, data = LibTrixiDataBaseType())
         return new{typeof(semi), typeof(integrator)}(semi, integrator, data)
     end
 end

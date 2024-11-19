@@ -42,7 +42,7 @@ foreach ( EXAMPLE ${EXAMPLES} )
         target_link_libraries( ${TARGET_NAME} PRIVATE ${PROJECT_NAME}_tls )
     endif()
     if ( T8CODE_FOUND )
-        target_link_libraries( ${TARGET_NAME} PRIVATE ${T8CODE_LIBRARIES} )
+        target_link_libraries( ${TARGET_NAME} PRIVATE T8CODE::T8 )
     endif()
 
     # set include directories
@@ -51,7 +51,7 @@ foreach ( EXAMPLE ${EXAMPLES} )
         PRIVATE ${CMAKE_SOURCE_DIR}/src
     )
     if ( T8CODE_FOUND )
-        target_include_directories( ${TARGET_NAME} PRIVATE ${T8CODE_INCLUDE_DIR} )
+        target_include_directories( ${TARGET_NAME} PRIVATE ${T8CODE_ROOT}/include/t8_fortran_interface/ )
     endif()
 
     # set runtime path for installed binaries
