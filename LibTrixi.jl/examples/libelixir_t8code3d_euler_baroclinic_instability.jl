@@ -9,9 +9,6 @@
 #   A proposed baroclinic wave test case for deep- and shallow-atmosphere dynamical cores
 #   https://doi.org/10.1002/qj.2241
 
-# CAVE: only for development
-# in particular this libelixir uses a way too small fixed time step
-
 using OrdinaryDiffEq
 using Trixi
 using LinearAlgebra
@@ -234,26 +231,23 @@ end
 # The function to create the simulation state needs to be named `init_simstate`
 function init_simstate()
 
-    ###############################################################################
-    # Setup for the baroclinic instability test
+    # compressible euler equations
     gamma = 1.4
     equations = CompressibleEulerEquations3D(gamma)
 
-    ###############################################################################
-    # semidiscretization of the problem
-
+    # setup of the problem
     initial_condition = initial_condition_baroclinic_instability
 
     boundary_conditions = Dict(:inside => boundary_condition_slip_wall,
                                :outside => boundary_condition_slip_wall)
 
-    # This is a good estimate for the speed of sound in this example.
-    # Other values between 300 and 400 should work as well.
+    # estimate for the speed of sound
     surface_flux = FluxLMARS(340)
     volume_flux = flux_kennedy_gruber
     solver = DGSEM(polydeg = 3, surface_flux = surface_flux,
                    volume_integral = VolumeIntegralFluxDifferencing(volume_flux))
 
+    # for nice results, use 4 and 8 here
     lat_lon_levels = 3
     layers = 4
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_levels, layers, 6.371229e6, 30000.0,
@@ -277,10 +271,9 @@ function init_simstate()
                                         source_terms = source_term_database,
                                         boundary_conditions = boundary_conditions)
 
-    ###############################################################################
-    # ODE solvers, callbacks etc.
-
-    tspan = (0.0, 10.0)
+    # for nice results use 10 day
+    days = 0.1
+    tspan = (0.0, days * 24 * 60 * 60.0)
 
     ode = semidiscretize(semi, tspan)
 
@@ -302,21 +295,12 @@ function init_simstate()
                             alive_callback,
                             save_solution)
 
-
-    ###############################################################################
-    # create the time integrator
-
-    # OrdinaryDiffEq's `integrator`
-    # Use a Runge-Kutta method with automatic (error based) time step size control
-    integrator = init(ode, CarpenterKennedy2N54(williamson_condition=false);
-                      dt = 0.1,  
+    # use a Runge-Kutta method with automatic (error based) time step size control
+    integrator = init(ode, RDPK3SpFSAL49(thread = OrdinaryDiffEq.False());
                       abstol = 1.0e-6, reltol = 1.0e-6,
-                      ode_default_options()...,
-                      callback = callbacks,
-                      maxiters=5e5);
+                      ode_default_options()..., callback = callbacks, maxiters=1e7);
 
-    ###############################################################################
-    # Create simulation state
+    # create simulation state
     simstate = SimulationState(semi, integrator, database)
 
     return simstate
