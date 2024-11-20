@@ -1,6 +1,6 @@
 subroutine source_terms_baroclinic( nnodes, nodes, forest, ndofs, &
                                     u1, u2, u3, u4, du2, du3, du4, du5 )
-  use t8_mo_fortran_interface
+  use t8_fortran_interface_mod
   use, intrinsic :: iso_c_binding, only: c_ptr, c_int, c_double
 
   implicit none
@@ -45,7 +45,7 @@ subroutine source_terms_baroclinic( nnodes, nodes, forest, ndofs, &
             ele = sqrt( global_coords(1)*global_coords(1) + &
                         global_coords(2)*global_coords(2) + &
                         global_coords(3)*global_coords(3) )
-            ele_corrected = max( ele - radius_earth, 0.0) + radius_earth
+            ele_corrected = max( ele - radius_earth, 0.0_dp ) + radius_earth
 
             ! Gravity term
             temp = g_r2 / (ele_corrected*ele_corrected*ele_corrected)
