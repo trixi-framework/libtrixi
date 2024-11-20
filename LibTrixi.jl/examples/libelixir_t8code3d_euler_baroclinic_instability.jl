@@ -244,14 +244,14 @@ function init_simstate()
     # estimate for the speed of sound
     surface_flux = FluxLMARS(340)
     volume_flux = flux_kennedy_gruber
-    solver = DGSEM(polydeg = 3, surface_flux = surface_flux,
+    solver = DGSEM(polydeg = 5, surface_flux = surface_flux,
                    volume_integral = VolumeIntegralFluxDifferencing(volume_flux))
 
     # for nice results, use 4 and 8 here
     lat_lon_levels = 3
     layers = 4
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_levels, layers, 6.371229e6, 30000.0,
-                                       polydeg = 3, initial_refinement_level = 0)
+                                       polydeg = 5, initial_refinement_level = 0)
 
     # create the database and three vectors for the source terms
     database = LibTrixiDataBaseType(undef, 4)
@@ -271,7 +271,7 @@ function init_simstate()
                                         source_terms = source_term_database,
                                         boundary_conditions = boundary_conditions)
 
-    # for nice results use 10 day
+    # for nice results, use 10 days
     days = 0.1
     tspan = (0.0, days * 24 * 60 * 60.0)
 
@@ -284,21 +284,24 @@ function init_simstate()
 
     alive_callback = AliveCallback(analysis_interval = analysis_interval)
 
+    stepsize_callback = StepsizeCallback(cfl=1.6)
+
     save_solution = SaveSolutionCallback(interval = 50,
                                          save_initial_solution = true,
                                          save_final_solution = true,
                                          solution_variables = cons2prim,
-                                         output_directory = "out_baroclinic",)
+                                         output_directory = "out_baroclinic")
 
     callbacks = CallbackSet(summary_callback,
                             analysis_callback,
                             alive_callback,
+                            stepsize_callback,
                             save_solution)
 
-    # use a Runge-Kutta method with automatic (error based) time step size control
-    integrator = init(ode, RDPK3SpFSAL49(thread = OrdinaryDiffEq.False());
-                      abstol = 1.0e-6, reltol = 1.0e-6,
-                      ode_default_options()..., callback = callbacks, maxiters=1e7);
+    # OrdinaryDiffEq's integrator
+    integrator = init(ode, CarpenterKennedy2N54(williamson_condition=false),
+                      dt=1.0, # solve needs some value here but it will be overwritten by the stepsize_callback
+                      save_everystep=false, callback=callbacks, maxiters=1e7);
 
     # create simulation state
     simstate = SimulationState(semi, integrator, database)
