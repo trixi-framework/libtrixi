@@ -67,7 +67,7 @@ function init_simstate()
     surface_flux = FluxLMARS(374)
     solver = DGSEM(polydeg = 3, surface_flux = surface_flux)
 
-    # increase trees_per_cube_face or initial_refinement_level to get nicer results
+    # increase trees_per_cube_face to 4 to get nicer results
     lat_lon_levels = 2
     layers = 1
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_levels, layers, 6.371229e6, 30000.0,
