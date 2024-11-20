@@ -10,7 +10,7 @@ module t8code_suite
 
   character(len=*), parameter, public :: julia_project_path = JULIA_PROJECT_PATH
   character(len=*), parameter, public :: libelixir_path = &
-    "../../../LibTrixi.jl/examples/libelixir_t8code_2d_dgsem_advection_amr.jl"
+    "../../../LibTrixi.jl/examples/libelixir_t8code2d_advection_amr.jl"
 
   contains
 
