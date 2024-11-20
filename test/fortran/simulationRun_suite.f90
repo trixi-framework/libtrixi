@@ -27,7 +27,7 @@ module simulationRun_suite
     logical :: finished_status
     ! dp as defined in test-drive
     integer, parameter :: dp = selected_real_kind(15)
-    real(dp) :: dt, integral
+    real(dp) :: dt, time, integral
     real(dp), dimension(:), allocatable :: data, weights
 
     ! Initialize Trixi
@@ -37,12 +37,21 @@ module simulationRun_suite
     handle = trixi_initialize_simulation(libelixir_path)
     call check(error, handle, 1)
 
+    ! Store a vector in database
+    allocate(data(3))
+    call trixi_store_in_database(handle, 1, 3, data)
+    deallocate(data)
+
     ! Do a simulation step
     call trixi_step(handle)
 
     ! Check time step length
     dt = trixi_calculate_dt(handle)
     call check(error, dt, 0.0032132984504400627_dp)
+
+    ! Check time step length
+    time = trixi_get_time(handle)
+    call check(error, time, 0.0032382397675568731_dp)
     
     ! Check finished status
     finished_status = trixi_is_finished(handle)
