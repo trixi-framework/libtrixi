@@ -22,7 +22,7 @@ on:
 
 jobs:
   test:
-    name: ${{ matrix.os }} - ${{ matrix.test_type }} - ${{ matrix.julia_version }} - ${{ github.event_name }}
+    name: ${{ matrix.os }} - ${{ matrix.test_type }} - Julia ${{ matrix.julia_version }} - ${{ github.event_name }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
