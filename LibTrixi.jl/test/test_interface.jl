@@ -76,8 +76,8 @@ end
     trixi_register_data(handle, Int32(1), Int32(3), pointer(test_data))
     trixi_register_data_jl(simstate_jl, 1, test_data)
     # check that the same memory is referenced
-    @test pointer(simstate_jl.registry[1][]) ==
-        pointer(LibTrixi.simstates[handle].registry[1][])
+    @test pointer(simstate_jl.registry[1]) ==
+        pointer(LibTrixi.simstates[handle].registry[1])
 end
 
 
