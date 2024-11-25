@@ -33,7 +33,7 @@ enum {
     TRIXI_FTPR_VERSION_JULIA_EXTENDED,
     TRIXI_FTPR_EVAL_JULIA,
     TRIXI_FTPR_GET_T8CODE_FOREST,
-    TRIXI_FPTR_GET_TIME,
+    TRIXI_FPTR_GET_SIMULATION_TIME,
 
     // The last one is for the array size
     TRIXI_NUM_FPTRS
@@ -71,7 +71,7 @@ static const char* trixi_function_pointer_names[] = {
     [TRIXI_FTPR_VERSION_JULIA_EXTENDED]               = "trixi_version_julia_extended_cfptr",
     [TRIXI_FTPR_EVAL_JULIA]                           = "trixi_eval_julia_cfptr",
     [TRIXI_FTPR_GET_T8CODE_FOREST]                    = "trixi_get_t8code_forest_cfptr",
-    [TRIXI_FPTR_GET_TIME]                             = "trixi_get_time_cfptr"
+    [TRIXI_FPTR_GET_SIMULATION_TIME]                  = "trixi_get_simulation_time_cfptr"
 };
 
 // Track initialization/finalization status to prevent unhelpful errors
@@ -727,7 +727,7 @@ void trixi_store_in_database(int handle, int index, int size, const double * dat
 
 
 /**
- * @anchor trixi_get_time_api_c
+ * @anchor trixi_get_simulation_time_api_c
  *
  * @brief Return current physical time.
  *
@@ -735,13 +735,14 @@ void trixi_store_in_database(int handle, int index, int size, const double * dat
  *
  * @return physical time
  */
-double trixi_get_time(int handle) {
+double trixi_get_simulation_time(int handle) {
 
     // Get function pointer
-    double (*get_time)(int) = trixi_function_pointers[TRIXI_FPTR_GET_TIME];
+    double (*get_simulation_time)(int) =
+        trixi_function_pointers[TRIXI_FPTR_GET_SIMULATION_TIME];
 
     // Call function
-    return get_time(handle);
+    return get_simulation_time(handle);
 }
 
 

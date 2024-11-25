@@ -208,7 +208,7 @@ function trixi_store_in_database_jl(simstate, index, data)
 end
 
 
-function trixi_get_time_jl(simstate)
+function trixi_get_simulation_time_jl(simstate)
     return simstate.integrator.t
 end
 

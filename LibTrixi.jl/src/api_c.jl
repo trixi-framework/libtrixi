@@ -494,18 +494,18 @@ trixi_store_in_database_cfptr() =
 
 
 """
-    trixi_get_time(simstate_handle::Cint)::Cdouble
+    trixi_get_simulation_time(simstate_handle::Cint)::Cdouble
 
 Return current physical time.
 """
-function trixi_get_time end
+function trixi_get_simulation_time end
 
-Base.@ccallable function trixi_get_time(simstate_handle::Cint)::Cdouble
+Base.@ccallable function trixi_get_simulation_time(simstate_handle::Cint)::Cdouble
     simstate = load_simstate(simstate_handle)
-    return trixi_get_time_jl(simstate)
+    return trixi_get_simulation_time_jl(simstate)
 end
 
-trixi_get_time_cfptr() = @cfunction(trixi_get_time, Cdouble, (Cint,))
+trixi_get_simulation_time_cfptr() = @cfunction(trixi_get_simulation_time, Cdouble, (Cint,))
 
 
 """

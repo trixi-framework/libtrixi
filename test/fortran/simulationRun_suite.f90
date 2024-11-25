@@ -50,7 +50,7 @@ module simulationRun_suite
     call check(error, dt, 0.0032132984504400627_dp)
 
     ! Check time step length
-    time = trixi_get_time(handle)
+    time = trixi_get_simulation_time(handle)
     call check(error, time, 0.0032382397675568731_dp)
     
     ! Check finished status

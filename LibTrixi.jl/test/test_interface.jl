@@ -60,8 +60,8 @@ end
     @test dt_c == dt_jl
 
     # compare time
-    time_c = trixi_get_time(handle)
-    time_jl = trixi_get_time_jl(simstate_jl)
+    time_c = trixi_get_simulation_time(handle)
+    time_jl = trixi_get_simulation_time_jl(simstate_jl)
     @test time_c == time_jl
 
     # compare finished status

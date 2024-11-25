@@ -392,7 +392,7 @@ module LibTrixi
     end subroutine
 
     !>
-    !! @fn LibTrixi::trixi_get_time::trixi_get_time(handle)
+    !! @fn LibTrixi::trixi_get_simulation_time::trixi_get_simulation_time(handle)
     !!
     !! @brief Return current physical time.
     !!
@@ -400,8 +400,8 @@ module LibTrixi
     !!
     !! @return  physical time
     !!
-    !! @see @ref trixi_get_time_api_c "trixi_get_time (C API)"
-    real(c_double) function trixi_get_time(handle) bind(c)
+    !! @see @ref trixi_get_simulation_time_api_c "trixi_get_simulation_time (C API)"
+    real(c_double) function trixi_get_simulation_time(handle) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int, c_double
       integer(c_int), value, intent(in) :: handle
     end function
