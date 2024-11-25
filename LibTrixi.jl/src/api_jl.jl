@@ -199,10 +199,10 @@ function trixi_load_element_averaged_primitive_vars_jl(simstate, variable_id, da
 end
 
 
-function trixi_store_in_database_jl(simstate, index, data)
-    simstate.data[index] = Ref(data)
+function trixi_register_data_jl(simstate, index, data)
+    simstate.registry[index] = data
     if show_debug_output()
-        println("New data vector stored at index ", index)
+        println("New data vector registered at index ", index)
     end
     return nothing
 end

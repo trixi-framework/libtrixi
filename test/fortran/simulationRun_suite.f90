@@ -37,9 +37,9 @@ module simulationRun_suite
     handle = trixi_initialize_simulation(libelixir_path)
     call check(error, handle, 1)
 
-    ! Store a vector in database
+    ! Store a vector in registry
     allocate(data(3))
-    call trixi_store_in_database(handle, 1, 3, data)
+    call trixi_register_data(handle, 1, 3, data)
     deallocate(data)
 
     ! Do a simulation step

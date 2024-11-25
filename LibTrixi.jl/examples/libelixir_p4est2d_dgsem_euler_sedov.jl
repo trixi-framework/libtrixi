@@ -106,9 +106,9 @@ function init_simstate()
     ###############################################################################
     # Create simulation state
 
-    # database only used for tests
-    database = LibTrixiDataBaseType(undef, 1)
-    simstate = SimulationState(semi, integrator, database)
+    # registry only used for tests
+    registry = LibTrixiDataRegistry(undef, 1)
+    simstate = SimulationState(semi, integrator, registry)
 
     return simstate
 end

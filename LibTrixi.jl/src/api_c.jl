@@ -462,35 +462,35 @@ trixi_load_primitive_vars_cfptr() =
 
 
 """
-    trixi_store_in_database(data::Ptr{Cdouble}, size::Cint, index::Cint,
-                            simstate_handle::Cint)::Cvoid
+    trixi_register_data(data::Ptr{Cdouble}, size::Cint, index::Cint,
+                        simstate_handle::Cint)::Cvoid
 
-Store data vector in current simulation's database.
+Store data vector in current simulation's registry.
 
-A reference to the passed data array `data` will be stored in the database of the simulation
-given by `simstate_handle` at given `index`. The database object has to be created in
+A reference to the passed data array `data` will be stored in the registry of the simulation
+given by `simstate_handle` at given `index`. The registry object has to be created in
 `init_simstate()` of the running libelixir and can be used throughout the simulation.
 
-The database object has to exist, has to be of type `LibTrixiDataBaseType`, and has to hold
+The registry object has to exist, has to be of type `LibTrixiDataRegistry`, and has to hold
 enough data references such that access at `index` is valid.
-
-The size of `data` has to match `size`.
+Memory storage remains on the user side. It must not be deallocated as long as it might be
+accessed via the registry. The size of `data` has to match `size`.
 """
-function trixi_store_in_database end
+function trixi_register_data end
 
-Base.@ccallable function trixi_store_in_database(simstate_handle::Cint, index::Cint,
-                                                 size::Cint, data::Ptr{Cdouble})::Cvoid
+Base.@ccallable function trixi_register_data(simstate_handle::Cint, index::Cint,
+                                             size::Cint, data::Ptr{Cdouble})::Cvoid
     simstate = load_simstate(simstate_handle)
 
     # convert C to Julia array
     data_jl = unsafe_wrap(Array, data, size)
 
-    trixi_store_in_database_jl(simstate, index, data_jl)
+    trixi_register_data_jl(simstate, index, data_jl)
     return nothing
 end
 
-trixi_store_in_database_cfptr() =
-    @cfunction(trixi_store_in_database, Cvoid, (Cint, Cint, Cint, Ptr{Cdouble},))
+trixi_register_data_cfptr() =
+    @cfunction(trixi_register_data, Cvoid, (Cint, Cint, Cint, Ptr{Cdouble},))
 
 
 """
