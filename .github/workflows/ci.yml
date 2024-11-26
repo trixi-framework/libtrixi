@@ -22,7 +22,7 @@ on:
 
 jobs:
   test:
-    name: ${{ matrix.os }} - ${{ matrix.test_type }} - ${{ github.event_name }}
+    name: ${{ matrix.os }} - ${{ matrix.test_type }} - Julia ${{ matrix.julia_version }} - ${{ github.event_name }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -31,14 +31,20 @@ jobs:
           - ubuntu-latest
         test_type:
           - regular
-          - coverage
           - package-compiler
         arch:
           - x64
         julia_version:
           - '1.10'
+          - '1.11'
         t8code_version:
           - '3.0.0'
+        include:
+          - os: ubuntu-latest
+            test_type: coverage
+            arch: x64
+            julia_version: '1.11'
+            t8code_version: '3.0.0'
     env:
       # Necessary for HDF5 to play nice with Julia
       LD_PRELOAD: /lib/x86_64-linux-gnu/libcurl.so.4
