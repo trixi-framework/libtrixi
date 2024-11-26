@@ -52,7 +52,7 @@ function trixi_finalize_simulation_jl(simstate)
     # x-ref: https://github.com/DLR-AMR/t8code/issues/1295
     # x-ref: https://github.com/trixi-framework/libtrixi/pull/215#discussion_r1843676330
     mesh, _, _, _ = mesh_equations_solver_cache(simstate.semi)
-    if mesh isa Trixi.T8codeMesh
+    if mesh isa Trixi.T8codeMesh || mesh isa Trixi.P4estMesh
         finalize(mesh)
     end
 
