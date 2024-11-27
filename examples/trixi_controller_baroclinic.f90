@@ -24,11 +24,11 @@ subroutine source_terms_baroclinic( nnodes, nodes, forest, ndofs, &
   num_local_trees = t8_forest_get_num_local_trees (forest)
   ! Iterate through all local trees
   index = 1
-  do itree = 1,num_local_trees
+  do itree = 0,num_local_trees-1
     ! Get number of elements of this tree
     num_elements_in_tree = t8_forest_get_tree_num_elements (forest, itree)
     ! Iterate through all the local elements
-    do ielement = 1,num_elements_in_tree
+    do ielement = 0,num_elements_in_tree-1
       ! Get a pointer to the current element
       element = t8_forest_get_element_in_tree (forest, itree, ielement)
       do k = 1,nnodes
