@@ -260,10 +260,12 @@ function init_simstate()
     nnodes = nnodesdim^3
     nelements = Trixi.ncells(mesh)
 
-    database[1] = Ref(Vector{Float64}(undef, nelements*nnodes))
-    database[2] = Ref(Vector{Float64}(undef, nelements*nnodes))
-    database[3] = Ref(Vector{Float64}(undef, nelements*nnodes))
-    database[4] = Ref(Vector{Float64}(undef, nelements*nnodes))
+    # provide some data because calc_sources! will already be called during initialization
+    zero_data = Vector{Float64}(0.0, nelements*nnodes)
+    database[1] = zero_data
+    database[2] = zero_data
+    database[3] = zero_data
+    database[4] = zero_data
 
     source_term_database = SourceTerm(nnodesdim, database)
 
