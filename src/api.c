@@ -24,6 +24,7 @@ enum {
     TRIXI_FPTR_LOAD_NODE_WEIGHTS,
     TRIXI_FTPR_LOAD_PRIMITIVE_VARS,
     TRIXI_FTPR_LOAD_ELEMENT_AVERAGED_PRIMITIVE_VARS,
+    TRIXI_FTPR_REGISTER_DATA,
     TRIXI_FTPR_VERSION_LIBRARY,
     TRIXI_FTPR_VERSION_LIBRARY_MAJOR,
     TRIXI_FTPR_VERSION_LIBRARY_MINOR,
@@ -32,6 +33,7 @@ enum {
     TRIXI_FTPR_VERSION_JULIA_EXTENDED,
     TRIXI_FTPR_EVAL_JULIA,
     TRIXI_FTPR_GET_T8CODE_FOREST,
+    TRIXI_FPTR_GET_SIMULATION_TIME,
 
     // The last one is for the array size
     TRIXI_NUM_FPTRS
@@ -60,6 +62,7 @@ static const char* trixi_function_pointer_names[] = {
     [TRIXI_FPTR_LOAD_NODE_WEIGHTS]                    = "trixi_load_node_weights_cfptr",
     [TRIXI_FTPR_LOAD_PRIMITIVE_VARS]                  = "trixi_load_primitive_vars_cfptr",
     [TRIXI_FTPR_LOAD_ELEMENT_AVERAGED_PRIMITIVE_VARS] = "trixi_load_element_averaged_primitive_vars_cfptr",
+    [TRIXI_FTPR_REGISTER_DATA]                        = "trixi_register_data_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY]                      = "trixi_version_library_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY_MAJOR]                = "trixi_version_library_major_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY_MINOR]                = "trixi_version_library_minor_cfptr",
@@ -67,7 +70,8 @@ static const char* trixi_function_pointer_names[] = {
     [TRIXI_FTPR_VERSION_JULIA]                        = "trixi_version_julia_cfptr",
     [TRIXI_FTPR_VERSION_JULIA_EXTENDED]               = "trixi_version_julia_extended_cfptr",
     [TRIXI_FTPR_EVAL_JULIA]                           = "trixi_eval_julia_cfptr",
-    [TRIXI_FTPR_GET_T8CODE_FOREST]                    = "trixi_get_t8code_forest_cfptr"
+    [TRIXI_FTPR_GET_T8CODE_FOREST]                    = "trixi_get_t8code_forest_cfptr",
+    [TRIXI_FPTR_GET_SIMULATION_TIME]                  = "trixi_get_simulation_time_cfptr"
 };
 
 // Track initialization/finalization status to prevent unhelpful errors
@@ -689,6 +693,58 @@ void trixi_load_element_averaged_primitive_vars(int handle, int variable_id, dou
     // Call function
     load_element_averaged_primitive_vars(handle, variable_id, data);
 }
+
+
+/**
+ * @anchor trixi_register_data_api_c
+ *
+ * @brief Store data vector in current simulation's registry
+ *
+ * A reference to the passed data array `data` will be stored in the registry of the
+ * simulation given by `simstate_handle` at given `index`. The registry object has to be
+ * created in `init_simstate()` of the running libelixir and can be used throughout the
+ * simulation.
+ *
+ * The registry object has to exist, has to be of type `LibTrixiDataRegistry`, and has to
+ * hold enough data references such that access at `index` is valid.
+ * Memory storage remains on the user side. It must not be deallocated as long as it might
+ * be accessed via the registry. The size of `data` has to match `size`.
+ *
+ * @param[in]  handle  simulation handle
+ * @param[in]  index   index in registry where data vector will be stored
+ * @param[in]  size    size of given data vector
+ * @param[in]  data    data vector to store
+ */
+void trixi_register_data(int handle, int index, int size, const double * data) {
+
+    // Get function pointer
+    void (*register_data)(int, int, int, const double *) =
+        trixi_function_pointers[TRIXI_FTPR_REGISTER_DATA];
+
+    // Call function
+    register_data(handle, index, size, data);
+}
+
+
+/**
+ * @anchor trixi_get_simulation_time_api_c
+ *
+ * @brief Return current physical time.
+ *
+ * @param[in]  handle  simulation handle
+ *
+ * @return physical time
+ */
+double trixi_get_simulation_time(int handle) {
+
+    // Get function pointer
+    double (*get_simulation_time)(int) =
+        trixi_function_pointers[TRIXI_FPTR_GET_SIMULATION_TIME];
+
+    // Call function
+    return get_simulation_time(handle);
+}
+
 
 
 /******************************************************************************************/

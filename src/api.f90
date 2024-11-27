@@ -388,8 +388,23 @@ module LibTrixi
       use, intrinsic :: iso_c_binding, only: c_int, c_double
       integer(c_int), value, intent(in) :: handle
       integer(c_int), value, intent(in) :: variable_id
-      real(c_double), dimension(*), intent(in) :: data
+      real(c_double), dimension(*), intent(out) :: data
     end subroutine
+
+    !>
+    !! @fn LibTrixi::trixi_get_simulation_time::trixi_get_simulation_time(handle)
+    !!
+    !! @brief Return current physical time.
+    !!
+    !! @param[in]  handle  simulation handle
+    !!
+    !! @return  physical time
+    !!
+    !! @see @ref trixi_get_simulation_time_api_c "trixi_get_simulation_time (C API)"
+    real(c_double) function trixi_get_simulation_time(handle) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int, c_double
+      integer(c_int), value, intent(in) :: handle
+    end function
 
     !>
     !! @fn LibTrixi::trixi_load_element_averaged_primitive_vars::trixi_load_element_averaged_primitive_vars(handle, variable_id, data)
@@ -405,6 +420,25 @@ module LibTrixi
       use, intrinsic :: iso_c_binding, only: c_int, c_double
       integer(c_int), value, intent(in) :: handle
       integer(c_int), value, intent(in) :: variable_id
+      real(c_double), dimension(*), intent(out) :: data
+    end subroutine
+
+    !>
+    !! @fn LibTrixi::trixi_register_data::trixi_register_data(handle, variable_id, data)
+    !!
+    !! @brief Store data vector in current simulation's registry
+    !!
+    !! @param[in]  handle  simulation handle
+    !! @param[in]  index   index in registry where data vector will be stored
+    !! @param[in]  size    size of given data vector
+    !! @param[in]  data    data vector to store
+    !!
+    !! @see @ref trixi_register_data_api_c "trixi_register_data (C API)"
+    subroutine trixi_register_data(handle, index, size, data) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int, c_double
+      integer(c_int), value, intent(in) :: handle
+      integer(c_int), value, intent(in) :: index
+      integer(c_int), value, intent(in) :: size
       real(c_double), dimension(*), intent(in) :: data
     end subroutine
 

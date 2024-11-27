@@ -58,6 +58,9 @@ export trixi_load_primitive_vars,
 export trixi_load_element_averaged_primitive_vars,
        trixi_load_element_averaged_primitive_vars_cfptr,
        trixi_load_element_averaged_primitive_vars_jl
+export trixi_register_data,
+       trixi_register_data_cfptr,
+       trixi_register_data_jl
 export trixi_version_library,
        trixi_version_library_cfptr,
        trixi_version_library_jl
@@ -82,8 +85,13 @@ export trixi_get_t8code_forest,
 export trixi_eval_julia,
        trixi_eval_julia_cfptr,
        trixi_eval_julia_jl
+export trixi_get_simulation_time,
+       trixi_get_simulation_time_cfptr,
+       trixi_get_simulation_time_jl
+
 
 export SimulationState, store_simstate, load_simstate, delete_simstate!
+export LibTrixiDataRegistry
 
 
 # global storage of name and version information of loaded packages

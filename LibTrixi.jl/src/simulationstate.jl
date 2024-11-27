@@ -1,12 +1,21 @@
+const LibTrixiDataRegistry = Vector{Vector{Float64}}
+
 """
     SimulationState
 
-Data structure to store a simulation state that consists of a semidiscretization
-plus the time integrator.
+Data structure to store a simulation state consisting of
+- a semidiscretization
+- the time integrator
+- an optional array of data vectors
 """
 mutable struct SimulationState{SemiType, IntegratorType}
     semi::SemiType
     integrator::IntegratorType
+    registry::LibTrixiDataRegistry
+
+    function SimulationState(semi, integrator, registry = LibTrixiDataRegistry())
+        return new{typeof(semi), typeof(integrator)}(semi, integrator, registry)
+    end
 end
 
 # Global variables to store different simulation states
