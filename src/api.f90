@@ -392,7 +392,7 @@ module LibTrixi
     end subroutine
 
     !>
-    !! @fn LibTrixi::trixi_get_time::trixi_get_time(handle)
+    !! @fn LibTrixi::trixi_get_simulation_time::trixi_get_simulation_time(handle)
     !!
     !! @brief Return current physical time.
     !!
@@ -400,8 +400,8 @@ module LibTrixi
     !!
     !! @return  physical time
     !!
-    !! @see @ref trixi_get_time_api_c "trixi_get_time (C API)"
-    real(c_double) function trixi_get_time(handle) bind(c)
+    !! @see @ref trixi_get_simulation_time_api_c "trixi_get_simulation_time (C API)"
+    real(c_double) function trixi_get_simulation_time(handle) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int, c_double
       integer(c_int), value, intent(in) :: handle
     end function
@@ -424,17 +424,17 @@ module LibTrixi
     end subroutine
 
     !>
-    !! @fn LibTrixi::trixi_store_in_database::trixi_store_in_database(handle, variable_id, data)
+    !! @fn LibTrixi::trixi_register_data::trixi_register_data(handle, variable_id, data)
     !!
-    !! @brief Store data vector in current simulation's database
+    !! @brief Store data vector in current simulation's registry
     !!
     !! @param[in]  handle  simulation handle
-    !! @param[in]  index   index in database where data vector will be stored
+    !! @param[in]  index   index in registry where data vector will be stored
     !! @param[in]  size    size of given data vector
     !! @param[in]  data    data vector to store
     !!
-    !! @see @ref trixi_store_in_database_api_c "trixi_store_in_database (C API)"
-    subroutine trixi_store_in_database(handle, index, size, data) bind(c)
+    !! @see @ref trixi_register_data_api_c "trixi_register_data (C API)"
+    subroutine trixi_register_data(handle, index, size, data) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int, c_double
       integer(c_int), value, intent(in) :: handle
       integer(c_int), value, intent(in) :: index

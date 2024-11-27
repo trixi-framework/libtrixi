@@ -34,12 +34,12 @@ int trixi_ndofselement(int handle);
 int trixi_nvariables(int handle);
 int trixi_nnodes(int handle);
 double trixi_calculate_dt(int handle);
-double trixi_get_time(int handle);
+double trixi_get_simulation_time(int handle);
 void trixi_load_node_reference_coordinates(int handle, double* node_coords);
 void trixi_load_node_weights(int handle, double* node_weights);
 void trixi_load_primitive_vars(int handle, int variable_id, double * data);
 void trixi_load_element_averaged_primitive_vars(int handle, int variable_id, double * data);
-void trixi_store_in_database(int handle, int index, int size, const double * data);
+void trixi_register_data(int handle, int index, int size, const double * data);
 
 // T8code
 #if !defined(T8_H) && !defined(T8_FOREST_GENERAL_H)

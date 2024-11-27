@@ -1,4 +1,4 @@
-const LibTrixiDataBaseType = Vector{Ref{Vector{Float64}}}
+const LibTrixiDataRegistry = Vector{Vector{Float64}}
 
 """
     SimulationState
@@ -11,10 +11,10 @@ Data structure to store a simulation state consisting of
 mutable struct SimulationState{SemiType, IntegratorType}
     semi::SemiType
     integrator::IntegratorType
-    data::LibTrixiDataBaseType
+    registry::LibTrixiDataRegistry
 
-    function SimulationState(semi, integrator, data = LibTrixiDataBaseType())
-        return new{typeof(semi), typeof(integrator)}(semi, integrator, data)
+    function SimulationState(semi, integrator, registry = LibTrixiDataRegistry())
+        return new{typeof(semi), typeof(integrator)}(semi, integrator, registry)
     end
 end
 

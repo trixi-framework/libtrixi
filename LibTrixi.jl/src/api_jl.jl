@@ -52,7 +52,7 @@ function trixi_finalize_simulation_jl(simstate)
     # x-ref: https://github.com/DLR-AMR/t8code/issues/1295
     # x-ref: https://github.com/trixi-framework/libtrixi/pull/215#discussion_r1843676330
     mesh, _, _, _ = mesh_equations_solver_cache(simstate.semi)
-    if mesh isa Trixi.T8codeMesh
+    if mesh isa Trixi.T8codeMesh || mesh isa Trixi.P4estMesh
         finalize(mesh)
     end
 
@@ -199,16 +199,16 @@ function trixi_load_element_averaged_primitive_vars_jl(simstate, variable_id, da
 end
 
 
-function trixi_store_in_database_jl(simstate, index, data)
-    simstate.data[index] = Ref(data)
+function trixi_register_data_jl(simstate, index, data)
+    simstate.registry[index] = data
     if show_debug_output()
-        println("New data vector stored at index ", index)
+        println("New data vector registered at index ", index)
     end
     return nothing
 end
 
 
-function trixi_get_time_jl(simstate)
+function trixi_get_simulation_time_jl(simstate)
     return simstate.integrator.t
 end
 

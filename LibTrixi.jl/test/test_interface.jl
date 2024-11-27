@@ -60,23 +60,24 @@ end
     @test dt_c == dt_jl
 
     # compare time
-    time_c = trixi_get_time(handle)
-    time_jl = trixi_get_time_jl(simstate_jl)
+    time_c = trixi_get_simulation_time(handle)
+    time_jl = trixi_get_simulation_time_jl(simstate_jl)
     @test time_c == time_jl
 
     # compare finished status
     @test trixi_is_finished(handle) == 0
     @test !trixi_is_finished_jl(simstate_jl)
 
-    # manually increase databases (for testing only!)
-    push!(simstate_jl.data, Vector{Float64}())
-    push!(LibTrixi.simstates[handle].data, Vector{Float64}())
+    # manually increase registries (for testing only!)
+    push!(simstate_jl.registry, Vector{Float64}())
+    push!(LibTrixi.simstates[handle].registry, Vector{Float64}())
     # store a vector
     test_data = [1.0, 2.0, 3.0]
-    trixi_store_in_database(handle, Int32(1), Int32(3), pointer(test_data))
-    trixi_store_in_database_jl(simstate_jl, 1, test_data)
+    trixi_register_data(handle, Int32(1), Int32(3), pointer(test_data))
+    trixi_register_data_jl(simstate_jl, 1, test_data)
     # check that the same memory is referenced
-    @test pointer(simstate_jl.data[1][]) == pointer(LibTrixi.simstates[handle].data[1][])
+    @test pointer(simstate_jl.registry[1]) ==
+        pointer(LibTrixi.simstates[handle].registry[1])
 end
 
 

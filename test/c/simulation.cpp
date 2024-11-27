@@ -40,10 +40,10 @@ TEST(CInterfaceTest, SimulationRun) {
     EXPECT_DEATH(trixi_is_finished(42),
                  "the provided handle was not found in the stored simulation states: 42");
 
-    // Store a vector in database
+    // Store a vector in registry
     std::vector<double> test_data(3);
-    trixi_store_in_database(handle, 1, 3, test_data.data());
-    EXPECT_DEATH(trixi_store_in_database(handle, 2, 3, test_data.data()),
+    trixi_register_data(handle, 1, 3, test_data.data());
+    EXPECT_DEATH(trixi_register_data(handle, 2, 3, test_data.data()),
                  "BoundsError");
 
     // Do 10 simulation steps
@@ -56,7 +56,7 @@ TEST(CInterfaceTest, SimulationRun) {
     EXPECT_NEAR(dt, 0.0028566952356658794, 1e-17);
 
     // Check time
-    double time = trixi_get_time(handle);
+    double time = trixi_get_simulation_time(handle);
     EXPECT_NEAR(time, 0.0304927240859461, 1e-16);
     
     // Check finished status
