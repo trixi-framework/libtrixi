@@ -126,10 +126,10 @@ program trixi_controller_baroclinic_f
   allocate( du5(ndofs) )
 
   ! Store source term vectors in Trixi
-  call trixi_store_in_database( handle, 1, ndofs, du2 )
-  call trixi_store_in_database( handle, 2, ndofs, du3 )
-  call trixi_store_in_database( handle, 3, ndofs, du4 )
-  call trixi_store_in_database( handle, 4, ndofs, du5 )
+  call trixi_register_data( handle, 1, ndofs, du2 )
+  call trixi_register_data( handle, 2, ndofs, du3 )
+  call trixi_register_data( handle, 3, ndofs, du4 )
+  call trixi_register_data( handle, 4, ndofs, du5 )
 
   ! Get number of quadrature nodes
   nnodes = trixi_nnodes( handle )

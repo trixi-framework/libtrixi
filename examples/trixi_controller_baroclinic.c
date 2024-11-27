@@ -102,10 +102,10 @@ int main ( int argc, char *argv[] ) {
     double * du5 = calloc( ndofs, sizeof(double) );
 
     // Store source term vectors in Trixi
-    trixi_store_in_database( handle, 1, ndofs, du2 );
-    trixi_store_in_database( handle, 2, ndofs, du3 );
-    trixi_store_in_database( handle, 3, ndofs, du4 );
-    trixi_store_in_database( handle, 4, ndofs, du5 );
+    trixi_register_data( handle, 1, ndofs, du2 );
+    trixi_register_data( handle, 2, ndofs, du3 );
+    trixi_register_data( handle, 3, ndofs, du4 );
+    trixi_register_data( handle, 4, ndofs, du5 );
 
     // Get number of quadrature nodes
     int nnodes = trixi_nnodes( handle );
