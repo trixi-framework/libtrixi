@@ -79,7 +79,6 @@ program trixi_controller_baroclinic_f
   character(len=256) :: argument
   type(c_ptr) :: forest
   integer, parameter :: dp = selected_real_kind(12)
-  real(c_double) :: t
   real(dp), dimension(:), pointer :: u1, u2, u3, u4, du2, du3, du4, du5, nodes => null()
 
 
@@ -154,9 +153,6 @@ program trixi_controller_baroclinic_f
   do
     ! Exit loop once simulation is completed
     if ( trixi_is_finished(handle) ) exit
-
-    ! Get current time
-    t = trixi_get_time( handle );
 
     ! Get current state
     call trixi_load_primitive_vars( handle, 1, u1 )
