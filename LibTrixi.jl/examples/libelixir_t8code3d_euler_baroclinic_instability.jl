@@ -18,7 +18,7 @@ using LibTrixi
 # Callable struct holding vectors with source terms
 struct SourceTerm
     nnodesdim::Int
-    database::Vector{Ref{Vector{Float64}}}
+    registry::LibTrixiDataRegistry
 end
 
 # We overwrite Trixi.jl's internal method here such that it calls source_terms with indices
@@ -43,11 +43,10 @@ end
                                       equations::CompressibleEulerEquations3D)
     @unpack nnodesdim = source
     index_global = (element-1) * nnodesdim^3 + (k-1) * nnodesdim^2 + (j-1) * nnodesdim + i
-    # massive allocations occur when directly accessing source.database[1][][1]
-    du2::Vector{Float64} = source.database[1][]
-    du3::Vector{Float64} = source.database[2][]
-    du4::Vector{Float64} = source.database[3][]
-    du5::Vector{Float64} = source.database[4][]
+    du2::Vector{Float64} = source.registry[1]
+    du3::Vector{Float64} = source.registry[2]
+    du4::Vector{Float64} = source.registry[3]
+    du5::Vector{Float64} = source.registry[4]
     return SVector(zero(eltype(u)), du2[index_global], du3[index_global],
                    du4[index_global], du5[index_global])
 end
@@ -248,33 +247,33 @@ function init_simstate()
                    volume_integral = VolumeIntegralFluxDifferencing(volume_flux))
 
     # for nice results, use 4 and 8 here
-    lat_lon_levels = 3
+    lat_lon_levels = 2
     layers = 4
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_levels, layers, 6.371229e6, 30000.0,
                                        polydeg = 5, initial_refinement_level = 0)
 
-    # create the database and three vectors for the source terms
-    database = LibTrixiDataBaseType(undef, 4)
+    # create the data registry and three vectors for the source terms
+    registry = LibTrixiDataRegistry(undef, 4)
 
     nnodesdim = Trixi.nnodes(solver)
     nnodes = nnodesdim^3
     nelements = Trixi.ncells(mesh)
 
     # provide some data because calc_sources! will already be called during initialization
-    zero_data = Vector{Float64}(0.0, nelements*nnodes)
-    database[1] = zero_data
-    database[2] = zero_data
-    database[3] = zero_data
-    database[4] = zero_data
+    zero_data = zeros(Float64, nelements*nnodes)
+    registry[1] = zero_data
+    registry[2] = zero_data
+    registry[3] = zero_data
+    registry[4] = zero_data
 
-    source_term_database = SourceTerm(nnodesdim, database)
+    source_term_data_registry = SourceTerm(nnodesdim, registry)
 
     semi = SemidiscretizationHyperbolic(mesh, equations, initial_condition, solver,
-                                        source_terms = source_term_database,
+                                        source_terms = source_term_data_registry,
                                         boundary_conditions = boundary_conditions)
 
     # for nice results, use 10 days
-    days = 0.1
+    days = 0.02
     tspan = (0.0, days * 24 * 60 * 60.0)
 
     ode = semidiscretize(semi, tspan)
@@ -286,8 +285,6 @@ function init_simstate()
 
     alive_callback = AliveCallback(analysis_interval = analysis_interval)
 
-    stepsize_callback = StepsizeCallback(cfl=1.6)
-
     save_solution = SaveSolutionCallback(interval = 50,
                                          save_initial_solution = true,
                                          save_final_solution = true,
@@ -297,16 +294,15 @@ function init_simstate()
     callbacks = CallbackSet(summary_callback,
                             analysis_callback,
                             alive_callback,
-                            stepsize_callback,
                             save_solution)
 
-    # OrdinaryDiffEq's integrator
-    integrator = init(ode, CarpenterKennedy2N54(williamson_condition=false),
-                      dt=1.0, # solve needs some value here but it will be overwritten by the stepsize_callback
-                      save_everystep=false, callback=callbacks, maxiters=1e7);
+    # use a Runge-Kutta method with automatic (error based) time step size control
+    integrator = init(ode, RDPK3SpFSAL49(thread = OrdinaryDiffEq.False());
+                      abstol = 1.0e-6, reltol = 1.0e-6,
+                      ode_default_options()..., callback = callbacks, maxiters=1e7);
 
     # create simulation state
-    simstate = SimulationState(semi, integrator, database)
+    simstate = SimulationState(semi, integrator, registry)
 
     return simstate
 end
