@@ -58,7 +58,7 @@ subroutine source_terms_baroclinic( nnodes, nodes, forest, ndofs, &
             
             ! Coriolis term
             du2(index) = du2(index) + 2.0 * angular_velocity * u3(index) * u1(index)
-            du3(index) = du2(index) - 2.0 * angular_velocity * u2(index) * u1(index)
+            du3(index) = du3(index) - 2.0 * angular_velocity * u2(index) * u1(index)
 
             index = index + 1
           end do
