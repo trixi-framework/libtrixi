@@ -28,9 +28,9 @@ function Trixi.calc_sources!(du, u, t, source_terms::SourceTerm,
     Trixi.@threaded for element in eachelement(dg, cache)
         for k in eachnode(dg), j in eachnode(dg), i in eachnode(dg)
             u_local = Trixi.get_node_vars(u, equations, dg, i, j, k, element)
-            x_local = Trixi.get_node_coords(node_coordinates, equations, dg,
-                                      i, j, k, element)
             du_local = source_terms(u_local, i, j, k, element, t, equations)
+            #x_local = Trixi.get_node_coords(node_coordinates, equations, dg,
+            #                                i, j, k, element)
             #du_local_ref = source_terms_baroclinic_instability(u_local, x_local, t,
             #                                                   equations)
             Trixi.add_to_node_vars!(du, du_local, equations, dg, i, j, k, element)
@@ -285,7 +285,7 @@ function init_simstate()
 
     alive_callback = AliveCallback(analysis_interval = analysis_interval)
 
-    save_solution = SaveSolutionCallback(interval = 50,
+    save_solution = SaveSolutionCallback(interval = 500,
                                          save_initial_solution = true,
                                          save_final_solution = true,
                                          solution_variables = cons2prim,
