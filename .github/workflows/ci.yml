@@ -7,10 +7,12 @@ on:
     paths-ignore:
       - 'LICENSE.md'
       - 'README.md'
+      - 'docs/**'
   pull_request:
     paths-ignore:
       - 'LICENSE.md'
       - 'README.md'
+      - 'docs/**'
   workflow_dispatch:
     inputs:
       debug_enabled:
@@ -20,7 +22,7 @@ on:
 
 jobs:
   test:
-    name: ${{ matrix.os }} - ${{ matrix.test_type }} - ${{ github.event_name }}
+    name: ${{ matrix.os }} - ${{ matrix.test_type }} - Julia ${{ matrix.julia_version }} - ${{ github.event_name }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -29,14 +31,20 @@ jobs:
           - ubuntu-latest
         test_type:
           - regular
-          - coverage
           - package-compiler
         arch:
           - x64
         julia_version:
-          - '1.9'
+          - '1.10'
+          - '1.11'
         t8code_version:
-          - '1.4.1'
+          - '3.0.0'
+        include:
+          - os: ubuntu-latest
+            test_type: coverage
+            arch: x64
+            julia_version: '1.11'
+            t8code_version: '3.0.0'
     env:
       # Necessary for HDF5 to play nice with Julia
       LD_PRELOAD: /lib/x86_64-linux-gnu/libcurl.so.4
@@ -47,23 +55,26 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Enable Julia cache
-        uses: julia-actions/cache@v1
+        uses: julia-actions/cache@v2
 
       - name: Enable t8code cache
         id: cache-t8code
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./t8code-local
           key: ${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.t8code_version }}
 
       - name: Install Julia
-        uses: julia-actions/setup-julia@v1
+        uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.julia_version }}
           arch: ${{ matrix.arch }}
 
       - name: Show Julia version information
         run: julia -e 'using InteractiveUtils; versioninfo(verbose=true)'
+
+      - name: Update `apt-get`
+        run: sudo apt-get update
 
       - name: Install dependencies available with `apt-get`
         # - MPI
@@ -82,12 +93,22 @@ jobs:
           T8CODE_RELEASE=${{ matrix.t8code_version }}
           mkdir t8code-local
           cd t8code-local
-          wget https://github.com/DLR-AMR/t8code/releases/download/v${T8CODE_RELEASE}/t8-${T8CODE_RELEASE}.tar.gz
-          tar xf t8-${T8CODE_RELEASE}.tar.gz
+          wget https://github.com/DLR-AMR/t8code/releases/download/v${T8CODE_RELEASE}/T8CODE-${T8CODE_RELEASE}-Source.tar.gz
+          tar xf T8CODE-${T8CODE_RELEASE}-Source.tar.gz
           mkdir build
           cd build
-          CC=mpicc CXX=mpicxx ../t8-${T8CODE_RELEASE}/configure \
-              --prefix=$PWD/../prefix --enable-mpi
+          cmake \
+              -DCMAKE_C_COMPILER=mpicc \
+              -DCMAKE_CXX_COMPILER=mpicxx \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_INSTALL_PREFIX="$PWD/../prefix" \
+              -DT8CODE_BUILD_TESTS=OFF \
+              -DT8CODE_BUILD_TUTORIALS=OFF \
+              -DT8CODE_BUILD_EXAMPLES=OFF \
+              -DT8CODE_BUILD_BENCHMARKS=OFF \
+              -DT8CODE_ENABLE_MPI=ON \
+              -DT8CODE_BUILD_FORTRAN_INTERFACE=ON \
+              ../T8CODE-${T8CODE_RELEASE}-Source
           make -j 2
           make install
 
@@ -98,7 +119,7 @@ jobs:
           cd build
           cmake .. -DCMAKE_INSTALL_PREFIX=../install \
                    -DCMAKE_BUILD_TYPE=Release \
-                   -DT8CODE_PREFIX=$PWD/../t8code-local/prefix \
+                   -DT8CODE_ROOT=$PWD/../t8code-local/prefix \
                    -DENABLE_TESTING=ON -DJULIA_PROJECT_PATH=../libtrixi-julia
 
       - name: Configure (test_type == 'coverage')
@@ -108,7 +129,7 @@ jobs:
           cd build
           cmake .. -DCMAKE_INSTALL_PREFIX=../install \
                    -DCMAKE_BUILD_TYPE=Debug \
-                   -DT8CODE_PREFIX=$PWD/../t8code-local/prefix \
+                   -DT8CODE_ROOT=$PWD/../t8code-local/prefix \
                    -DCMAKE_C_FLAGS="-cpp --coverage -O0" \
                    -DCMAKE_Fortran_FLAGS="-cpp --coverage -O0" \
                    -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
@@ -151,9 +172,9 @@ jobs:
               --force
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl .
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl .
-          cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_t8code_2d_dgsem_advection_basic.jl .
+          cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_t8code_2d_dgsem_advection_amr.jl .
 
-      - name: Initialize project directory
+      - name: Initialize project directory (test_type == 'package-compiler')
         if: ${{ matrix.test_type == 'package-compiler' }}
         # Note that we set the Julia depot to `~/.julia` *ONLY* to make use of the
         # julia-actions/cache above (which unfortunately hardcoded the `~/.julia`
@@ -170,17 +191,33 @@ jobs:
               --julia-depot ~/.julia \
               --force
 
-      - name: Build libtrixi using PackageCompiler
+      - name: Configure (test_type == 'package-compiler')
         if: ${{ matrix.test_type == 'package-compiler' }}
         run: |
-          cd LibTrixi.jl/lib
-          make
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_INSTALL_PREFIX=../install \
+                   -DCMAKE_BUILD_TYPE=Debug \
+                   -DUSE_PACKAGE_COMPILER=ON \
+                   -DJULIA_PROJECT_PATH=$PWD/../libtrixi-julia
 
-      - name: Build example
+      - name: Build (test_type == 'package-compiler')
         if: ${{ matrix.test_type == 'package-compiler' }}
         run: |
-          cd examples
-          make -f MakefileCompiled LIBTRIXI_PREFIX=$PWD/../LibTrixi.jl/lib/build
+          cd build
+          make -j2
+          du -hL ./prefix-pc/lib/libtrixi.so
+
+      - name: Test external CMake project
+        if: ${{ matrix.test_type == 'regular' }}
+        run: |
+          cd examples/external
+          ./build.sh
+          mpirun -n 2 ./build/trixi_controller_simple_c \
+              ../../libtrixi-julia \
+              ../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl
+        env:
+          LIBTRIXI_DEBUG: all
 
       - name: Prepare coverage reporting
         if: ${{ matrix.test_type == 'coverage' }}
@@ -203,23 +240,24 @@ jobs:
         if: ${{ matrix.test_type == 'regular' || matrix.test_type == 'coverage' }}
         run: |
           cd libtrixi-julia
-          ../build/examples/simple_trixi_controller_c . libelixir_tree1d_dgsem_advection_basic.jl
-          ../build/examples/simple_trixi_controller_f . libelixir_tree1d_dgsem_advection_basic.jl
-          ../build/examples/simple_trixi_controller_c . libelixir_p4est2d_dgsem_euler_sedov.jl
-          ../build/examples/simple_trixi_controller_f . libelixir_p4est2d_dgsem_euler_sedov.jl
-          ../build/examples/trixi_controller_data_c . libelixir_p4est2d_dgsem_euler_sedov.jl
-          ../build/examples/trixi_controller_data_f . libelixir_p4est2d_dgsem_euler_sedov.jl
-          ../build/examples/simple_t8code_c . libelixir_t8code_2d_dgsem_advection_basic.jl
+          ../build/examples/trixi_controller_simple_c . libelixir_tree1d_dgsem_advection_basic.jl
+          ../build/examples/trixi_controller_simple_f . libelixir_tree1d_dgsem_advection_basic.jl
+          ../build/examples/trixi_controller_simple_c . libelixir_p4est2d_dgsem_euler_sedov.jl
+          ../build/examples/trixi_controller_simple_f . libelixir_p4est2d_dgsem_euler_sedov.jl
+          ../build/examples/trixi_controller_data_c . libelixir_t8code_2d_dgsem_advection_amr.jl
+          ../build/examples/trixi_controller_data_f . libelixir_t8code_2d_dgsem_advection_amr.jl
+          ../build/examples/trixi_controller_t8code_c . libelixir_t8code_2d_dgsem_advection_amr.jl
+          ../build/examples/trixi_controller_t8code_f . libelixir_t8code_2d_dgsem_advection_amr.jl
         env:
           LIBTRIXI_DEBUG: all
 
-      - name: Run examples
+      - name: Run examples (test_type == 'package-compiler')
         if: ${{ matrix.test_type == 'package-compiler' }}
         run: |
-          cd examples
-          mpirun -n 2 simple_trixi_controller_c \
-              ../libtrixi-julia \
-              ../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl
+          cd build/examples
+          mpirun -n 2 trixi_controller_simple_c \
+              ../../libtrixi-julia \
+              ../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl
         env:
           LIBTRIXI_DEBUG: all
 
@@ -228,16 +266,18 @@ jobs:
         run: |
           cd libtrixi-julia
           set +e  # disable early exit on non-zero exit code
-          for command in "../build/examples/simple_trixi_controller_c"   \
-                         "../build/examples/simple_trixi_controller_c ." \
-                         "../build/examples/simple_trixi_controller_f"   \
-                         "../build/examples/simple_trixi_controller_f ." \
+          for command in "../build/examples/trixi_controller_simple_c"   \
+                         "../build/examples/trixi_controller_simple_c ." \
+                         "../build/examples/trixi_controller_simple_f"   \
+                         "../build/examples/trixi_controller_simple_f ." \
                          "../build/examples/trixi_controller_data_c"     \
                          "../build/examples/trixi_controller_data_c ."   \
                          "../build/examples/trixi_controller_data_f"     \
                          "../build/examples/trixi_controller_data_f ."   \
-                         "../build/examples/simple_t8code_c"             \
-                         "../build/examples/simple_t8code_c ."
+                         "../build/examples/trixi_controller_t8code_c"   \
+                         "../build/examples/trixi_controller_t8code_c ." \
+                         "../build/examples/trixi_controller_t8code_f"   \
+                         "../build/examples/trixi_controller_t8code_f ."
             do
               $command
               if [ $? -ne 2 ]; then
@@ -280,12 +320,13 @@ jobs:
                --output-file lcov.info
 
       - name: Upload coverage data (Codecov)
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         if: ${{ matrix.test_type == 'coverage' }}
         with:
           files: ./libtrixi-julia/lcov.info,./lcov.info
           flags: unittests
           name: codecov-umbrella
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload coverage data (Coveralls)
         if: ${{ matrix.test_type == 'coverage' }}

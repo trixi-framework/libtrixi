@@ -6,5 +6,5 @@ FC ?= f95
 libdir := $(LIBTRIXI_PREFIX)/lib
 incdir := $(LIBTRIXI_PREFIX)/include
 
-simple_trixi_controller_f: simple_trixi_controller.f90
+trixi_controller_simple_f: trixi_controller_simple.f90
 	$(FC) $< -o $@ -fPIC -I$(incdir) -L$(libdir) -Wl,-rpath,$(libdir) -ltrixi $(libdir)/libtrixi_tls.o

@@ -11,9 +11,6 @@
 **Libtrixi** is an interface library for using
 [Trixi.jl](https://github.com/trixi-framework/Trixi.jl) from C/C++/Fortran.
 
-**Note: This project is in an early stage and the API is still under development. 
-Nevertheless, basic functionality is already implemented and actively tested.**
-
 
 ## Getting started
 
@@ -49,7 +46,7 @@ For building, `cmake` and its typical workflow is used.
 2. Call cmake
 
     ```bash
-    cmake -DCMAKE_BUILD_TYPE=(debug|release) -DCMAKE_INSTALL_PREFIX=<install_directory> ..
+    cmake -DCMAKE_BUILD_TYPE=(Debug|Release) -DCMAKE_INSTALL_PREFIX=<install_directory> ..
     ```
 
     `cmake` should find `MPI` and `Julia` automatically. If not, the directories
@@ -58,7 +55,9 @@ For building, `cmake` and its typical workflow is used.
 
     - Specifying the directory `install_directory` for later installation is optional.
     - Optional specification of build type sets some default compiler options for optimized
-      or debug code
+      or debug code.
+    - Building with t8code support is optional. It requires to pass
+      `-DT8CODE_PREFIX=<t8code_install_directory>`.
 
 3. Call make
 
@@ -81,7 +80,7 @@ For building, `cmake` and its typical workflow is used.
     This will install all provided files to the specified location.
 
 ### Setting up Julia
-After the library has been installed, you need to configure Julia for use with libtrixi. For
+Besides the library being installed, you need to configure Julia for use with libtrixi. For
 this, create a directory where all necessary files will be placed, e.g., `libtrixi-julia`.
 Then, you can use the
 [`utils/libtrixi-init-julia`](https://github.com/trixi-framework/libtrixi/tree/main/utils/libtrixi-init-julia)
@@ -113,7 +112,7 @@ Go to some directory from where you want to run a Trixi simulation.
 
 ```shell
 LIBTRIXI_DEBUG=all \
-    <install_directory>/bin/simple_trixi_controller_c \
+    <install_directory>/bin/trixi_controller_simple_c \
     <libtrixi-julia_directory> \
     <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
 ```
@@ -209,18 +208,27 @@ Current time step length: 0.050000
  ────────────────────────────────────────────────────────────────────────────────────
 ```
 
-If you change the executable name from `simple_trixi_controller_c` to
-`simple_trixi_controller_f`, you will get a near identical output. The corresponding source
-files `simple_trixi_controller.c` and `simple_trixi_controller.f90` give you an idea on how
-to use the C and Fortran APIs of libtrixi, and can be found in the
-[`examples/`](https://github.com/trixi-framework/libtrixi/tree/main/examples/) folder.
+If you change the executable name from `trixi_controller_simple_c` to
+`trixi_controller_simple_f`, you will get a near identical output. The corresponding source
+files can be found in the
+[`examples/`](https://github.com/trixi-framework/libtrixi/tree/main/examples/) folder. The
+examples demonstrate different aspects on how to use the C and Fortran APIs of libtrixi:
+
+- `trixi_controller_simple.(c|f90)`: basic usage
+- `trixi_controller_mpi.(c|f90)`: usage in the presence of MPI
+- `trixi_controller_data.(c|f90)`: simulation data access
+- `trixi_controller_t8code.c`: interacting with t8code
+  (there is no Fortran example yet as the Fortran interface of t8code is still under development)
 
 If you just want to test the Julia part of libtrixi, i.e., LibTrixi.jl, you can also run
-everything from Julia. From the repository root, execute
+`trixi_controller_simple.jl` from Julia.
+
 ```shell
-JULIA_DEPOT_PATH=$PWD/libtrixi-julia/julia-depot \
+JULIA_DEPOT_PATH=<julia-depot_directory> \
+LIBTRIXI_DEBUG=all \
     julia --project=<libtrixi-julia_directory>
-    <install_directory>/share/libtrixi/LibTrixi.jl/examples/simple_trixi_controller.jl
+    <install_directory>/share/libtrixi/examples/trixi_controller_simple.jl
+    <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
 ```
 
 Note: Most auxiliary output is hidden unless the environment variable `LIBTRIXI_DEBUG` is
@@ -228,8 +236,10 @@ set to `all`. Alternative values for the variable are `c` or `julia` to only sho
 statements from the C or Julia part of the library, respectively. All values are
 case-sensitive and must be provided all lowercase.
 
-
 ### Linking against libtrixi
+
+#### Make
+
 To use libtrixi in your program, you need to specify `-I$LIBTRIXI_PREFIX/include` for the
 include directory with header and module files, `-L$LIBTRIXI_PREFIX/lib` for the library
 directory, and `-ltrixi` for the library itself during your build process. Optionally, you
@@ -244,7 +254,20 @@ which can be invoked from inside the `examples/` directory as
 ```shell
 make -f MakefileExternal LIBTRIXI_PREFIX=path/to/libtrixi/prefix
 ```
-to build `simple_trixi_controller_f`.
+to build `trixi_controller_simple_f`.
+
+#### CMake
+
+A CMake module for the discovery of an installed libtrixi library is provided with
+[`cmake/FindLibTrixi.cmake`](https://github.com/trixi-framework/libtrixi/tree/main/cmake/FindLibTrixi.cmake).
+Before calling `find_package(LibTrixi)`, the CMake variable `LIBTRIXI_PREFIX` has to be set to
+`<install_directory>`. An example `CMakeLists.txt` can be found in
+[`examples/external/CMakeLists.txt`](https://github.com/trixi-framework/libtrixi/tree/main/examples/external/CMakeLists.txt).
+To see the commands required to build an example program with this CMake project,
+please refer to
+[`examples/external/build.sh`](https://github.com/trixi-framework/libtrixi/tree/main/examples/external/build.sh).
+
+#### Note on thread-local storage (TLS)
 
 Note: On Linux and FreeBSD systems (i.e., *not* on macOS or Windows), Julia may internally
 use a faster implementation for thread-local storage (TLS), which is used whenever Julia
@@ -263,24 +286,34 @@ library with a C interface. This is possible with the use of the Julia package
 To try this out, perform the following steps:
 1. Initialize the project directory `libtrixi-julia` using `libtrixi-init-julia` as
    described above.
-2. Go to the `LibTrixi.jl/lib` directory in the repository root,
-   make sure that `PROJECT_DIR` (defined in `Makefile`) point to your `libtrixi-julia` directory,
-   and call `make`:
-   ```shell
-   cd LibTrixi.jl/lib
-   make
-   ```
-3. Go to the `examples` folder in the repository root and compile
-   `simple_trixi_controller_c`:
-   ```shell
-   cd examples
-   make -f MakefileCompiled LIBTRIXI_PREFIX=$PWD/../LibTrixi.jl/lib/build
-   ```
-   This will create a `simple_trixi_controller_c` file.
-4. From inside the `examples` folder you should be able to run the example (in parallel)
+2.  Build
+
+    *using make*
+    - Go to the `LibTrixi.jl/lib` directory in the repository root,
+      make sure that `PROJECT_DIR` (defined in `Makefile`) points to your `libtrixi-julia` directory,
+      and call `make`:
+      ```shell
+      cd LibTrixi.jl/lib
+      make
+      ```
+    - Go to the `examples` folder in the repository root and compile
+      `trixi_controller_simple_c`:
+      ```shell
+      cd examples
+      make -f MakefileCompiled LIBTRIXI_PREFIX=$PWD/../LibTrixi.jl/lib/build
+      ```
+      This will create a `trixi_controller_simple_c` file.
+
+    *using cmake*
+    - Add
+      ```
+      -DUSE_PACKAGE_COMPILER=ON -DJULIA_PROJECT_PATH=<libtrixi-julia_directory>
+      ```
+      to your cmake call (see above)
+3. From inside the `examples` folder you should be able to run the example (in parallel)
    with the following command:
    ```shell
-   mpirun -n 2 simple_trixi_controller_c \
+   mpirun -n 2 trixi_controller_simple_c \
        ../libtrixi-julia \
        ../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl
    ```

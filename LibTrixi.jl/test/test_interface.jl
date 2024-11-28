@@ -59,9 +59,25 @@ end
     dt_jl = trixi_calculate_dt_jl(simstate_jl)
     @test dt_c == dt_jl
 
+    # compare time
+    time_c = trixi_get_simulation_time(handle)
+    time_jl = trixi_get_simulation_time_jl(simstate_jl)
+    @test time_c == time_jl
+
     # compare finished status
     @test trixi_is_finished(handle) == 0
     @test !trixi_is_finished_jl(simstate_jl)
+
+    # manually increase registries (for testing only!)
+    push!(simstate_jl.registry, Vector{Float64}())
+    push!(LibTrixi.simstates[handle].registry, Vector{Float64}())
+    # store a vector
+    test_data = [1.0, 2.0, 3.0]
+    trixi_register_data(handle, Int32(1), Int32(3), pointer(test_data))
+    trixi_register_data_jl(simstate_jl, 1, test_data)
+    # check that the same memory is referenced
+    @test pointer(simstate_jl.registry[1]) ==
+        pointer(LibTrixi.simstates[handle].registry[1])
 end
 
 
@@ -77,20 +93,59 @@ end
     nelements_jl = trixi_nelements_jl(simstate_jl)
     @test nelements_c == nelements_jl
 
-    nelements_global_c = trixi_nelements_global(handle)
-    nelements_global_jl = trixi_nelements_global_jl(simstate_jl)
-    @test nelements_global_c == nelements_global_jl
+    nelementsglobal_c = trixi_nelementsglobal(handle)
+    nelementsglobal_jl = trixi_nelementsglobal_jl(simstate_jl)
+    @test nelementsglobal_c == nelementsglobal_jl
+
+    # compare number of dofs
+    ndofs_c = trixi_ndofs(handle)
+    ndofs_jl = trixi_ndofs_jl(simstate_jl)
+    @test ndofs_c == ndofs_jl
+
+    ndofsglobal_c = trixi_ndofsglobal(handle)
+    ndofsglobal_jl = trixi_ndofsglobal_jl(simstate_jl)
+    @test ndofsglobal_c == ndofsglobal_jl
+
+    ndofselement_c = trixi_ndofselement(handle)
+    ndofselement_jl = trixi_ndofselement_jl(simstate_jl)
+    @test ndofselement_c == ndofselement_jl
 
     # compare number of variables
     nvariables_c = trixi_nvariables(handle)
     nvariables_jl = trixi_nvariables_jl(simstate_jl)
     @test nvariables_c == nvariables_jl
 
-    # compare cell averaged values
-    data_c = zeros(nvariables_c * nelements_c)
-    trixi_load_cell_averages(pointer(data_c), handle)
-    data_jl = zeros(nvariables_jl * nelements_jl)
-    trixi_load_cell_averages_jl(data_jl, simstate_jl)
+    # compare number of quadrature nodes
+    nnodes_c = trixi_nnodes(handle)
+    nnodes_jl = trixi_nnodes_jl(simstate_jl)
+    @test nnodes_c == nnodes_jl
+
+    # compare coordinates of quadrature nodes
+    data_c = zeros(nnodes_c)
+    trixi_load_node_reference_coordinates(handle, pointer(data_c))
+    data_jl = zeros(nnodes_jl)
+    trixi_load_node_reference_coordinates_jl(simstate_jl, data_jl)
+    @test data_c == data_jl
+
+    # compare weights of quadrature nodes
+    data_c = zeros(nnodes_c)
+    trixi_load_node_weights(handle, pointer(data_c))
+    data_jl = zeros(nnodes_jl)
+    trixi_load_node_weights_jl(simstate_jl, data_jl)
+    @test data_c == data_jl
+
+    # compare element averaged values
+    data_c = zeros(nelements_c)
+    trixi_load_element_averaged_primitive_vars(handle, Int32(1), pointer(data_c))
+    data_jl = zeros(nelements_jl)
+    trixi_load_element_averaged_primitive_vars_jl(simstate_jl, 1, data_jl)
+    @test data_c == data_jl
+
+    # compare primitive variable values on all dofs
+    data_c = zeros(ndofs_c)
+    trixi_load_primitive_vars(handle, Int32(1), pointer(data_c))
+    data_jl = zeros(ndofs_jl)
+    trixi_load_primitive_vars_jl(simstate_jl, 1, data_jl)
     @test data_c == data_jl
 end
 

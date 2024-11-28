@@ -12,7 +12,7 @@ void init_mpi_external ( int argc, char *argv[] ) {
 
     int flag_init;
     ret = MPI_Initialized(&flag_init);
-    printf("[EXT] MPI Initialized: return %d, initialized %d, MPI_COMM_WORLD %p\n", ret, flag_init, MPI_COMM_WORLD);
+    printf("[EXT] MPI Initialized: return %d, initialized %d, MPI_COMM_WORLD %p\n", ret, flag_init, (void *) MPI_COMM_WORLD);
 
     if ( flag_init == 0 ) {
 
@@ -84,15 +84,15 @@ int main ( int argc, char *argv[] ) {
     }
 
     // Finalize Trixi simulation
-    printf("\n*** Trixi controller ***   Finalize Trixi simulation\n");
+    printf("*** Trixi controller ***   Finalize Trixi simulation\n\n");
     trixi_finalize_simulation( handle );
 
     // Finalize Trixi
-    printf("\n*** Trixi controller ***   Finalize Trixi\n");
+    printf("*** Trixi controller ***   Finalize Trixi\n\n");
     trixi_finalize();
 
     // Finalize MPI
-    printf("\n*** Trixi controller ***   Finalize MPI\n");
+    printf("*** Trixi controller ***   Finalize MPI\n");
     MPI_Finalize();
 
     return 0;

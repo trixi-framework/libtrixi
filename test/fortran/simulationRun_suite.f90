@@ -22,12 +22,13 @@ module simulationRun_suite
 
   subroutine test_simulationRun(error)
     type(error_type), allocatable, intent(out) :: error
-    integer :: handle, ndims, nelements, nelements_global, nvariables, size
+    integer :: handle, ndims, nelements, nelementsglobal, nvariables, ndofsglobal, &
+               ndofselement, ndofs, size, nnodes, i
     logical :: finished_status
     ! dp as defined in test-drive
     integer, parameter :: dp = selected_real_kind(15)
-    real(dp) :: dt
-    real(dp), dimension(:), allocatable :: data
+    real(dp) :: dt, time, integral
+    real(dp), dimension(:), allocatable :: data, weights
 
     ! Initialize Trixi
     call trixi_initialize(julia_project_path)
@@ -36,12 +37,21 @@ module simulationRun_suite
     handle = trixi_initialize_simulation(libelixir_path)
     call check(error, handle, 1)
 
+    ! Store a vector in registry
+    allocate(data(3))
+    call trixi_register_data(handle, 1, 3, data)
+    deallocate(data)
+
     ! Do a simulation step
     call trixi_step(handle)
 
     ! Check time step length
     dt = trixi_calculate_dt(handle)
     call check(error, dt, 0.0032132984504400627_dp)
+
+    ! Check time step length
+    time = trixi_get_simulation_time(handle)
+    call check(error, time, 0.0032382397675568731_dp)
     
     ! Check finished status
     finished_status = trixi_is_finished(handle)
@@ -55,21 +65,58 @@ module simulationRun_suite
     nelements = trixi_nelements(handle)
     call check(error, nelements, 256)
 
-    nelements_global = trixi_nelements_global(handle)
-    call check(error, nelements_global, 256)
+    nelementsglobal = trixi_nelementsglobal(handle)
+    call check(error, nelementsglobal, 256)
+
+    ! Check number of dofs
+    ndofselement = trixi_ndofselement(handle)
+    call check(error, ndofselement, 25)
+
+    ndofs = trixi_ndofs(handle)
+    call check(error, ndofs, nelements * ndofselement)
+
+    ndofsglobal = trixi_ndofsglobal(handle)
+    call check(error, ndofsglobal, nelementsglobal * ndofselement)
 
     ! Check number of variables
     nvariables = trixi_nvariables(handle)
     call check(error, nvariables, 4)
 
-    ! Check cell averaged values
-    size = nelements*nvariables
+    ! Check number of quadrature nodes
+    nnodes = trixi_nnodes(handle)
+    call check(error, nnodes, 5)
+
+    ! Check quadrature, integrate f(x) = x^4 over [-1,1]
+    size = nnodes
     allocate(data(size))
-    call trixi_load_cell_averages(data, handle)
-    call check(error, data(1), 1.0_dp)
-    call check(error, data(929), 2.6605289164377273_dp)
-    call check(error, data(size), 1e-5_dp)
-    
+    allocate(weights(size))
+    call trixi_load_node_reference_coordinates(handle, data)
+    call trixi_load_node_weights(handle, weights)
+    integral = 0.0_dp
+    do i = 1, size
+      integral = integral + weights(i) * data(i) * data(i) * data(i)* data(i)
+    end do
+    call check(error, integral, 0.4_dp)
+    deallocate(data)
+
+    ! Check primitive variable values
+    size = ndofs
+    allocate(data(size))
+    call trixi_load_primitive_vars(handle, 1, data)
+    call check(error, data(1),    1.0_dp)
+    call check(error, data(3200), 1.0_dp)
+    call check(error, data(size), 1.0_dp)
+    deallocate(data)
+
+    ! Check element averaged values
+    size = nelements
+    allocate(data(size))
+    call trixi_load_element_averaged_primitive_vars(handle, 1, data)
+    call check(error, data(1),    1.0_dp)
+    call check(error, data(94),   0.99833232379996562_dp)
+    call check(error, data(size), 1.0_dp)
+    deallocate(data)
+
     ! Finalize Trixi simulation
     call trixi_finalize_simulation(handle)
     
