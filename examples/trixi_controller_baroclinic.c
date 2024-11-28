@@ -28,7 +28,6 @@ void source_terms_baroclinic(int nnodes, double * nodes, t8_forest_t forest,
         // Get number of elements of this tree
         t8_locidx_t num_elements_in_tree = t8_forest_get_tree_num_elements (forest, itree);
         // Iterate through all the local elements
-        // TODO: What happens in parallel computations with MPI?
         for (t8_locidx_t ielement = 0; ielement < num_elements_in_tree; ++ielement) {
             // Get a pointer to the current element
             const t8_element_t *element = t8_forest_get_element_in_tree (forest, itree, ielement);
@@ -158,6 +157,7 @@ int main ( int argc, char *argv[] ) {
     free(du3);
     free(du4);
     free(du5);
+    free(nodes);
 
     return 0;
 }
