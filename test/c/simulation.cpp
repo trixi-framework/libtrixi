@@ -10,7 +10,7 @@ const char * julia_project_path = JULIA_PROJECT_PATH;
 
 // Example libexlixir
 const char * libelixir_path =
-  "../../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl";
+  "../../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_sedov.jl";
 
 TEST(CInterfaceTest, SimulationRun) {
 
@@ -40,6 +40,12 @@ TEST(CInterfaceTest, SimulationRun) {
     EXPECT_DEATH(trixi_is_finished(42),
                  "the provided handle was not found in the stored simulation states: 42");
 
+    // Store a vector in registry
+    std::vector<double> test_data(3);
+    trixi_register_data(handle, 1, 3, test_data.data());
+    EXPECT_DEATH(trixi_register_data(handle, 2, 3, test_data.data()),
+                 "BoundsError");
+
     // Do 10 simulation steps
     for (int i = 0; i < 10; ++i) {
         trixi_step(handle);
@@ -48,6 +54,10 @@ TEST(CInterfaceTest, SimulationRun) {
     // Check time step length
     double dt = trixi_calculate_dt(handle);
     EXPECT_NEAR(dt, 0.0028566952356658794, 1e-17);
+
+    // Check time
+    double time = trixi_get_simulation_time(handle);
+    EXPECT_NEAR(time, 0.0304927240859461, 1e-16);
     
     // Check finished status
     int finished_status = trixi_is_finished(handle);
@@ -95,7 +105,7 @@ TEST(CInterfaceTest, SimulationRun) {
     std::vector<double> energy(ndofs);
     trixi_load_primitive_vars(handle, 1, rho.data());
     trixi_load_primitive_vars(handle, 4, energy.data());
-    // check memory boarders
+    // check memory borders
     EXPECT_DOUBLE_EQ(rho[0],          1.0);
     EXPECT_DOUBLE_EQ(rho[ndofs-1],    1.0);
     EXPECT_DOUBLE_EQ(energy[0],       1.0e-5);
@@ -111,7 +121,7 @@ TEST(CInterfaceTest, SimulationRun) {
     trixi_load_element_averaged_primitive_vars(handle, 3, v2_averages.data());
     trixi_load_element_averaged_primitive_vars(handle, 4, e_averages.data());
     if (nranks == 1) {
-        // check memory boarders (densities at the beginning, energies at the end)
+        // check memory borders (densities at the beginning, energies at the end)
         EXPECT_DOUBLE_EQ(rho_averages[0],         1.0);
         EXPECT_DOUBLE_EQ(e_averages[nelements-1], 1.0e-5);
         // check values somewhere near the center (expect symmetries)
@@ -128,7 +138,7 @@ TEST(CInterfaceTest, SimulationRun) {
     }
     else if (nranks == 2) {
         if (rank == 0) {
-            // check memory boarders (densities at the beginning, energies at the end)
+            // check memory borders (densities at the beginning, energies at the end)
             EXPECT_DOUBLE_EQ(rho_averages[0],         1.0);
             EXPECT_DOUBLE_EQ(e_averages[nelements-1], 1.0e-5);
             // check values somewhere near the center (expect symmetries)
@@ -140,7 +150,7 @@ TEST(CInterfaceTest, SimulationRun) {
             EXPECT_NEAR(v2_averages[94],             -0.14037267400591, 1e-14);
         }
         else {
-            // check memory boarders (densities at the beginning, energies at the end)
+            // check memory borders (densities at the beginning, energies at the end)
             EXPECT_DOUBLE_EQ(rho_averages[0],         1.0);
             EXPECT_DOUBLE_EQ(e_averages[nelements-1], 1.0e-5);
             // check values somewhere near the center (expect symmetries)

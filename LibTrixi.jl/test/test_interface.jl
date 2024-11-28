@@ -24,7 +24,7 @@ end
 
 
 libelixir = joinpath(dirname(pathof(LibTrixi)),
-                     "../examples/libelixir_tree1d_dgsem_advection_basic.jl")
+                     "../examples/libelixir_tree1d_advection_basic.jl")
 
 # initialize a simulation via API, receive a handle
 handle = trixi_initialize_simulation(libelixir)
@@ -59,9 +59,25 @@ end
     dt_jl = trixi_calculate_dt_jl(simstate_jl)
     @test dt_c == dt_jl
 
+    # compare time
+    time_c = trixi_get_simulation_time(handle)
+    time_jl = trixi_get_simulation_time_jl(simstate_jl)
+    @test time_c == time_jl
+
     # compare finished status
     @test trixi_is_finished(handle) == 0
     @test !trixi_is_finished_jl(simstate_jl)
+
+    # manually increase registries (for testing only!)
+    push!(simstate_jl.registry, Vector{Float64}())
+    push!(LibTrixi.simstates[handle].registry, Vector{Float64}())
+    # store a vector
+    test_data = [1.0, 2.0, 3.0]
+    trixi_register_data(handle, Int32(1), Int32(3), pointer(test_data))
+    trixi_register_data_jl(simstate_jl, 1, test_data)
+    # check that the same memory is referenced
+    @test pointer(simstate_jl.registry[1]) ==
+        pointer(LibTrixi.simstates[handle].registry[1])
 end
 
 
