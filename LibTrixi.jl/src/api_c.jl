@@ -539,7 +539,7 @@ trixi_load_element_averaged_primitive_vars_cfptr() =
 
 
 """
-    trixi_get_t8code_forest(simstate_handle::Cint)::::Ptr{Trixi.t8_forest}
+    trixi_get_t8code_forest(simstate_handle::Cint)::Ptr{Trixi.t8_forest}
 
 Return t8code forest of the current T8codeMesh.
 
