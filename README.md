@@ -112,7 +112,7 @@ Go to some directory from where you want to run a Trixi simulation.
 LIBTRIXI_DEBUG=all \
     <install_directory>/bin/trixi_controller_simple_c \
     <libtrixi-julia_directory> \
-    <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
+    <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_advection_basic.jl
 ```
 which should give you an output similar to this:
 ```
@@ -224,7 +224,7 @@ JULIA_DEPOT_PATH=<julia-depot_directory> \
 LIBTRIXI_DEBUG=all \
     julia --project=<libtrixi-julia_directory>
     <install_directory>/share/libtrixi/examples/trixi_controller_simple.jl
-    <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
+    <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_advection_basic.jl
 ```
 
 Note: Most auxiliary output is hidden unless the environment variable `LIBTRIXI_DEBUG` is
@@ -310,7 +310,7 @@ To try this out, perform the following steps:
    ```shell
    mpirun -n 2 trixi_controller_simple_c \
        ../libtrixi-julia \
-       ../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl
+       ../LibTrixi.jl/examples/libelixir_p4est2d_euler_sedov.jl
    ```
    Optionally, you can set `LIBTRIXI_DEBUG=all` to get some debug output along the way.
 

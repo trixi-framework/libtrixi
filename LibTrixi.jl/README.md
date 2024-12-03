@@ -18,8 +18,8 @@ run, and finalize a simulation by running the following code:
 ```julia
 julia> using LibTrixi
 
-julia> libelixir = pkgdir(LibTrixi, "examples", "libelixir_tree1d_dgsem_advection_basic.jl")
-"/path/to/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl"
+julia> libelixir = pkgdir(LibTrixi, "examples", "libelixir_tree1d_advection_basic.jl")
+"/path/to/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_advection_basic.jl"
 
 julia> handle = trixi_initialize_simulation(libelixir); # initialize a new simulation setup
 
