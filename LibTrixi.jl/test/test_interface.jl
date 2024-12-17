@@ -24,7 +24,7 @@ end
 
 
 libelixir = joinpath(dirname(pathof(LibTrixi)),
-                     "../examples/libelixir_tree1d_dgsem_advection_basic.jl")
+                     "../examples/libelixir_tree1d_advection_basic.jl")
 
 # initialize a simulation via API, receive a handle
 handle = trixi_initialize_simulation(libelixir)

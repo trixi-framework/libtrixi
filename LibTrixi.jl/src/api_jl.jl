@@ -46,13 +46,15 @@ function trixi_finalize_simulation_jl(simstate)
         end
     end
 
-    # In course of garbage collection, MPI might get finalized before t8code related objects.
-    # This can lead to crashes because t8code allocates MPI related objects, e.g. shared
-    # memory arrays. The workaround is to finalize T8codeMesh explicitly in advance.
+    # In course of garbage collection, MPI might get finalized before t8code related
+    # objects. This can lead to crashes because t8code allocates MPI related objects, e.g.
+    # shared memory arrays.
+    # T8code.jl implements manual ref counting to deal with this issue.
+    # For p4est the workaround is to finalize P4estMeshes explicitly in advance.
     # x-ref: https://github.com/DLR-AMR/t8code/issues/1295
     # x-ref: https://github.com/trixi-framework/libtrixi/pull/215#discussion_r1843676330
     mesh, _, _, _ = mesh_equations_solver_cache(simstate.semi)
-    if mesh isa Trixi.T8codeMesh || mesh isa Trixi.P4estMesh
+    if mesh isa Trixi.P4estMesh
         finalize(mesh)
     end
 
@@ -215,7 +217,7 @@ end
 
 function trixi_get_t8code_forest_jl(simstate)
     mesh, _, _, _ = mesh_equations_solver_cache(simstate.semi)
-    return mesh.forest
+    return mesh.forest.pointer
 end
 
 ############################################################################################
