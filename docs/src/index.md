@@ -24,7 +24,7 @@ software packages need to be made available locally before installing libtrixi:
 * [CMake](https://cmake.org/)
 * MPI (e.g., [OpenMPI](https://www.open-mpi.org/) or [MPICH](https://www.mpich.org/))
 * [HDF5](https://www.hdfgroup.org/solutions/hdf5/)
-* [t8code](https://github.com/DLR-AMR/t8code) v3.0.0
+* [t8code](https://github.com/DLR-AMR/t8code) v3.0.1
 
 ### Get the sources
 
