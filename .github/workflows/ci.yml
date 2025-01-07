@@ -196,7 +196,6 @@ jobs:
           cd build
           cmake .. -DCMAKE_INSTALL_PREFIX=../install \
                    -DCMAKE_BUILD_TYPE=Debug \
-                   -DT8CODE_ROOT=$PWD/../t8code-local/prefix \
                    -DUSE_PACKAGE_COMPILER=ON \
                    -DJULIA_PROJECT_PATH=$PWD/../libtrixi-julia
 
