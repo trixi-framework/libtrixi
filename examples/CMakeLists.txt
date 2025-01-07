@@ -12,6 +12,7 @@ set ( EXAMPLES
 
 if ( NOT T8CODE_FOUND )
     list( FILTER EXAMPLES EXCLUDE REGEX ".*(t|T)8(c|C)(o|O)(d|D)(e|E).*" )
+    list( FILTER EXAMPLES EXCLUDE REGEX "trixi_controller_baroclinic.*" )
 endif()
 
 foreach ( EXAMPLE ${EXAMPLES} )
