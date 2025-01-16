@@ -92,7 +92,6 @@ export trixi_get_simulation_time,
        trixi_get_simulation_time_cfptr,
        trixi_get_simulation_time_jl
 
-
 export SimulationState, store_simstate, load_simstate, delete_simstate!
 export LibTrixiDataRegistry
 

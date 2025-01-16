@@ -15,6 +15,43 @@ using LinearAlgebra
 using LibTrixi
 
 
+# Callable struct holding vectors with source terms
+struct SourceTerm
+    nnodesdim::Int
+    registry::LibTrixiDataRegistry
+end
+
+# We overwrite Trixi.jl's internal method here such that it calls source_terms with indices
+function Trixi.calc_sources!(du, u, t, source_terms::SourceTerm,
+                             equations::CompressibleEulerEquations3D, dg::DG, cache)
+    @unpack node_coordinates = cache.elements
+    Trixi.@threaded for element in eachelement(dg, cache)
+        for k in eachnode(dg), j in eachnode(dg), i in eachnode(dg)
+            u_local = Trixi.get_node_vars(u, equations, dg, i, j, k, element)
+            du_local = source_terms(u_local, i, j, k, element, t, equations)
+            #x_local = Trixi.get_node_coords(node_coordinates, equations, dg,
+            #                                i, j, k, element)
+            #du_local_ref = source_terms_baroclinic_instability(u_local, x_local, t,
+            #                                                   equations)
+            Trixi.add_to_node_vars!(du, du_local, equations, dg, i, j, k, element)
+        end
+    end
+    return nothing
+end
+
+@inline function (source::SourceTerm)(u, i, j, k, element, t,
+                                      equations::CompressibleEulerEquations3D)
+    @unpack nnodesdim = source
+    index_global = (element-1) * nnodesdim^3 + (k-1) * nnodesdim^2 + (j-1) * nnodesdim + i
+    du2::Vector{Float64} = source.registry[1]
+    du3::Vector{Float64} = source.registry[2]
+    du4::Vector{Float64} = source.registry[3]
+    du5::Vector{Float64} = source.registry[4]
+    return SVector(zero(eltype(u)), du2[index_global], du3[index_global],
+                   du4[index_global], du5[index_global])
+end
+
+
 # Initial condition for an idealized baroclinic instability test
 # https://doi.org/10.1002/qj.2241, Section 3.2 and Appendix A
 function initial_condition_baroclinic_instability(x, t,
@@ -193,38 +230,51 @@ end
 # The function to create the simulation state needs to be named `init_simstate`
 function init_simstate()
 
-    ###############################################################################
-    # Setup for the baroclinic instability test
+    # compressible euler equations
     gamma = 1.4
     equations = CompressibleEulerEquations3D(gamma)
 
-    ###############################################################################
-    # semidiscretization of the problem
-
+    # setup of the problem
     initial_condition = initial_condition_baroclinic_instability
 
     boundary_conditions = Dict(:inside => boundary_condition_slip_wall,
                                :outside => boundary_condition_slip_wall)
 
-    # This is a good estimate for the speed of sound in this example.
-    # Other values between 300 and 400 should work as well.
+    # estimate for the speed of sound
     surface_flux = FluxLMARS(340)
     volume_flux = flux_kennedy_gruber
     solver = DGSEM(polydeg = 5, surface_flux = surface_flux,
                    volume_integral = VolumeIntegralFluxDifferencing(volume_flux))
 
-    trees_per_cube_face = (16, 8)
-    mesh = Trixi.P4estMeshCubedSphere(trees_per_cube_face..., 6.371229e6, 30000.0,
-                                      polydeg = 5, initial_refinement_level = 0)
+    # for nice results, use 4 and 8 here
+    lat_lon_levels = 2
+    layers = 4
+    mesh = Trixi.T8codeMeshCubedSphere(lat_lon_levels, layers, 6.371229e6, 30000.0,
+                                       polydeg = 5, initial_refinement_level = 0)
+
+    # create the data registry and four vectors for the source terms
+    registry = LibTrixiDataRegistry(undef, 4)
+
+    nnodesdim = Trixi.nnodes(solver)
+    nnodes = nnodesdim^3
+    nelements = Trixi.ncells(mesh)
+
+    # provide some data because calc_sources! will already be called during initialization
+    # Note: the data pointers in the registry will be overwritten before the first real use
+    registry[1] = zeros(Float64, nelements*nnodes)
+    registry[2] = zeros(Float64, nelements*nnodes)
+    registry[3] = zeros(Float64, nelements*nnodes)
+    registry[4] = zeros(Float64, nelements*nnodes)
+
+    source_term_data_registry = SourceTerm(nnodesdim, registry)
 
     semi = SemidiscretizationHyperbolic(mesh, equations, initial_condition, solver,
-                                        source_terms = source_terms_baroclinic_instability,
+                                        source_terms = source_term_data_registry,
                                         boundary_conditions = boundary_conditions)
 
-    ###############################################################################
-    # ODE solvers, callbacks etc.
-
-    tspan = (0.0, 12 * 24 * 60 * 60.0) # time in seconds for 12 days#
+    # for nice results, use 10 days
+    days = 0.02
+    tspan = (0.0, days * 24 * 60 * 60.0)
 
     ode = semidiscretize(semi, tspan)
 
@@ -235,33 +285,24 @@ function init_simstate()
 
     alive_callback = AliveCallback(analysis_interval = analysis_interval)
 
-    save_solution = SaveSolutionCallback(interval = 5000,
+    save_solution = SaveSolutionCallback(interval = 500,
                                          save_initial_solution = true,
                                          save_final_solution = true,
                                          solution_variables = cons2prim,
-                                         output_directory = "out_baroclinic",)
+                                         output_directory = "out_baroclinic")
 
     callbacks = CallbackSet(summary_callback,
                             analysis_callback,
                             alive_callback,
                             save_solution)
 
-
-    ###############################################################################
-    # create the time integrator
-
-    # OrdinaryDiffEq's `integrator`
-    # Use a Runge-Kutta method with automatic (error based) time step size control
-    integrator = init(ode, RDPK3SpFSAL49();
+    # use a Runge-Kutta method with automatic (error based) time step size control
+    integrator = init(ode, RDPK3SpFSAL49(thread = OrdinaryDiffEq.False());
                       abstol = 1.0e-6, reltol = 1.0e-6,
-                      ode_default_options()...,
-                      callback = callbacks,
-                      maxiters=5e5);
+                      ode_default_options()..., callback = callbacks, maxiters=1e7);
 
-    ###############################################################################
-    # Create simulation state
-
-    simstate = SimulationState(semi, integrator)
+    # create simulation state
+    simstate = SimulationState(semi, integrator, registry)
 
     return simstate
 end

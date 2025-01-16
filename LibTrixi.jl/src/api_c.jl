@@ -558,7 +558,7 @@ trixi_get_data_pointer_cfptr() = @cfunction(trixi_get_data_pointer, Ptr{Cdouble}
 # t8code
 ############################################################################################
 """
-    trixi_get_t8code_forest(simstate_handle::Cint)::::Ptr{Trixi.t8_forest}
+    trixi_get_t8code_forest(simstate_handle::Cint)::Ptr{Trixi.t8_forest}
 
 Return t8code forest of the current T8codeMesh.
 
