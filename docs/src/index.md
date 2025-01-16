@@ -2,7 +2,7 @@
 
 [![Docs-stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://trixi-framework.github.io/libtrixi/stable)
 [![Docs-dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://trixi-framework.github.io/libtrixi/dev)
-[![Build Status](https://github.com/trixi-framework/libtrixi/workflows/CI/badge.svg)](https://github.com/trixi-framework/libtrixi/actions?query=workflow%3ACI)
+[![Build Status](https://github.com/trixi-framework/libtrixi/actions/workflows/ci.yml/badge.svg)](https://github.com/trixi-framework/libtrixi/actions?query=workflow%3ACI)
 [![Coveralls](https://coveralls.io/repos/github/trixi-framework/libtrixi/badge.svg)](https://coveralls.io/github/trixi-framework/libtrixi)
 [![Codecov](https://codecov.io/gh/trixi-framework/libtrixi/branch/main/graph/badge.svg)](https://codecov.io/gh/trixi-framework/libtrixi)
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg)](https://opensource.org/licenses/MIT)
@@ -24,7 +24,7 @@ software packages need to be made available locally before installing libtrixi:
 * [CMake](https://cmake.org/)
 * MPI (e.g., [OpenMPI](https://www.open-mpi.org/) or [MPICH](https://www.mpich.org/))
 * [HDF5](https://www.hdfgroup.org/solutions/hdf5/)
-* [t8code](https://github.com/DLR-AMR/t8code)
+* [t8code](https://github.com/DLR-AMR/t8code) v3.0.1
 
 ### Get the sources
 
@@ -57,7 +57,7 @@ For building, `cmake` and its typical workflow is used.
     - Optional specification of build type sets some default compiler options for optimized
       or debug code.
     - Building with t8code support is optional. It requires to pass
-      `-DT8CODE_PREFIX=<t8code_install_directory>`.
+      `-DT8CODE_ROOT=<t8code_install_directory>`.
 
 3. Call make
 
@@ -100,7 +100,7 @@ In your code, pass the path to the `libtrixi-julia` directory to `trixi_initiali
 see the code of the examples. If you did not modify the default value for the Julia depot
 when calling `libtrixi-init-julia`, libtrixi will find it automatically.
 Otherwise, when running a program that uses libtrixi, you need to make sure to set the
-`JULIA_DEPOT_PATH` environment variable to point to the `<julia-depot>` folder reported. 
+`JULIA_DEPOT_PATH` environment variable to point to the `<julia-depot>` folder reported.
 
 If you intend to use additional Julia packages, besides `Trixi` and `OrdinaryDiffEq`, you
 will have to add them to your Julia project (i.e. use
@@ -114,7 +114,7 @@ Go to some directory from where you want to run a Trixi simulation.
 LIBTRIXI_DEBUG=all \
     <install_directory>/bin/trixi_controller_simple_c \
     <libtrixi-julia_directory> \
-    <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
+    <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_advection_basic.jl
 ```
 which should give you an output similar to this:
 ```
@@ -217,8 +217,7 @@ examples demonstrate different aspects on how to use the C and Fortran APIs of l
 - `trixi_controller_simple.(c|f90)`: basic usage
 - `trixi_controller_mpi.(c|f90)`: usage in the presence of MPI
 - `trixi_controller_data.(c|f90)`: simulation data access
-- `trixi_controller_t8code.c`: interacting with t8code
-  (there is no Fortran example yet as the Fortran interface of t8code is still under development)
+- `trixi_controller_t8code.(c|f90)`: interacting with t8code
 
 If you just want to test the Julia part of libtrixi, i.e., LibTrixi.jl, you can also run
 `trixi_controller_simple.jl` from Julia.
@@ -228,7 +227,7 @@ JULIA_DEPOT_PATH=<julia-depot_directory> \
 LIBTRIXI_DEBUG=all \
     julia --project=<libtrixi-julia_directory>
     <install_directory>/share/libtrixi/examples/trixi_controller_simple.jl
-    <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_dgsem_advection_basic.jl
+    <install_directory>/share/libtrixi/LibTrixi.jl/examples/libelixir_tree1d_advection_basic.jl
 ```
 
 Note: Most auxiliary output is hidden unless the environment variable `LIBTRIXI_DEBUG` is
@@ -269,7 +268,7 @@ please refer to
 
 #### Note on thread-local storage (TLS)
 
-Note: On Linux and FreeBSD systems (i.e., *not* on macOS or Windows), Julia may internally
+On Linux and FreeBSD systems (i.e., *not* on macOS or Windows), Julia may internally
 use a faster implementation for thread-local storage (TLS), which is used whenever Julia
 functions such task management, garbage collection etc. are used in a multithreaded
 context, or when they are themselves multithreaded. To activate the fast TLS in your
@@ -284,8 +283,8 @@ library with a C interface. This is possible with the use of the Julia package
 [PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl).
 
 To try this out, perform the following steps:
-1. Initialize the project directory `libtrixi-julia` using `libtrixi-init-julia` as
-   described above.
+1.  Initialize the project directory `libtrixi-julia` using `libtrixi-init-julia` as
+    described above.
 2.  Build
 
     *using make*
@@ -315,7 +314,7 @@ To try this out, perform the following steps:
    ```shell
    mpirun -n 2 trixi_controller_simple_c \
        ../libtrixi-julia \
-       ../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_euler_sedov.jl
+       ../LibTrixi.jl/examples/libelixir_p4est2d_euler_sedov.jl
    ```
    Optionally, you can set `LIBTRIXI_DEBUG=all` to get some debug output along the way.
 
