@@ -8,7 +8,7 @@ module simulationRun_suite
 
   character(len=*), parameter, public :: julia_project_path = JULIA_PROJECT_PATH
   character(len=*), parameter, public :: libelixir_path = &
-    "../../../LibTrixi.jl/examples/libelixir_p4est2d_dgsem_sedov.jl"
+    "../../../LibTrixi.jl/examples/libelixir_p4est2d_euler_sedov.jl"
 
   contains
 

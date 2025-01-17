@@ -38,13 +38,13 @@ jobs:
           - '1.10'
           - '1.11'
         t8code_version:
-          - '3.0.0'
+          - '3.0.1'
         include:
           - os: ubuntu-latest
             test_type: coverage
             arch: x64
             julia_version: '1.11'
-            t8code_version: '3.0.0'
+            t8code_version: '3.0.1'
     env:
       # Necessary for HDF5 to play nice with Julia
       LD_PRELOAD: /lib/x86_64-linux-gnu/libcurl.so.4
@@ -331,7 +331,7 @@ jobs:
                --output-file lcov.info
 
       - name: Upload coverage data (Codecov)
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         if: ${{ matrix.test_type == 'coverage' }}
         with:
           files: ./libtrixi-julia/lcov.info,./lcov.info

@@ -252,7 +252,7 @@ function init_simstate()
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_levels, layers, 6.371229e6, 30000.0,
                                        polydeg = 5, initial_refinement_level = 0)
 
-    # create the data registry and three vectors for the source terms
+    # create the data registry and four vectors for the source terms
     registry = LibTrixiDataRegistry(undef, 4)
 
     nnodesdim = Trixi.nnodes(solver)
@@ -260,11 +260,11 @@ function init_simstate()
     nelements = Trixi.ncells(mesh)
 
     # provide some data because calc_sources! will already be called during initialization
-    zero_data = zeros(Float64, nelements*nnodes)
-    registry[1] = zero_data
-    registry[2] = zero_data
-    registry[3] = zero_data
-    registry[4] = zero_data
+    # Note: the data pointers in the registry will be overwritten before the first real use
+    registry[1] = zeros(Float64, nelements*nnodes)
+    registry[2] = zeros(Float64, nelements*nnodes)
+    registry[3] = zeros(Float64, nelements*nnodes)
+    registry[4] = zeros(Float64, nelements*nnodes)
 
     source_term_data_registry = SourceTerm(nnodesdim, registry)
 
