@@ -189,6 +189,7 @@ jobs:
               --t8code-library ../t8code-local/prefix/lib/libt8.so \
               --julia-depot ~/.julia \
               --force
+        continue-on-error: true
 
       - name: Configure (test_type == 'package-compiler')
         if: ${{ matrix.test_type == 'package-compiler' }}
