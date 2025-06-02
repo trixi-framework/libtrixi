@@ -171,7 +171,7 @@ jobs:
               --julia-depot ~/.julia \
               --force
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_* .
-        allow_failure: true
+        continue-on-error: true
 
       - name: Initialize project directory (test_type == 'package-compiler')
         if: ${{ matrix.test_type == 'package-compiler' }}
