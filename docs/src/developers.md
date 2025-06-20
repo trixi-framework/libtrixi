@@ -9,7 +9,7 @@ publishing new Julia package releases.  Specifically, that means
 * we use the [Julia Registrator app](https://github.com/JuliaRegistries/Registrator.jl)
   for GitHub to register new versions of the Julia package LibTrixi.jl, and
 * we rely on the Julia [TagBot](https://github.com/JuliaRegistries/TagBot)
-  to create associacted tags and GitHub releases once the Julia package is registered.
+  to create associated tags and GitHub releases once the Julia package is registered.
 
 ### Creating a new release
 To create a new libtrixi release, follow these steps:
