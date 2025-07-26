@@ -41,7 +41,7 @@ function init_simstate()
     initial_condition = initial_condition_sedov_blast_wave
 
     # Get the DG approximation space
-    surface_flux = FluxLaxFriedrichs(max_abs_speed = max_abs_speed_naive)
+    surface_flux = FluxLaxFriedrichs(max_abs_speed_naive)
     volume_flux = flux_ranocha
     polydeg = 4
     basis = LobattoLegendreBasis(polydeg)
