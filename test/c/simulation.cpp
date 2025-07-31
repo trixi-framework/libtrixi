@@ -100,8 +100,18 @@ TEST(CInterfaceTest, SimulationRun) {
     }
     EXPECT_NEAR(integral, 0.4, 1e-17);
 
-    // Check primitive variable values on all dofs
+    // Check conservative variable values
     std::vector<double> rho(ndofs);
+    std::vector<double> rho_energy(ndofs);
+    trixi_load_conservative_vars(handle, 1, rho.data());
+    trixi_load_conservative_vars(handle, 4, rho_energy.data());
+    // check memory borders
+    EXPECT_DOUBLE_EQ(rho[0],              1.0);
+    EXPECT_DOUBLE_EQ(rho[ndofs-1],        1.0);
+    EXPECT_DOUBLE_EQ(rho_energy[0],       1.0e-5);
+    EXPECT_DOUBLE_EQ(rho_energy[ndofs-1], 1.0e-5);
+
+    // Check primitive variable values
     std::vector<double> energy(ndofs);
     trixi_load_primitive_vars(handle, 1, rho.data());
     trixi_load_primitive_vars(handle, 4, energy.data());
@@ -165,6 +175,15 @@ TEST(CInterfaceTest, SimulationRun) {
     else {
         FAIL() << "Test cannot be run with " << nranks << " ranks.";
     }
+
+    // Check storing of conservative variables
+    rho[0] = 42.0
+    rho[ndofs-1] = 23.0
+    trixi_store_conservative_vars(handle, 1, rho.data());
+
+    double * raw_data = trixi_get_data_pointer(handle);
+    EXPECT_DOUBLE_EQ(rho[0],       raw_data[0]);
+    EXPECT_DOUBLE_EQ(rho[ndofs-1], raw_data[5*(ndofs-1)]);
 
     // Finalize Trixi simulation
     trixi_finalize_simulation(handle);
