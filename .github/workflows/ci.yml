@@ -164,13 +164,14 @@ jobs:
         run: |
           mkdir libtrixi-julia
           cd libtrixi-julia
+          cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_* .
           mkdir julia-depot
           ../install/bin/libtrixi-init-julia .. \
               --hdf5-library /usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so \
               --t8code-library ../t8code-local/prefix/lib/libt8.so \
               --julia-depot ~/.julia \
               --force
-          cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_* .
+        continue-on-error: true # HDF5_jll hotfix (see https://github.com/trixi-framework/libtrixi/pull/241)
 
       - name: Initialize project directory (test_type == 'package-compiler')
         if: ${{ matrix.test_type == 'package-compiler' }}
@@ -188,6 +189,7 @@ jobs:
               --t8code-library ../t8code-local/prefix/lib/libt8.so \
               --julia-depot ~/.julia \
               --force
+        continue-on-error: true # HDF5_jll hotfix (see https://github.com/trixi-framework/libtrixi/pull/241)
 
       - name: Configure (test_type == 'package-compiler')
         if: ${{ matrix.test_type == 'package-compiler' }}

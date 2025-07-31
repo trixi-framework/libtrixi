@@ -616,7 +616,7 @@ module LibTrixi
   end function
 
   !>
-  !! @brief Set up Trixi simulation (Fortran convencience version)
+  !! @brief Set up Trixi simulation (Fortran convenience version)
   !!
   !! @param[in]  libelixir  Path to libelexir file.
   !!
