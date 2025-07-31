@@ -63,7 +63,7 @@ function init_simstate()
     alive_callback = AliveCallback(analysis_interval=analysis_interval)
 
     # StepsizeCallback handles the re-calculation of the maximum Δt after each time step
-    stepsize_callback = StepsizeCallback(cfl=0.5)
+    stepsize_callback = StepsizeCallback(cfl = 1.0)
 
     # AMRCallback triggers adaptive mesh refinement
     @inline function first_tracer(u, equations::PassiveTracerEquations)

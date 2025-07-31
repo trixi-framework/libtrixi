@@ -33,7 +33,7 @@ int main ( int argc, char *argv[] ) {
         trixi_step( handle );
         steps++;
 
-        if (steps % 10 == 0) {
+        if (steps % 100 == 0) {
 
             // Get number of degrees of freedom
             int ndofs = trixi_ndofsglobal( handle );
