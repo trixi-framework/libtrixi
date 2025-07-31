@@ -3,9 +3,10 @@ set ( EXAMPLES
       trixi_controller_simple.f90
       trixi_controller_mpi.c
       trixi_controller_mpi.f90
-      trixi_controller_data.c
-      trixi_controller_data.f90
-      trixi_controller_raw_data.c
+      trixi_controller_data_load.c
+      trixi_controller_data_load.f90
+      trixi_controller_data_store.c
+      trixi_controller_data_store.f90
       trixi_controller_t8code.c
       trixi_controller_t8code.f90
       trixi_controller_baroclinic.c

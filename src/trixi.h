@@ -37,8 +37,10 @@ double trixi_calculate_dt(int handle);
 double trixi_get_simulation_time(int handle);
 void trixi_load_node_reference_coordinates(int handle, double* node_coords);
 void trixi_load_node_weights(int handle, double* node_weights);
+void trixi_load_conservative_vars(int handle, int variable_id, double * data);
 void trixi_load_primitive_vars(int handle, int variable_id, double * data);
 void trixi_load_element_averaged_primitive_vars(int handle, int variable_id, double * data);
+void trixi_store_conservative_vars(int handle, int variable_id, double * data);
 void trixi_register_data(int handle, int index, int size, const double * data);
 double * trixi_get_data_pointer(int handle);
 

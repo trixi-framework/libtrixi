@@ -1,4 +1,4 @@
-program trixi_controller_data_f
+program trixi_controller_data_load_f
   use LibTrixi
   use, intrinsic :: iso_fortran_env, only: error_unit
   use, intrinsic :: iso_c_binding, only: c_int, c_double

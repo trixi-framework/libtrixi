@@ -433,6 +433,30 @@ trixi_load_node_weights_cfptr() =
 
 
 """
+    trixi_load_conservative_vars(simstate_handle::Cint, variable_id::Cint,
+                                 data::Ptr{Cdouble})::Cvoid
+
+Load conservative variable.
+"""
+function trixi_load_conservative_vars end
+
+Base.@ccallable function trixi_load_conservative_vars(simstate_handle::Cint,
+                                                      variable_id::Cint,
+                                                      data::Ptr{Cdouble})::Cvoid
+    simstate = load_simstate(simstate_handle)
+
+    # convert C to Julia array
+    size = trixi_ndofs_jl(simstate)
+    data_jl = unsafe_wrap(Array, data, size)
+
+    trixi_load_conservative_vars_jl(simstate, variable_id, data_jl)
+end
+
+trixi_load_conservative_vars_cfptr() =
+    @cfunction(trixi_load_conservative_vars, Cvoid, (Cint, Cint, Ptr{Cdouble}))
+
+
+"""
     trixi_load_primitive_vars(simstate_handle::Cint, variable_id::Cint,
                               data::Ptr{Cdouble})::Cvoid
 
@@ -459,6 +483,30 @@ end
 
 trixi_load_primitive_vars_cfptr() =
     @cfunction(trixi_load_primitive_vars, Cvoid, (Cint, Cint, Ptr{Cdouble}))
+
+
+"""
+    trixi_store_conservative_vars(simstate_handle::Cint, variable_id::Cint,
+                                  data::Ptr{Cdouble})::Cvoid
+
+Store conservative variable.
+"""
+function trixi_store_conservative_vars end
+
+Base.@ccallable function trixi_store_conservative_vars(simstate_handle::Cint,
+                                                       variable_id::Cint,
+                                                       data::Ptr{Cdouble})::Cvoid
+    simstate = load_simstate(simstate_handle)
+
+    # convert C to Julia array
+    size = trixi_ndofs_jl(simstate)
+    data_jl = unsafe_wrap(Array, data, size)
+
+    trixi_store_conservative_vars_jl(simstate, variable_id, data_jl)
+end
+
+trixi_store_conservative_vars_cfptr() =
+    @cfunction(trixi_store_conservative_vars, Cvoid, (Cint, Cint, Ptr{Cdouble}))
 
 
 """

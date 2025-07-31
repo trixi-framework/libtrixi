@@ -52,12 +52,18 @@ export trixi_load_node_reference_coordinates,
 export trixi_load_node_weights,
        trixi_load_node_weights_cfptr,
        trixi_load_node_weights_jl
+export trixi_load_conservative_vars,
+       trixi_load_conservative_vars_cfptr,
+       trixi_load_conservative_vars_jl
 export trixi_load_primitive_vars,
        trixi_load_primitive_vars_cfptr,
        trixi_load_primitive_vars_jl
 export trixi_load_element_averaged_primitive_vars,
        trixi_load_element_averaged_primitive_vars_cfptr,
        trixi_load_element_averaged_primitive_vars_jl
+export trixi_store_conservative_vars,
+       trixi_store_conservative_vars_cfptr,
+       trixi_store_conservative_vars_jl
 export trixi_register_data,
        trixi_register_data_cfptr,
        trixi_register_data_jl
