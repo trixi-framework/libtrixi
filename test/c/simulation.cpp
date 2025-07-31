@@ -108,8 +108,8 @@ TEST(CInterfaceTest, SimulationRun) {
     // check memory borders
     EXPECT_DOUBLE_EQ(rho[0],              1.0);
     EXPECT_DOUBLE_EQ(rho[ndofs-1],        1.0);
-    EXPECT_DOUBLE_EQ(rho_energy[0],       1.0e-5);
-    EXPECT_DOUBLE_EQ(rho_energy[ndofs-1], 1.0e-5);
+    EXPECT_DOUBLE_EQ(rho_energy[0],       2.5e-5);
+    EXPECT_DOUBLE_EQ(rho_energy[ndofs-1], 2.5e-5);
 
     // Check primitive variable values
     std::vector<double> energy(ndofs);
@@ -183,7 +183,7 @@ TEST(CInterfaceTest, SimulationRun) {
 
     double * raw_data = trixi_get_data_pointer(handle);
     EXPECT_DOUBLE_EQ(rho[0],       raw_data[0]);
-    EXPECT_DOUBLE_EQ(rho[ndofs-1], raw_data[5*(ndofs-1)]);
+    EXPECT_DOUBLE_EQ(rho[ndofs-1], raw_data[4*(ndofs-1)]);
 
     // Finalize Trixi simulation
     trixi_finalize_simulation(handle);

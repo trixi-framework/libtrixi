@@ -1,6 +1,7 @@
 module simulationRun_suite
   use LibTrixi
   use testdrive, only : new_unittest, unittest_type, error_type, check
+  use, intrinsic :: iso_c_binding, only: c_double, c_f_pointer, c_ptr
   implicit none
   private
 
@@ -29,6 +30,8 @@ module simulationRun_suite
     integer, parameter :: dp = selected_real_kind(15)
     real(dp) :: dt, time, integral
     real(dp), dimension(:), allocatable :: data, weights
+    type(c_ptr) :: raw_data_c
+    real(c_double), dimension(:), pointer :: raw_data
 
     ! Initialize Trixi
     call trixi_initialize(julia_project_path)
@@ -99,8 +102,16 @@ module simulationRun_suite
     call check(error, integral, 0.4_dp)
     deallocate(data)
 
-    ! Check primitive variable values
+    ! Check conservative variable values
     size = ndofs
+    allocate(data(size))
+    call trixi_load_conservative_vars(handle, 1, data)
+    call check(error, data(1),    1.0_dp)
+    call check(error, data(3200), 1.0_dp)
+    call check(error, data(size), 2.5e-5_dp)
+    deallocate(data)
+
+    ! Check primitive variable values
     allocate(data(size))
     call trixi_load_primitive_vars(handle, 1, data)
     call check(error, data(1),    1.0_dp)
@@ -115,6 +126,17 @@ module simulationRun_suite
     call check(error, data(1),    1.0_dp)
     call check(error, data(94),   0.99833232379996562_dp)
     call check(error, data(size), 1.0_dp)
+
+    ! Check storing of conservative variables
+    data(1) = 42.0
+    data(ndofs) = 23.0
+    call trixi_store_conservative_vars(handle, 1, data)
+
+    raw_data_c = trixi_get_data_pointer(handle)
+    call c_f_pointer(raw_data_c, raw_data, [ndofs])
+    call check(error, data(1),     raw_data(1))
+    call check(error, data(ndofs), raw_data(4*ndofs - 3))
+
     deallocate(data)
 
     ! Finalize Trixi simulation
