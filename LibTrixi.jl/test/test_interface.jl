@@ -160,14 +160,14 @@ end
     trixi_store_conservative_vars(handle, Int32(1), pointer(data_c))
     data_ptr_c = trixi_get_data_pointer(handle)
     data_jl = unsafe_wrap(Array, data_ptr_c, ndofs_c)
-    @test data_jl .== 1.0
+    @test all(data_jl .== 1.0)
 
     # write 2.0 to first variable and compare via raw access
     data_jl = fill(2.0, ndofs_jl)
     trixi_store_conservative_vars_jl(simstate_jl, 1, data_jl)
     data_ptr_jl = trixi_get_data_pointer_jl(simstate_jl)
     data_jl = unsafe_wrap(Array, data_ptr_jl, ndofs_jl)
-    @test data_jl .== 2.0
+    @test all(data_jl .== 2.0)
 end
 
 
