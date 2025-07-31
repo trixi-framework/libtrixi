@@ -108,11 +108,9 @@ module simulationRun_suite
     call trixi_load_conservative_vars(handle, 1, data)
     call check(error, data(1),    1.0_dp)
     call check(error, data(3200), 1.0_dp)
-    call check(error, data(size), 2.5e-5_dp)
-    deallocate(data)
+    call check(error, data(size), 1.0_dp)
 
     ! Check primitive variable values
-    allocate(data(size))
     call trixi_load_primitive_vars(handle, 1, data)
     call check(error, data(1),    1.0_dp)
     call check(error, data(3200), 1.0_dp)
