@@ -177,8 +177,8 @@ TEST(CInterfaceTest, SimulationRun) {
     }
 
     // Check storing of conservative variables
-    rho[0] = 42.0
-    rho[ndofs-1] = 23.0
+    rho[0] = 42.0;
+    rho[ndofs-1] = 23.0;
     trixi_store_conservative_vars(handle, 1, rho.data());
 
     double * raw_data = trixi_get_data_pointer(handle);

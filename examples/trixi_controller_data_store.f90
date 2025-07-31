@@ -93,7 +93,7 @@ program trixi_controller_data_store_f
         rho_tracer(i) = tracer * rho(i)
       end do
 
-      ! wite back tracer
+      ! write back tracer
       call trixi_store_conservative_vars(handle, 5, rho_tracer)
     end if
   end do
