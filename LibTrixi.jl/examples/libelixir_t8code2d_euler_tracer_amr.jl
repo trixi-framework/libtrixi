@@ -71,15 +71,15 @@ function init_simstate()
     end
     amr_controller = ControllerThreeLevel(semi, IndicatorMax(semi, variable=first_tracer),
                                           base_level=1,
-                                          med_level=2, med_threshold=0.1,
-                                          max_level=2, max_threshold=0.1)
+                                          med_level=2, med_threshold=0.05,
+                                          max_level=2, max_threshold=0.05)
     amr_callback = AMRCallback(semi, amr_controller,
-                               interval=10,
+                               interval=50,
                                adapt_initial_condition=true,
                                adapt_initial_condition_only_refine=true)
 
     # SaveSolutionCallback writes the solution at regular intervals
-    save_solution = SaveSolutionCallback(interval=100,
+    save_solution = SaveSolutionCallback(interval=50,
                                          save_initial_solution=true,
                                          save_final_solution=true,
                                          solution_variables = cons2prim)

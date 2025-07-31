@@ -43,14 +43,14 @@ int main ( int argc, char *argv[] ) {
 
             for (int i = 0; i < ndofs; ++i) {
                 // Density comes first
-                const double rho = raw_data[i];
+                const double rho = raw_data[5*i];
 
                 // Tracer comes last
-                const double rho_tracer = raw_data[4*ndofs + i];
+                const double rho_tracer = raw_data[5*i + 4];
 
-                // Apply 20% damping to tracer (fraction of density)
-                const double tracer = 0.8 * (rho_tracer / rho);
-                raw_data[4*ndofs + i] = tracer * rho;
+                // Apply 10% damping to tracer (fraction of density)
+                const double tracer = 0.9 * (rho_tracer / rho);
+                raw_data[5*i + 4] = tracer * rho;
             }
         }
     }
