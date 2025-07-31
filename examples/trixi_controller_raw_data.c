@@ -42,11 +42,15 @@ int main ( int argc, char *argv[] ) {
             double * raw_data = trixi_get_data_pointer(handle);
 
             for (int i = 0; i < ndofs; ++i) {
-                // Compute local deviation from density 1
-                const double dev = raw_data[i] - 1.0;
+                // Density comes first
+                const double rho = raw_data[i];
 
-                // Apply 20% damping
-                raw_data[i] = 1.0 + 0.8 * dev;
+                // Tracer comes last
+                const double rho_tracer = raw_data[4*ndofs + i];
+
+                // Apply 20% damping to tracer (fraction of density)
+                const double tracer = 0.8 * (rho_tracer / rho);
+                raw_data[4*ndofs + i] = tracer * rho;
             }
         }
     }
