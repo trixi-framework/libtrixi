@@ -7,12 +7,14 @@ version = "0.1.6-pre"
 MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+PreallocationTools = "d236fae5-4411-538c-8e31-a6e3d9e00b46"
 Trixi = "a7f1ee26-1774-49b1-8366-f1abc58fbfcb"
 
 [compat]
 MPI = "0.20.13"
 OrdinaryDiffEq = "6.53.2"
 Pkg = "1.8"
+PreallocationTools = "< 0.4.30"
 Trixi = "0.9.12, 0.10, 0.11, 0.12, 0.13"
 julia = "1.8"
 
