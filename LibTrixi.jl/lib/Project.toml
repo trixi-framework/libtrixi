@@ -1,7 +1,9 @@
 [deps]
 PackageCompiler = "9b87118b-4619-50d2-8e1e-99f35a4d4d9d"
+PreallocationTools = "d236fae5-4411-538c-8e31-a6e3d9e00b46"
 TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 
 [compat]
 PackageCompiler = "2.1.9"
+PreallocationTools = "0.4.29"
 TOML = "1"
