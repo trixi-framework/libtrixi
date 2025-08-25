@@ -5,5 +5,5 @@ TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 
 [compat]
 PackageCompiler = "2.1.9"
-PreallocationTools = "0.4.29"
+PreallocationTools = "< 0.4.30"
 TOML = "1"
