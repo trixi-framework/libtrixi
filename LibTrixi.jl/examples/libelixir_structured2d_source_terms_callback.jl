@@ -3,20 +3,25 @@ using Trixi
 using OrdinaryDiffEq
 using Libdl
 
-# TODO: hard-coded path for SO
-so_handle = dlopen("./lib/libsource_terms.so")
-println("Opened library ", dlpath(so_handle))
-source_term_fptr = dlsym(so_handle, "source_term_wave")
-println("Obtained function pointer ", source_term_fptr)
+struct SourceTermsCallback
+    source_term_fptr::Ptr{Nothing}
+    buffer::Vector{Cdouble}
 
-# TODO: global buffer to avoid allocation of temporary storage in source_term_callback
-sources_tmp::Vector{Cdouble} = Vector{Cdouble}(undef, 4)
+    function SourceTermsCallback(; n_vars, so_path)
+        so_handle = dlopen(so_path)
+        @info "Opened library ", dlpath(so_handle)
+        source_term_fptr = dlsym(so_handle, "source_term_wave")
+        @info "Obtained function pointer ", source_term_fptr
 
-function source_term_callback(u, x, t, equations::CompressibleEulerEquations2D)
+        new(source_term_fptr, Vector{Cdouble}(undef, n_vars))
+    end
+end
+
+function (callback::SourceTermsCallback)(u, x, t, equations::CompressibleEulerEquations2D)
+    @unpack source_term_fptr, buffer = callback
     @ccall $source_term_fptr(u::Ptr{Cdouble}, x::Ptr{Cdouble}, t::Cdouble,
-                                      equations.gamma::Cdouble,
-                                      sources_tmp::Ptr{Cdouble})::Cvoid
-    return SVector(sources_tmp[1], sources_tmp[2], sources_tmp[3], sources_tmp[4])
+                             equations.gamma::Cdouble, buffer::Ptr{Cdouble})::Cvoid
+    return SVector(buffer[1], buffer[2], buffer[3], buffer[4])
 end
 
 # The function to create the simulation state needs to be named `init_simstate`
@@ -24,6 +29,10 @@ function init_simstate()
 
     ###############################################################################
     # semidiscretization of the compressible Euler equations
+
+    # use external function in locally compiled shared object
+    source_terms_callback = SourceTermsCallback(n_vars = 4,
+                                                so_path = "./lib/libsource_terms.so")
 
     equations = CompressibleEulerEquations2D(1.4)
 
@@ -39,7 +48,7 @@ function init_simstate()
     mesh = StructuredMesh(cells_per_dimension, coordinates_min, coordinates_max)
 
     semi = SemidiscretizationHyperbolic(mesh, equations, initial_condition, solver,
-                                        source_terms = source_term_callback)
+                                        source_terms = source_terms_callback)
 
     ###############################################################################
     # ODE solvers, callbacks etc.

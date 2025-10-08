@@ -243,6 +243,7 @@ jobs:
           # all controllers
           ../build/examples/trixi_controller_simple_c          . libelixir_tree1d_advection_basic.jl
           ../build/examples/trixi_controller_simple_f          . libelixir_tree1d_advection_basic.jl
+          ../build/examples/trixi_controller_simple_c          . libelixir_structured2d_source_terms_callback.jl
           ../build/examples/trixi_controller_data_load_c       . libelixir_t8code2d_euler_tracer_amr.jl
           ../build/examples/trixi_controller_data_load_f       . libelixir_t8code2d_euler_tracer_amr.jl
           ../build/examples/trixi_controller_data_store_c      . libelixir_t8code2d_euler_tracer_amr.jl
