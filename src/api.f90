@@ -375,7 +375,7 @@ module LibTrixi
     end subroutine
 
     !>
-    !! @anchor trixi_load_conservative_vars_api_c
+    !! @anchor trixi_load_conservative_var_api_c
     !!
     !! @brief Load conservative variable.
     !!
@@ -388,7 +388,7 @@ module LibTrixi
     !! @param[in]   handle       simulation handle
     !! @param[in]   variable_id  index of variable
     !! @param[out]  data         values for all degrees of freedom
-    subroutine trixi_load_conservative_vars(handle, variable_id, data) bind(c)
+    subroutine trixi_load_conservative_var(handle, variable_id, data) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int, c_double
       integer(c_int), value, intent(in) :: handle
       integer(c_int), value, intent(in) :: variable_id
@@ -396,7 +396,7 @@ module LibTrixi
     end subroutine
 
     !>
-    !! @fn LibTrixi::trixi_load_primitive_vars::trixi_load_primitive_vars(handle, variable_id, data)
+    !! @fn LibTrixi::trixi_load_primitive_var::trixi_load_primitive_var(handle, variable_id, data)
     !!
     !! @brief Load primitive variable
     !!
@@ -404,8 +404,8 @@ module LibTrixi
     !! @param[in]  variable_id  index of variable
     !! @param[out] data         primitive variable values for all degrees of freedom
     !!
-    !! @see @ref trixi_load_primitive_vars_api_c "trixi_load_primitive_vars (C API)"
-    subroutine trixi_load_primitive_vars(handle, variable_id, data) bind(c)
+    !! @see @ref trixi_load_primitive_var_api_c "trixi_load_primitive_var (C API)"
+    subroutine trixi_load_primitive_var(handle, variable_id, data) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int, c_double
       integer(c_int), value, intent(in) :: handle
       integer(c_int), value, intent(in) :: variable_id
@@ -428,7 +428,7 @@ module LibTrixi
     end function
 
     !>
-    !! @fn LibTrixi::trixi_load_element_averaged_primitive_vars::trixi_load_element_averaged_primitive_vars(handle, variable_id, data)
+    !! @fn LibTrixi::trixi_load_element_averaged_primitive_var::trixi_load_element_averaged_primitive_var(handle, variable_id, data)
     !!
     !! @brief Load element averages for primitive variable
     !!
@@ -436,8 +436,8 @@ module LibTrixi
     !! @param[in]  variable_id  index of variable
     !! @param[out] data         averaged values for all elements
     !!
-    !! @see @ref trixi_load_element_averaged_primitive_vars_api_c "trixi_load_element_averaged_primitive_vars (C API)"
-    subroutine trixi_load_element_averaged_primitive_vars(handle, variable_id, data) bind(c)
+    !! @see @ref trixi_load_element_averaged_primitive_var_api_c "trixi_load_element_averaged_primitive_var (C API)"
+    subroutine trixi_load_element_averaged_primitive_var(handle, variable_id, data) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int, c_double
       integer(c_int), value, intent(in) :: handle
       integer(c_int), value, intent(in) :: variable_id
@@ -445,7 +445,7 @@ module LibTrixi
     end subroutine
 
     !>
-    !! @anchor trixi_store_conservative_vars_api_c
+    !! @anchor trixi_store_conservative_var_api_c
     !!
     !! @brief Store conservative variable.
     !!
@@ -458,7 +458,7 @@ module LibTrixi
     !! @param[in]  handle       simulation handle
     !! @param[in]  variable_id  index of variable
     !! @param[in]  data         values for all degrees of freedom
-    subroutine trixi_store_conservative_vars(handle, variable_id, data) bind(c)
+    subroutine trixi_store_conservative_var(handle, variable_id, data) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int, c_double
       integer(c_int), value, intent(in) :: handle
       integer(c_int), value, intent(in) :: variable_id
@@ -485,7 +485,7 @@ module LibTrixi
     end subroutine
 
     !>
-    !! @anchor trixi_get_data_pointer_api_c
+    !! @anchor trixi_get_conservative_vars_pointer_api_c
     !!
     !! @brief Return pointer to internal data vector.
     !!
@@ -497,7 +497,7 @@ module LibTrixi
     !! undefined behavior.
     !!
     !! @param[in]  handle  simulation handle
-    type (c_ptr) function trixi_get_data_pointer(handle) bind(c)
+    type (c_ptr) function trixi_get_conservative_vars_pointer(handle) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int, c_ptr
       integer(c_int), value, intent(in) :: handle
     end function

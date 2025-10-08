@@ -105,13 +105,13 @@ module simulationRun_suite
     ! Check conservative variable values
     size = ndofs
     allocate(data(size))
-    call trixi_load_conservative_vars(handle, 1, data)
+    call trixi_load_conservative_var(handle, 1, data)
     call check(error, data(1),    1.0_dp)
     call check(error, data(3200), 1.0_dp)
     call check(error, data(size), 1.0_dp)
 
     ! Check primitive variable values
-    call trixi_load_primitive_vars(handle, 1, data)
+    call trixi_load_primitive_var(handle, 1, data)
     call check(error, data(1),    1.0_dp)
     call check(error, data(3200), 1.0_dp)
     call check(error, data(size), 1.0_dp)
@@ -120,7 +120,7 @@ module simulationRun_suite
     ! Check element averaged values
     size = nelements
     allocate(data(size))
-    call trixi_load_element_averaged_primitive_vars(handle, 1, data)
+    call trixi_load_element_averaged_primitive_var(handle, 1, data)
     call check(error, data(1),    1.0_dp)
     call check(error, data(94),   0.99833232379996562_dp)
     call check(error, data(size), 1.0_dp)
@@ -128,9 +128,9 @@ module simulationRun_suite
     ! Check storing of conservative variables
     data(1) = 42.0
     data(ndofs) = 23.0
-    call trixi_store_conservative_vars(handle, 1, data)
+    call trixi_store_conservative_var(handle, 1, data)
 
-    raw_data_c = trixi_get_data_pointer(handle)
+    raw_data_c = trixi_get_conservative_vars_pointer(handle)
     call c_f_pointer(raw_data_c, raw_data, [ndofs])
     call check(error, data(1),     raw_data(1))
     call check(error, data(ndofs), raw_data(4*ndofs - 3))

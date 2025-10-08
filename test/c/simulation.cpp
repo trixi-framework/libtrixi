@@ -103,8 +103,8 @@ TEST(CInterfaceTest, SimulationRun) {
     // Check conservative variable values
     std::vector<double> rho(ndofs);
     std::vector<double> rho_energy(ndofs);
-    trixi_load_conservative_vars(handle, 1, rho.data());
-    trixi_load_conservative_vars(handle, 4, rho_energy.data());
+    trixi_load_conservative_var(handle, 1, rho.data());
+    trixi_load_conservative_var(handle, 4, rho_energy.data());
     // check memory borders
     EXPECT_DOUBLE_EQ(rho[0],              1.0);
     EXPECT_DOUBLE_EQ(rho[ndofs-1],        1.0);
@@ -113,8 +113,8 @@ TEST(CInterfaceTest, SimulationRun) {
 
     // Check primitive variable values
     std::vector<double> energy(ndofs);
-    trixi_load_primitive_vars(handle, 1, rho.data());
-    trixi_load_primitive_vars(handle, 4, energy.data());
+    trixi_load_primitive_var(handle, 1, rho.data());
+    trixi_load_primitive_var(handle, 4, energy.data());
     // check memory borders
     EXPECT_DOUBLE_EQ(rho[0],          1.0);
     EXPECT_DOUBLE_EQ(rho[ndofs-1],    1.0);
@@ -126,10 +126,10 @@ TEST(CInterfaceTest, SimulationRun) {
     std::vector<double> v1_averages(nelements);
     std::vector<double> v2_averages(nelements);
     std::vector<double> e_averages(nelements);
-    trixi_load_element_averaged_primitive_vars(handle, 1, rho_averages.data());
-    trixi_load_element_averaged_primitive_vars(handle, 2, v1_averages.data());
-    trixi_load_element_averaged_primitive_vars(handle, 3, v2_averages.data());
-    trixi_load_element_averaged_primitive_vars(handle, 4, e_averages.data());
+    trixi_load_element_averaged_primitive_var(handle, 1, rho_averages.data());
+    trixi_load_element_averaged_primitive_var(handle, 2, v1_averages.data());
+    trixi_load_element_averaged_primitive_var(handle, 3, v2_averages.data());
+    trixi_load_element_averaged_primitive_var(handle, 4, e_averages.data());
     if (nranks == 1) {
         // check memory borders (densities at the beginning, energies at the end)
         EXPECT_DOUBLE_EQ(rho_averages[0],         1.0);
@@ -179,9 +179,9 @@ TEST(CInterfaceTest, SimulationRun) {
     // Check storing of conservative variables
     rho[0] = 42.0;
     rho[ndofs-1] = 23.0;
-    trixi_store_conservative_vars(handle, 1, rho.data());
+    trixi_store_conservative_var(handle, 1, rho.data());
 
-    double * raw_data = trixi_get_data_pointer(handle);
+    double * raw_data = trixi_get_conservative_vars_pointer(handle);
     EXPECT_DOUBLE_EQ(rho[0],       raw_data[0]);
     EXPECT_DOUBLE_EQ(rho[ndofs-1], raw_data[4*(ndofs-1)]);
 

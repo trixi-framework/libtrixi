@@ -22,12 +22,12 @@ enum {
     TRIXI_FPTR_NNODES,
     TRIXI_FPTR_LOAD_NODE_REFERENCE_COORDINATES,
     TRIXI_FPTR_LOAD_NODE_WEIGHTS,
-    TRIXI_FPTR_LOAD_CONSERVATIVE_VARS,
-    TRIXI_FTPR_LOAD_PRIMITIVE_VARS,
-    TRIXI_FTPR_LOAD_ELEMENT_AVERAGED_PRIMITIVE_VARS,
-    TRIXI_FPTR_STORE_CONSERVATIVE_VARS,
+    TRIXI_FPTR_LOAD_CONSERVATIVE_VAR,
+    TRIXI_FTPR_LOAD_PRIMITIVE_VAR,
+    TRIXI_FTPR_LOAD_ELEMENT_AVERAGED_PRIMITIVE_VAR,
+    TRIXI_FPTR_STORE_CONSERVATIVE_VAR,
     TRIXI_FTPR_REGISTER_DATA,
-    TRIXI_FPTR_GET_DATA_POINTER,
+    TRIXI_FPTR_GET_CONSERVATIVE_VARS_POINTER,
     TRIXI_FTPR_VERSION_LIBRARY,
     TRIXI_FTPR_VERSION_LIBRARY_MAJOR,
     TRIXI_FTPR_VERSION_LIBRARY_MINOR,
@@ -63,12 +63,12 @@ static const char* trixi_function_pointer_names[] = {
     [TRIXI_FPTR_NNODES]                               = "trixi_nnodes_cfptr",
     [TRIXI_FPTR_LOAD_NODE_REFERENCE_COORDINATES]      = "trixi_load_node_reference_coordinates_cfptr",
     [TRIXI_FPTR_LOAD_NODE_WEIGHTS]                    = "trixi_load_node_weights_cfptr",
-    [TRIXI_FPTR_LOAD_CONSERVATIVE_VARS]               = "trixi_load_conservative_vars_cfptr",
-    [TRIXI_FTPR_LOAD_PRIMITIVE_VARS]                  = "trixi_load_primitive_vars_cfptr",
-    [TRIXI_FTPR_LOAD_ELEMENT_AVERAGED_PRIMITIVE_VARS] = "trixi_load_element_averaged_primitive_vars_cfptr",
-    [TRIXI_FPTR_STORE_CONSERVATIVE_VARS]              = "trixi_store_conservative_vars_cfptr",
+    [TRIXI_FPTR_LOAD_CONSERVATIVE_VAR]                = "trixi_load_conservative_var_cfptr",
+    [TRIXI_FTPR_LOAD_PRIMITIVE_VAR]                   = "trixi_load_primitive_var_cfptr",
+    [TRIXI_FTPR_LOAD_ELEMENT_AVERAGED_PRIMITIVE_VAR]  = "trixi_load_element_averaged_primitive_var_cfptr",
+    [TRIXI_FPTR_STORE_CONSERVATIVE_VAR]               = "trixi_store_conservative_var_cfptr",
     [TRIXI_FTPR_REGISTER_DATA]                        = "trixi_register_data_cfptr",
-    [TRIXI_FPTR_GET_DATA_POINTER]                     = "trixi_get_data_pointer_cfptr",
+    [TRIXI_FPTR_GET_CONSERVATIVE_VARS_POINTER]        = "trixi_get_conservative_vars_pointer_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY]                      = "trixi_version_library_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY_MAJOR]                = "trixi_version_library_major_cfptr",
     [TRIXI_FTPR_VERSION_LIBRARY_MINOR]                = "trixi_version_library_minor_cfptr",
@@ -650,7 +650,7 @@ void trixi_load_node_weights(int handle, double* node_weights) {
 
 
 /**
- * @anchor trixi_load_conservative_vars_api_c
+ * @anchor trixi_load_conservative_var_api_c
  *
  * @brief Load conservative variable.
  *
@@ -664,19 +664,19 @@ void trixi_load_node_weights(int handle, double* node_weights) {
  * @param[in]   variable_id  index of variable
  * @param[out]  data         values for all degrees of freedom
  */
-void trixi_load_conservative_vars(int handle, int variable_id, double * data) {
+void trixi_load_conservative_var(int handle, int variable_id, double * data) {
 
     // Get function pointer
-    void (*load_conservative_vars)(int, int, double *) =
-        trixi_function_pointers[TRIXI_FPTR_LOAD_CONSERVATIVE_VARS];
+    void (*load_conservative_var)(int, int, double *) =
+        trixi_function_pointers[TRIXI_FPTR_LOAD_CONSERVATIVE_VAR];
 
     // Call function
-    return load_conservative_vars(handle, variable_id, data);
+    return load_conservative_var(handle, variable_id, data);
 }
 
 
 /**
- * @anchor trixi_load_primitive_vars_api_c
+ * @anchor trixi_load_primitive_var_api_c
  *
  * @brief Load primitive variable
  *
@@ -690,19 +690,19 @@ void trixi_load_conservative_vars(int handle, int variable_id, double * data) {
  * @param[in]  variable_id  index of variable
  * @param[out] data         values for all degrees of freedom
  */
-void trixi_load_primitive_vars(int handle, int variable_id, double * data) {
+void trixi_load_primitive_var(int handle, int variable_id, double * data) {
 
     // Get function pointer
-    void (*load_primitive_vars)(int, int, double *) =
-        trixi_function_pointers[TRIXI_FTPR_LOAD_PRIMITIVE_VARS];
+    void (*load_primitive_var)(int, int, double *) =
+        trixi_function_pointers[TRIXI_FTPR_LOAD_PRIMITIVE_VAR];
 
     // Call function
-    load_primitive_vars(handle, variable_id, data);
+    load_primitive_var(handle, variable_id, data);
 }
 
 
 /**
- * @anchor trixi_load_element_averaged_primitive_vars_api_c
+ * @anchor trixi_load_element_averaged_primitive_var_api_c
  *
  * @brief Load element averages for primitive variable
  *
@@ -716,19 +716,19 @@ void trixi_load_primitive_vars(int handle, int variable_id, double * data) {
  * @param[in]  variable_id  index of variable
  * @param[out] data         element averaged values for all elements
  */
-void trixi_load_element_averaged_primitive_vars(int handle, int variable_id, double * data) {
+void trixi_load_element_averaged_primitive_var(int handle, int variable_id, double * data) {
 
     // Get function pointer
-    void (*load_element_averaged_primitive_vars)(int, int, double *) =
-        trixi_function_pointers[TRIXI_FTPR_LOAD_ELEMENT_AVERAGED_PRIMITIVE_VARS];
+    void (*load_element_averaged_primitive_var)(int, int, double *) =
+        trixi_function_pointers[TRIXI_FTPR_LOAD_ELEMENT_AVERAGED_PRIMITIVE_VAR];
 
     // Call function
-    load_element_averaged_primitive_vars(handle, variable_id, data);
+    load_element_averaged_primitive_var(handle, variable_id, data);
 }
 
 
 /**
- * @anchor trixi_store_conservative_vars_api_c
+ * @anchor trixi_store_conservative_var_api_c
  *
  * @brief Store conservative variable.
  *
@@ -741,14 +741,14 @@ void trixi_load_element_averaged_primitive_vars(int handle, int variable_id, dou
  * @param[in]  variable_id  index of variable
  * @param[in]  data         values for all degrees of freedom
  */
-void trixi_store_conservative_vars(int handle, int variable_id, double * data) {
+void trixi_store_conservative_var(int handle, int variable_id, double * data) {
 
     // Get function pointer
-    void (*store_conservative_vars)(int, int, double *) =
-        trixi_function_pointers[TRIXI_FPTR_STORE_CONSERVATIVE_VARS];
+    void (*store_conservative_var)(int, int, double *) =
+        trixi_function_pointers[TRIXI_FPTR_STORE_CONSERVATIVE_VAR];
 
     // Call function
-    return store_conservative_vars(handle, variable_id, data);
+    return store_conservative_var(handle, variable_id, data);
 }
 
 
@@ -784,7 +784,7 @@ void trixi_register_data(int handle, int index, int size, const double * data) {
 
 
 /**
- * @anchor trixi_get_data_pointer_api_c
+ * @anchor trixi_get_conservative_vars_pointer_api_c
  *
  * @brief Return pointer to internal data vector.
  *
@@ -796,13 +796,14 @@ void trixi_register_data(int handle, int index, int size, const double * data) {
  *
  * @param[in]  handle  simulation handle
  */
-double * trixi_get_data_pointer(int handle) {
+double * trixi_get_conservative_vars_pointer(int handle) {
 
     // Get function pointer
-    double * (*get_data_pointer)(int) = trixi_function_pointers[TRIXI_FPTR_GET_DATA_POINTER];
+    double * (*get_conservative_vars_pointer)(int) =
+        trixi_function_pointers[TRIXI_FPTR_GET_CONSERVATIVE_VARS_POINTER];
 
     // Call function
-    return get_data_pointer(handle);
+    return get_conservative_vars_pointer(handle);
 }
 
 

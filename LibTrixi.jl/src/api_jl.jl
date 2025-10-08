@@ -140,7 +140,7 @@ function trixi_load_node_weights_jl(simstate, data)
 end
 
 
-function trixi_load_conservative_vars_jl(simstate, variable_id, data)
+function trixi_load_conservative_var_jl(simstate, variable_id, data)
     mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
     n_nodes_per_dim = nnodes(solver)
     n_dims = ndims(mesh)
@@ -165,7 +165,7 @@ function trixi_load_conservative_vars_jl(simstate, variable_id, data)
 end
 
 
-function trixi_load_primitive_vars_jl(simstate, variable_id, data)
+function trixi_load_primitive_var_jl(simstate, variable_id, data)
     mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
     n_nodes_per_dim = nnodes(solver)
     n_dims = ndims(mesh)
@@ -190,7 +190,7 @@ function trixi_load_primitive_vars_jl(simstate, variable_id, data)
 end
 
 
-function trixi_load_element_averaged_primitive_vars_jl(simstate, variable_id, data)
+function trixi_load_element_averaged_primitive_var_jl(simstate, variable_id, data)
     mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
     n_nodes = nnodes(solver)
     n_dims = ndims(mesh)
@@ -226,7 +226,7 @@ function trixi_load_element_averaged_primitive_vars_jl(simstate, variable_id, da
 end
 
 
-function trixi_store_conservative_vars_jl(simstate, variable_id, data)
+function trixi_store_conservative_var_jl(simstate, variable_id, data)
     mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
     n_nodes_per_dim = nnodes(solver)
     n_dims = ndims(mesh)
@@ -259,7 +259,7 @@ function trixi_register_data_jl(simstate, index, data)
 end
 
 
-function trixi_get_data_pointer_jl(simstate)
+function trixi_get_conservative_vars_pointer_jl(simstate)
     return pointer(simstate.integrator.u)
 end
 

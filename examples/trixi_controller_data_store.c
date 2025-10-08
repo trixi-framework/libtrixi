@@ -41,7 +41,7 @@ int main ( int argc, char *argv[] ) {
             int ndofs = trixi_ndofsglobal( handle );
 
             // Get a pointer to Trixi's internal simulation data
-            double * raw_data = trixi_get_data_pointer(handle);
+            double * raw_data = trixi_get_conservative_vars_pointer(handle);
 
             for (int i = 0; i < ndofs; ++i) {
                 // Density comes first
@@ -66,8 +66,8 @@ int main ( int argc, char *argv[] ) {
             rho_tracer = realloc( rho_tracer, sizeof(double) * ndofs );
 
             // Get density and tracer
-            trixi_load_conservative_vars(handle, 1, rho);
-            trixi_load_conservative_vars(handle, 5, rho_tracer);
+            trixi_load_conservative_var(handle, 1, rho);
+            trixi_load_conservative_var(handle, 5, rho_tracer);
 
             for (int i = 0; i < ndofs; ++i) {
                 // Apply 5% amplification to tracer (fraction of density)
@@ -76,7 +76,7 @@ int main ( int argc, char *argv[] ) {
             }
 
             // Write back tracer
-            trixi_store_conservative_vars(handle, 5, rho_tracer);
+            trixi_store_conservative_var(handle, 5, rho_tracer);
         }
     }
 

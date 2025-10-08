@@ -57,7 +57,7 @@ program trixi_controller_data_store_f
       ndofs = trixi_ndofsglobal(handle)
 
       ! Get a pointer to Trixi's internal simulation data
-      raw_data_c = trixi_get_data_pointer(handle)
+      raw_data_c = trixi_get_conservative_vars_pointer(handle)
       call c_f_pointer(raw_data_c, raw_data, [ndofs])
 
       do i = 1,ndofs
@@ -84,8 +84,8 @@ program trixi_controller_data_store_f
       allocate( rho_tracer(ndofs) )
 
       ! get density and tracer
-      call trixi_load_conservative_vars(handle, 1, rho)
-      call trixi_load_conservative_vars(handle, 5, rho_tracer)
+      call trixi_load_conservative_var(handle, 1, rho)
+      call trixi_load_conservative_var(handle, 5, rho_tracer)
 
       do i = 1,ndofs
         ! apply 5% amplification to tracer (fraction of density)
@@ -94,7 +94,7 @@ program trixi_controller_data_store_f
       end do
 
       ! write back tracer
-      call trixi_store_conservative_vars(handle, 5, rho_tracer)
+      call trixi_store_conservative_var(handle, 5, rho_tracer)
     end if
   end do
 

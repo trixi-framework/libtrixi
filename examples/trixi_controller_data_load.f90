@@ -66,7 +66,7 @@ program trixi_controller_data_load_f
       allocate( data(nelements) )
 
       ! get element averaged values for first variable
-      call trixi_load_element_averaged_primitive_vars(handle, 1, data)
+      call trixi_load_element_averaged_primitive_var(handle, 1, data)
     end if
   end do
 
