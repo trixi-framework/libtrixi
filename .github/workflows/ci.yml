@@ -165,6 +165,7 @@ jobs:
           mkdir libtrixi-julia
           cd libtrixi-julia
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_* .
+          cp ../install/lib/libsource_terms.so .
           mkdir julia-depot
           ../install/bin/libtrixi-init-julia .. \
               --hdf5-library /usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so \

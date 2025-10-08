@@ -32,7 +32,8 @@ function init_simstate()
 
     # use external function in locally compiled shared object
     source_terms_callback = SourceTermsCallback(n_vars = 4,
-                                                so_path = "./lib/libsource_terms.so")
+                                                so_path = joinpath(@__DIR__,
+                                                                   "libsource_terms.so"))
 
     equations = CompressibleEulerEquations2D(1.4)
 
