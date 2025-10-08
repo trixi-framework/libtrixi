@@ -43,7 +43,7 @@ lib_name = "trixi"
 incremental = false
 
 # Do not include stdlibs which are not needed
-filter_stdlibs = true
+filter_stdlibs = false
 
 # Overwrite existing files/folders at `dest_dir`
 force = true

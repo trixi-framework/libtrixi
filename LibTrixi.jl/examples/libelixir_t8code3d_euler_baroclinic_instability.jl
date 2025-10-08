@@ -297,7 +297,7 @@ function init_simstate()
                             save_solution)
 
     # use a Runge-Kutta method with automatic (error based) time step size control
-    integrator = init(ode, RDPK3SpFSAL49(thread = OrdinaryDiffEq.False());
+    integrator = init(ode, RDPK3SpFSAL49(thread = Trixi.False());
                       abstol = 1.0e-6, reltol = 1.0e-6,
                       ode_default_options()..., callback = callbacks, maxiters=1e7);
 
