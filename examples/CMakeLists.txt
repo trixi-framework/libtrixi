@@ -17,7 +17,7 @@ if ( NOT T8CODE_FOUND )
     list( FILTER EXAMPLES EXCLUDE REGEX "trixi_controller_baroclinic.*" )
 endif()
 
-# examplary external library providing function used to compute source terms
+# exemplary external library providing function used to compute source terms
 add_library ( source_terms SHARED
     source_terms.h
     source_terms.c
