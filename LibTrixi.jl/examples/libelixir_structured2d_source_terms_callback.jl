@@ -3,9 +3,9 @@ using Trixi
 using OrdinaryDiffEq
 using Libdl
 
-struct SourceTermsCallback
+struct SourceTermsCallback{NVARS}
     source_term_fptr::Ptr{Nothing}
-    buffer::Vector{Cdouble}
+    buffer::Base.RefValue{NTuple{NVARS, Float64}}
 
     function SourceTermsCallback(; n_vars, so_path)
         so_handle = dlopen(so_path)
@@ -13,7 +13,7 @@ struct SourceTermsCallback
         source_term_fptr = dlsym(so_handle, "source_term_wave")
         @info "Obtained function pointer ", source_term_fptr
 
-        new(source_term_fptr, Vector{Cdouble}(undef, n_vars))
+        new{n_vars}(source_term_fptr, Base.RefValue(ntuple(i -> 0.0, n_vars)))
     end
 end
 
@@ -21,7 +21,7 @@ function (callback::SourceTermsCallback)(u, x, t, equations::CompressibleEulerEq
     @unpack source_term_fptr, buffer = callback
     @ccall $source_term_fptr(u::Ptr{Cdouble}, x::Ptr{Cdouble}, t::Cdouble,
                              equations.gamma::Cdouble, buffer::Ptr{Cdouble})::Cvoid
-    return SVector(buffer[1], buffer[2], buffer[3], buffer[4])
+    return SVector(buffer[])
 end
 
 # The function to create the simulation state needs to be named `init_simstate`
