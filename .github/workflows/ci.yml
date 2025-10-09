@@ -165,6 +165,7 @@ jobs:
           mkdir libtrixi-julia
           cd libtrixi-julia
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_* .
+          cp ../install/lib/libsource_terms.so .
           mkdir julia-depot
           ../install/bin/libtrixi-init-julia .. \
               --hdf5-library /usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so \
@@ -243,6 +244,7 @@ jobs:
           # all controllers
           ../build/examples/trixi_controller_simple_c          . libelixir_tree1d_advection_basic.jl
           ../build/examples/trixi_controller_simple_f          . libelixir_tree1d_advection_basic.jl
+          ../build/examples/trixi_controller_simple_c          . libelixir_structured2d_source_terms_callback.jl
           ../build/examples/trixi_controller_data_load_c       . libelixir_t8code2d_euler_tracer_amr.jl
           ../build/examples/trixi_controller_data_load_f       . libelixir_t8code2d_euler_tracer_amr.jl
           ../build/examples/trixi_controller_data_store_c      . libelixir_t8code2d_euler_tracer_amr.jl
