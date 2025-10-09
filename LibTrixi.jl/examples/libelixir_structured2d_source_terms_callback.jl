@@ -13,7 +13,7 @@ struct SourceTermsCallback{NVARS}
         source_term_fptr = dlsym(so_handle, "source_term_wave")
         @info "Obtained function pointer ", source_term_fptr
 
-        new{n_vars}(source_term_fptr, Base.RefValue(ntuple(i -> 0.0, n_vars)))
+        new{n_vars}(source_term_fptr, Ref(ntuple(i -> 0.0, n_vars)))
     end
 end
 
