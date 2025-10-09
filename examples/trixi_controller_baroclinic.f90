@@ -155,10 +155,10 @@ program trixi_controller_baroclinic_f
     if ( trixi_is_finished(handle) ) exit
 
     ! Get current state
-    call trixi_load_primitive_vars( handle, 1, u1 )
-    call trixi_load_primitive_vars( handle, 2, u2 )
-    call trixi_load_primitive_vars( handle, 3, u3 )
-    call trixi_load_primitive_vars( handle, 4, u4 )
+    call trixi_load_primitive_var( handle, 1, u1 )
+    call trixi_load_primitive_var( handle, 2, u2 )
+    call trixi_load_primitive_var( handle, 3, u3 )
+    call trixi_load_primitive_var( handle, 4, u4 )
 
     ! Compute source terms
     call source_terms_baroclinic( nnodes, nodes, forest, ndofs, &

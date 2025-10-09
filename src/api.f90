@@ -375,7 +375,28 @@ module LibTrixi
     end subroutine
 
     !>
-    !! @fn LibTrixi::trixi_load_primitive_vars::trixi_load_primitive_vars(handle, variable_id, data)
+    !! @anchor trixi_load_conservative_var_api_c
+    !!
+    !! @brief Load conservative variable.
+    !!
+    !! The values for the conservative variable at position `variable_id` at every degree of
+    !! freedom are stored in the given array `data`.
+    !! 
+    !! The given array has to be of correct size (ndofs) and memory has to be allocated
+    !! beforehand.
+    !!
+    !! @param[in]   handle       simulation handle
+    !! @param[in]   variable_id  index of variable
+    !! @param[out]  data         values for all degrees of freedom
+    subroutine trixi_load_conservative_var(handle, variable_id, data) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int, c_double
+      integer(c_int), value, intent(in) :: handle
+      integer(c_int), value, intent(in) :: variable_id
+      real(c_double), dimension(*), intent(out) :: data
+    end subroutine
+
+    !>
+    !! @fn LibTrixi::trixi_load_primitive_var::trixi_load_primitive_var(handle, variable_id, data)
     !!
     !! @brief Load primitive variable
     !!
@@ -383,8 +404,8 @@ module LibTrixi
     !! @param[in]  variable_id  index of variable
     !! @param[out] data         primitive variable values for all degrees of freedom
     !!
-    !! @see @ref trixi_load_primitive_vars_api_c "trixi_load_primitive_vars (C API)"
-    subroutine trixi_load_primitive_vars(handle, variable_id, data) bind(c)
+    !! @see @ref trixi_load_primitive_var_api_c "trixi_load_primitive_var (C API)"
+    subroutine trixi_load_primitive_var(handle, variable_id, data) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int, c_double
       integer(c_int), value, intent(in) :: handle
       integer(c_int), value, intent(in) :: variable_id
@@ -407,7 +428,7 @@ module LibTrixi
     end function
 
     !>
-    !! @fn LibTrixi::trixi_load_element_averaged_primitive_vars::trixi_load_element_averaged_primitive_vars(handle, variable_id, data)
+    !! @fn LibTrixi::trixi_load_element_averaged_primitive_var::trixi_load_element_averaged_primitive_var(handle, variable_id, data)
     !!
     !! @brief Load element averages for primitive variable
     !!
@@ -415,12 +436,33 @@ module LibTrixi
     !! @param[in]  variable_id  index of variable
     !! @param[out] data         averaged values for all elements
     !!
-    !! @see @ref trixi_load_element_averaged_primitive_vars_api_c "trixi_load_element_averaged_primitive_vars (C API)"
-    subroutine trixi_load_element_averaged_primitive_vars(handle, variable_id, data) bind(c)
+    !! @see @ref trixi_load_element_averaged_primitive_var_api_c "trixi_load_element_averaged_primitive_var (C API)"
+    subroutine trixi_load_element_averaged_primitive_var(handle, variable_id, data) bind(c)
       use, intrinsic :: iso_c_binding, only: c_int, c_double
       integer(c_int), value, intent(in) :: handle
       integer(c_int), value, intent(in) :: variable_id
       real(c_double), dimension(*), intent(out) :: data
+    end subroutine
+
+    !>
+    !! @anchor trixi_store_conservative_var_api_c
+    !!
+    !! @brief Store conservative variable.
+    !!
+    !! The values for the conservative variable at position `variable_id` at every degree of
+    !! freedom are read from the given array `data` and written to Trixi.jl's internal
+    !! storage.
+    !! 
+    !! The given array has to be of correct size (ndofs).
+    !!
+    !! @param[in]  handle       simulation handle
+    !! @param[in]  variable_id  index of variable
+    !! @param[in]  data         values for all degrees of freedom
+    subroutine trixi_store_conservative_var(handle, variable_id, data) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int, c_double
+      integer(c_int), value, intent(in) :: handle
+      integer(c_int), value, intent(in) :: variable_id
+      real(c_double), dimension(*), intent(in) :: data
     end subroutine
 
     !>
@@ -441,6 +483,24 @@ module LibTrixi
       integer(c_int), value, intent(in) :: size
       real(c_double), dimension(*), intent(in) :: data
     end subroutine
+
+    !>
+    !! @anchor trixi_get_conservative_vars_pointer_api_c
+    !!
+    !! @brief Return pointer to internal data vector.
+    !!
+    !! The returned pointer points to the beginning of the internal data array used in
+    !! Trixi.jl. This array contains the conservative variables, i.e. density, momentum
+    !! density in the three Cartesian coordinates, and energy density, in this sequence.
+    !! The pointer can be used to read, but also to write these variables. The latter
+    !! should be done with care. Writing while a time step in being performed will lead to
+    !! undefined behavior.
+    !!
+    !! @param[in]  handle  simulation handle
+    type (c_ptr) function trixi_get_conservative_vars_pointer(handle) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int, c_ptr
+      integer(c_int), value, intent(in) :: handle
+    end function
 
 
 

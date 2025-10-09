@@ -140,7 +140,32 @@ function trixi_load_node_weights_jl(simstate, data)
 end
 
 
-function trixi_load_primitive_vars_jl(simstate, variable_id, data)
+function trixi_load_conservative_var_jl(simstate, variable_id, data)
+    mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
+    n_nodes_per_dim = nnodes(solver)
+    n_dims = ndims(mesh)
+    n_nodes = n_nodes_per_dim^n_dims
+
+    u_ode = simstate.integrator.u
+    u = wrap_array(u_ode, mesh, equations, solver, cache)
+
+    # all permutations of nodes indices for arbitrary dimension
+    node_cis = CartesianIndices(ntuple(i -> n_nodes_per_dim, n_dims))
+    node_lis = LinearIndices(node_cis)
+
+    for element in eachelement(solver, cache)
+        for node_ci in node_cis
+            node_vars = get_node_vars(u, equations, solver, node_ci, element)
+            node_index = (element-1) * n_nodes + node_lis[node_ci]
+            data[node_index] = node_vars[variable_id]
+        end
+    end
+
+    return nothing
+end
+
+
+function trixi_load_primitive_var_jl(simstate, variable_id, data)
     mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
     n_nodes_per_dim = nnodes(solver)
     n_dims = ndims(mesh)
@@ -165,7 +190,7 @@ function trixi_load_primitive_vars_jl(simstate, variable_id, data)
 end
 
 
-function trixi_load_element_averaged_primitive_vars_jl(simstate, variable_id, data)
+function trixi_load_element_averaged_primitive_var_jl(simstate, variable_id, data)
     mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
     n_nodes = nnodes(solver)
     n_dims = ndims(mesh)
@@ -201,12 +226,41 @@ function trixi_load_element_averaged_primitive_vars_jl(simstate, variable_id, da
 end
 
 
+function trixi_store_conservative_var_jl(simstate, variable_id, data)
+    mesh, equations, solver, cache = mesh_equations_solver_cache(simstate.semi)
+    n_nodes_per_dim = nnodes(solver)
+    n_dims = ndims(mesh)
+    n_nodes = n_nodes_per_dim^n_dims
+
+    u_ode = simstate.integrator.u
+    u = wrap_array(u_ode, mesh, equations, solver, cache)
+
+    # all permutations of nodes indices for arbitrary dimension
+    node_cis = CartesianIndices(ntuple(i -> n_nodes_per_dim, n_dims))
+    node_lis = LinearIndices(node_cis)
+
+    for element in eachelement(solver, cache)
+        for node_ci in node_cis
+            node_index = (element-1) * n_nodes + node_lis[node_ci]
+            u[variable_id, node_ci, element] = data[node_index]
+        end
+    end
+
+    return nothing
+end
+
+
 function trixi_register_data_jl(simstate, index, data)
     simstate.registry[index] = data
     if show_debug_output()
         println("New data vector registered at index ", index)
     end
     return nothing
+end
+
+
+function trixi_get_conservative_vars_pointer_jl(simstate)
+    return pointer(simstate.integrator.u)
 end
 
 

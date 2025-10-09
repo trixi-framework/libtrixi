@@ -128,10 +128,10 @@ int main ( int argc, char *argv[] ) {
     while ( !trixi_is_finished( handle ) ) {
 
         // Get current state
-        trixi_load_primitive_vars( handle, 1, u1 );
-        trixi_load_primitive_vars( handle, 2, u2 );
-        trixi_load_primitive_vars( handle, 3, u3 );
-        trixi_load_primitive_vars( handle, 4, u4 );
+        trixi_load_primitive_var( handle, 1, u1 );
+        trixi_load_primitive_var( handle, 2, u2 );
+        trixi_load_primitive_var( handle, 3, u3 );
+        trixi_load_primitive_var( handle, 4, u4 );
 
         // Compute source terms
         source_terms_baroclinic( nnodes, nodes, forest,
