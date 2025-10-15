@@ -315,7 +315,7 @@ function init_simstate()
         return Trixi.tracers(u, equations)[1]
     end
     amr_controller = ControllerThreeLevel(semi, IndicatorMax(semi, variable=first_tracer),
-                                          base_level=1,
+                                          base_level=0,
                                           med_level=2, med_threshold=0.05,
                                           max_level=2, max_threshold=0.05)
     amr_callback = AMRCallback(semi, amr_controller,
