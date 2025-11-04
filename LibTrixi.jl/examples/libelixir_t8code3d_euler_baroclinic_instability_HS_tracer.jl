@@ -73,8 +73,8 @@ function initial_condition_baroclinic_instability(x, t,
     #v = v_perturbation
 
     # Convert spherical velocity to Cartesian
-    v1 = u
-    v2 = 0
+    v1 = -sin(lon) * u
+    v2 = cos(lon) * u
     v3 = 0
     #v1 = -sin(lon) * u - sin(lat) * cos(lon) * v
     #v2 = cos(lon) * u - sin(lat) * sin(lon) * v
