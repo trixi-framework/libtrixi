@@ -73,8 +73,8 @@ function initial_condition_baroclinic_instability(x, t,
     #v = v_perturbation
 
     # Convert spherical velocity to Cartesian
-    v1 = u
-    v2 = 0
+    v1 = -sin(lon) * u
+    v2 = cos(lon) * u
     v3 = 0
     #v1 = -sin(lon) * u - sin(lat) * cos(lon) * v
     #v2 = cos(lon) * u - sin(lat) * sin(lon) * v
@@ -316,8 +316,8 @@ function init_simstate()
     end
     amr_controller = ControllerThreeLevel(semi, IndicatorMax(semi, variable=first_tracer),
                                           base_level=0,
-                                          med_level=2, med_threshold=0.05,
-                                          max_level=2, max_threshold=0.05)
+                                          med_level=2, med_threshold=0.00005,
+                                          max_level=2, max_threshold=0.00005)
     amr_callback = AMRCallback(semi, amr_controller,
                                interval=50)
 
