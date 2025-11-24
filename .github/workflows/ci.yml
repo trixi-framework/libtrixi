@@ -52,7 +52,7 @@ jobs:
       JULIA_DEPOT_PATH: ~/.julia
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Enable Julia cache
         uses: julia-actions/cache@v2
