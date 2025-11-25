@@ -52,7 +52,7 @@ jobs:
       JULIA_DEPOT_PATH: ~/.julia
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Enable Julia cache
         uses: julia-actions/cache@v2
@@ -244,10 +244,12 @@ jobs:
           # all controllers
           ../build/examples/trixi_controller_simple_c          . libelixir_tree1d_advection_basic.jl
           ../build/examples/trixi_controller_simple_f          . libelixir_tree1d_advection_basic.jl
-          ../build/examples/trixi_controller_data_c            . libelixir_t8code2d_advection_amr.jl
-          ../build/examples/trixi_controller_data_f            . libelixir_t8code2d_advection_amr.jl
-          ../build/examples/trixi_controller_t8code_c          . libelixir_t8code2d_advection_amr.jl
-          ../build/examples/trixi_controller_t8code_f          . libelixir_t8code2d_advection_amr.jl
+          ../build/examples/trixi_controller_data_load_c       . libelixir_t8code2d_euler_tracer_amr.jl
+          ../build/examples/trixi_controller_data_load_f       . libelixir_t8code2d_euler_tracer_amr.jl
+          ../build/examples/trixi_controller_data_store_c      . libelixir_t8code2d_euler_tracer_amr.jl
+          ../build/examples/trixi_controller_data_store_f      . libelixir_t8code2d_euler_tracer_amr.jl
+          ../build/examples/trixi_controller_t8code_c          . libelixir_t8code2d_euler_tracer_amr.jl
+          ../build/examples/trixi_controller_t8code_f          . libelixir_t8code2d_euler_tracer_amr.jl
           ../build/examples/trixi_controller_baroclinic_c      . libelixir_t8code3d_euler_baroclinic_instability.jl
           ../build/examples/trixi_controller_baroclinic_f      . libelixir_t8code3d_euler_baroclinic_instability.jl
           mpirun -n 2 ../build/examples/trixi_controller_mpi_c . libelixir_p4est2d_euler_sedov.jl
@@ -276,10 +278,14 @@ jobs:
                          "../build/examples/trixi_controller_simple_c ." \
                          "../build/examples/trixi_controller_simple_f"   \
                          "../build/examples/trixi_controller_simple_f ." \
-                         "../build/examples/trixi_controller_data_c"     \
-                         "../build/examples/trixi_controller_data_c ."   \
-                         "../build/examples/trixi_controller_data_f"     \
-                         "../build/examples/trixi_controller_data_f ."   \
+                         "../build/examples/trixi_controller_data_load_c"     \
+                         "../build/examples/trixi_controller_data_load_c ."   \
+                         "../build/examples/trixi_controller_data_load_f"     \
+                         "../build/examples/trixi_controller_data_load_f ."   \
+                         "../build/examples/trixi_controller_data_store_c"     \
+                         "../build/examples/trixi_controller_data_store_c ."   \
+                         "../build/examples/trixi_controller_data_store_f"     \
+                         "../build/examples/trixi_controller_data_store_f ."   \
                          "../build/examples/trixi_controller_t8code_c"   \
                          "../build/examples/trixi_controller_t8code_c ." \
                          "../build/examples/trixi_controller_t8code_f"   \

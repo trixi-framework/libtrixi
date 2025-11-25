@@ -49,7 +49,7 @@ int main ( int argc, char *argv[] ) {
             data = realloc( data, sizeof(double) * nelements );
 
             // Get element averaged values for first variable
-            trixi_load_element_averaged_primitive_vars(handle, 1, data);
+            trixi_load_element_averaged_primitive_var(handle, 1, data);
         }
     }
 
