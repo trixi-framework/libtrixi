@@ -8,7 +8,7 @@ function trixi_initialize_simulation_jl(filename)
 
     # Initialize simulation state
     # Note: we need `invokelatest` here since the function is dynamically upon `include`
-    simstate = invokelatest(Main.init_simstate)
+    simstate = @invokelatest Main.init_simstate()
 
     if show_debug_output()
         println("Simulation state initialized")
