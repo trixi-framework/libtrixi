@@ -10,7 +10,8 @@ set ( EXAMPLES
       trixi_controller_t8code.c
       trixi_controller_t8code.f90
       trixi_controller_baroclinic.c
-      trixi_controller_baroclinic.f90 )
+      trixi_controller_baroclinic.f90
+      trixi_controller_tracer.c )
 
 if ( NOT T8CODE_FOUND )
     list( FILTER EXAMPLES EXCLUDE REGEX ".*(t|T)8(c|C)(o|O)(d|D)(e|E).*" )
