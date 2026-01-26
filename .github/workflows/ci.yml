@@ -46,10 +46,11 @@ jobs:
             julia_version: '1.12'
             t8code_version: '3.0.1'
     env:
-      # Necessary for HDF5 to play nice with Julia
-      # LD_PRELOAD: /lib/x86_64-linux-gnu/libcurl.so.4
+      # Necessary for HDF5 to play nice with Julia 1.10
+      LD_PRELOAD: ${{ matrix.julia_version == '1.10' && '/lib/x86_64-linux-gnu/libcurl.so.4' || '' }}
       # Necessary such that libtrixi will not use its own default for the depot path
       JULIA_DEPOT_PATH: ~/.julia
+      JULIA_NUM_THREADS: 1
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
