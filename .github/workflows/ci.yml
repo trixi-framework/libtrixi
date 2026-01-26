@@ -51,6 +51,7 @@ jobs:
       LD_PRELOAD: ${{ matrix.julia_version == '1.10' && '/lib/x86_64-linux-gnu/libcurl.so.4' || '' }}
       # Necessary such that libtrixi will not use its own default for the depot path
       JULIA_DEPOT_PATH: ~/.julia
+      # This seems to fix some stalling C tests
       JULIA_NUM_THREADS: 1
     steps:
       - name: Checkout repository
