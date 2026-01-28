@@ -52,7 +52,7 @@ jobs:
       # Necessary such that libtrixi will not use its own default for the depot path
       JULIA_DEPOT_PATH: ~/.julia
       # This seems to fix some stalling C tests
-      # JULIA_NUM_THREADS: 1
+      JULIA_NUM_THREADS: 1
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -117,25 +117,30 @@ jobs:
 
       - name: Configure (test_type == 'regular')
         if: ${{ matrix.test_type == 'regular' }}
-        # remove -Wno-error=unused-parameter once https://github.com/JuliaLang/julia/pull/57681 is in the release
+        # remove once https://github.com/JuliaLang/julia/pull/57681 is in the release
+        with:
+          c_flags: ${{ matrix.julia_version == '1.12' && '-Wno-error=unused-parameter' || '' }}
         run: |
           mkdir build
           cd build
           cmake .. -DCMAKE_INSTALL_PREFIX=../install \
                    -DCMAKE_BUILD_TYPE=Release \
-                   -DCMAKE_C_FLAGS="-Wno-error=unused-parameter" \
+                   -DCMAKE_C_FLAGS="${INPUT_C_FLAGS}" \
                    -DT8CODE_ROOT=$PWD/../t8code-local/prefix \
                    -DENABLE_TESTING=ON -DJULIA_PROJECT_PATH=../libtrixi-julia
 
       - name: Configure (test_type == 'coverage')
         if: ${{ matrix.test_type == 'coverage' }}
+        # remove once https://github.com/JuliaLang/julia/pull/57681 is in the release
+        with:
+          c_flags: ${{ matrix.julia_version == '1.12' && '-Wno-error=unused-parameter' || '' }}
         run: |
           mkdir build
           cd build
           cmake .. -DCMAKE_INSTALL_PREFIX=../install \
                    -DCMAKE_BUILD_TYPE=Debug \
                    -DT8CODE_ROOT=$PWD/../t8code-local/prefix \
-                   -DCMAKE_C_FLAGS="-cpp --coverage -O0 -Wno-error=unused-parameter" \
+                   -DCMAKE_C_FLAGS="-cpp --coverage -O0 ${INPUT_C_FLAGS}" \
                    -DCMAKE_Fortran_FLAGS="-cpp --coverage -O0" \
                    -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
                    -DCMAKE_SHARED_LINKER_FLAGS="--coverage" \
@@ -210,7 +215,7 @@ jobs:
         if: ${{ matrix.test_type == 'package-compiler' }}
         run: |
           cd build
-          make -j2
+          make
           du -hL ./prefix-pc/lib/libtrixi.so
 
       - name: Test external CMake project
