@@ -52,7 +52,7 @@ jobs:
       # Necessary such that libtrixi will not use its own default for the depot path
       JULIA_DEPOT_PATH: ~/.julia
       # This seems to fix some stalling C tests
-      JULIA_NUM_THREADS: 1
+      # JULIA_NUM_THREADS: 1
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -117,6 +117,7 @@ jobs:
 
       - name: Configure (test_type == 'regular')
         if: ${{ matrix.test_type == 'regular' }}
+        # remove -Wno-error=unused-parameter once https://github.com/JuliaLang/julia/pull/57681 is in the release
         run: |
           mkdir build
           cd build
