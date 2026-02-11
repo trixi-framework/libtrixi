@@ -1,5 +1,5 @@
 using LibTrixi
-using OrdinaryDiffEq
+using OrdinaryDiffEqLowStorageRK
 using Trixi
 
 # The function to create the simulation state needs to be named `init_simstate`

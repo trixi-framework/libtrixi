@@ -4,7 +4,7 @@
 # Note that this libelixir is based on an elixir by Erik Faulhaber for Trixi.jl
 # Source: https://github.com/trixi-framework/Trixi.jl/blob/main/examples/p4est_3d_dgsem/elixir_euler_circular_wind_nonconforming.jl
 
-using OrdinaryDiffEq
+using OrdinaryDiffEqLowStorageRK
 using Trixi
 using LinearAlgebra
 using LibTrixi

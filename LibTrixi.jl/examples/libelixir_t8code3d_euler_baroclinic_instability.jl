@@ -9,7 +9,7 @@
 #   A proposed baroclinic wave test case for deep- and shallow-atmosphere dynamical cores
 #   https://doi.org/10.1002/qj.2241
 
-using OrdinaryDiffEq
+using OrdinaryDiffEqLowStorageRK
 using Trixi
 using LinearAlgebra
 using LibTrixi
