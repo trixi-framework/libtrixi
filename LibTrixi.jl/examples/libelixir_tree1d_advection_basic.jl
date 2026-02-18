@@ -1,6 +1,6 @@
 using LibTrixi
 using Trixi
-using OrdinaryDiffEq
+using OrdinaryDiffEqLowStorageRK
 
 # The function to create the simulation state needs to be named `init_simstate`
 function init_simstate()
@@ -19,11 +19,13 @@ function init_simstate()
 
     # Create a uniformly refined mesh with periodic boundaries
     mesh = TreeMesh(coordinates_min, coordinates_max,
-                    initial_refinement_level=4,
-                    n_cells_max=30_000) # set maximum capacity of tree data structure
+                    initial_refinement_level = 4,
+                    n_cells_max = 30_000, periodicity = true)
 
     # A semidiscretization collects data structures and functions for the spatial discretization
-    semi = SemidiscretizationHyperbolic(mesh, equations, initial_condition_convergence_test, solver)
+    semi = SemidiscretizationHyperbolic(mesh, equations,
+                                        initial_condition_convergence_test, solver;
+                                        boundary_conditions = boundary_condition_periodic)
 
 
 

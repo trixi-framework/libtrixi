@@ -29,7 +29,7 @@ function trixi_step_jl(simstate)
 
     ret = check_error(simstate.integrator)
 
-    if ret != :Success
+    if !successful_retcode(ret)
         error("integrator failed to perform time step, return code: ", ret)
     end
 
