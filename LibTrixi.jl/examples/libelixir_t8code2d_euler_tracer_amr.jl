@@ -40,11 +40,13 @@ function init_simstate()
     trees_per_dimension = (4, 4)   # initial resolution (without refinement)
     mesh = T8codeMesh(trees_per_dimension, polydeg = 1,
                       coordinates_min = coordinates_min, coordinates_max = coordinates_max,
-                      initial_refinement_level = 1)
+                      initial_refinement_level = 1,
+                      periodicity = true)
 
     # Create spatial discretization
     semi = SemidiscretizationHyperbolic(mesh, equations, initial_condition_wave_blob,
-                                        solver)
+                                        solver;
+                                        boundary_conditions = boundary_condition_periodic)
 
     ###############################################################################
     # ODE solvers, callbacks etc.
