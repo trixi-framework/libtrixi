@@ -60,8 +60,8 @@ function init_simstate()
     # setup of the problem
     initial_condition = initial_condition_circular_wind
 
-    boundary_conditions = Dict(:inside => boundary_condition_slip_wall,
-                               :outside => boundary_condition_slip_wall)
+    boundary_conditions = (; inside = boundary_condition_slip_wall,
+                           outside = boundary_condition_slip_wall)
 
     # estimate for speed of sound
     surface_flux = FluxLMARS(374)
@@ -73,7 +73,7 @@ function init_simstate()
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_levels, layers, 6.371229e6, 30000.0,
                                        polydeg = 3, initial_refinement_level = 0)
 
-    semi = SemidiscretizationHyperbolic(mesh, equations, initial_condition, solver,
+    semi = SemidiscretizationHyperbolic(mesh, equations, initial_condition, solver;
                                         source_terms = source_terms_circular_wind,
                                         boundary_conditions = boundary_conditions)
     

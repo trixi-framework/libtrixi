@@ -5,4 +5,4 @@ Trixi = "a7f1ee26-1774-49b1-8366-f1abc58fbfcb"
 
 [compat]
 OrdinaryDiffEqLowStorageRK = "1"
-Trixi = "0.11.12, 0.12, 0.13, 0.14"
+Trixi = "0.15"
