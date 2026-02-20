@@ -29,11 +29,12 @@ function Trixi.calc_sources!(du, u, t, source_terms::SourceTerm,
         for k in eachnode(dg), j in eachnode(dg), i in eachnode(dg)
             u_local = Trixi.get_node_vars(u, equations, dg, i, j, k, element)
             du_local = source_terms(u_local, i, j, k, element, t, equations)
-            #x_local = Trixi.get_node_coords(node_coordinates, equations, dg,
-            #                                i, j, k, element)
-            #du_local_ref = source_terms_baroclinic_instability(u_local, x_local, t,
-            #                                                   equations)
+            x_local = Trixi.get_node_coords(node_coordinates, equations, dg,
+                                            i, j, k, element)
+            du_local_ref = source_terms_baroclinic_instability(u_local, x_local, t,
+                                                               equations)
             Trixi.add_to_node_vars!(du, du_local, equations, dg, i, j, k, element)
+            Trixi.add_to_node_vars!(du, du_local_ref, equations, dg, i, j, k, element)
         end
     end
     return nothing
@@ -231,8 +232,9 @@ end
     # Coriolis term, -2Ω × ρv = -2 * angular_velocity * (0, 0, 1) × u[2:4]
     du2 -= -2 * angular_velocity * u[3]
     du3 -= 2 * angular_velocity * u[2]
+    du6 = 0
 
-    return SVector(du1, du2, du3, du4, du5)
+    return SVector(du1, du2, du3, du4, du5, du6)
 end
 
 @inline function Trixi.boundary_condition_slip_wall(u_inner,
@@ -273,7 +275,7 @@ function init_simstate()
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_levels, layers, 6.371229e6, 30000.0,
                                        polydeg = 5, initial_refinement_level = 0)
 
-    # create the data registry and four vectors for the source terms
+    # create the data registry and five vectors for the source terms
     registry = LibTrixiDataRegistry(undef, 5)
 
     nnodesdim = Trixi.nnodes(solver)
@@ -295,7 +297,7 @@ function init_simstate()
                                         boundary_conditions = boundary_conditions)
 
     # for nice results, use 10 days
-    days = 0.02
+    days = 0.04
     tspan = (0.0, days * 24 * 60 * 60.0)
 
     ode = semidiscretize(semi, tspan)
@@ -319,7 +321,7 @@ function init_simstate()
                                           med_level=1, med_threshold=0.0001,
                                           max_level=1, max_threshold=0.0005)
     amr_callback = AMRCallback(semi, amr_controller,
-                               interval=5)
+                               interval=20)
 
     save_solution = SaveSolutionCallback(interval = 5,
                                          save_initial_solution = true,
