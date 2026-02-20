@@ -184,7 +184,7 @@ function init_simstate()
     callbacks = CallbackSet(summary_callback,
                             analysis_callback,
                             alive_callback,
-                            #amr_callback,
+                            amr_callback,
                             #stepsize_callback,
                             save_solution)
 
