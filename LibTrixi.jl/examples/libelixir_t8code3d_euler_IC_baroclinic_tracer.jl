@@ -29,11 +29,12 @@ function Trixi.calc_sources!(du, u, t, source_terms::SourceTerm,
         for k in eachnode(dg), j in eachnode(dg), i in eachnode(dg)
             u_local = Trixi.get_node_vars(u, equations, dg, i, j, k, element)
             du_local = source_terms(u_local, i, j, k, element, t, equations)
-            #x_local = Trixi.get_node_coords(node_coordinates, equations, dg,
-            #                                i, j, k, element)
-            #du_local_ref = source_terms_baroclinic_instability(u_local, x_local, t,
-            #                                                   equations)
+            x_local = Trixi.get_node_coords(node_coordinates, equations, dg,
+                                            i, j, k, element)
+            du_local_ref = source_terms_baroclinic_instability(u_local, x_local, t,
+                                                               equations)
             Trixi.add_to_node_vars!(du, du_local, equations, dg, i, j, k, element)
+            Trixi.add_to_node_vars!(du, du_local_ref, equations, dg, i, j, k, element)
         end
     end
     return nothing
@@ -71,14 +72,12 @@ function initial_condition_baroclinic_instability(x, t,
 
     #u += u_perturbation
     #v = v_perturbation
+    v = 0
 
     # Convert spherical velocity to Cartesian
-    v1 = -sin(lon) * u
-    v2 = cos(lon) * u
-    v3 = 0
-    #v1 = -sin(lon) * u - sin(lat) * cos(lon) * v
-    #v2 = cos(lon) * u - sin(lat) * sin(lon) * v
-    #v3 = cos(lat) * v
+    v1 = -sin(lon) * u - sin(lat) * cos(lon) * v
+    v2 = cos(lon) * u - sin(lat) * sin(lon) * v
+    v3 = cos(lat) * v
 
     # Initial condition for tracers: blob in fraction of density
     #tracer = 0.2 * exp(-20 * (x[1] + 0.45)^2 - 10 * (x[2] - 0.15)^2 + (x[3])^2)
@@ -231,8 +230,9 @@ end
     # Coriolis term, -2Ω × ρv = -2 * angular_velocity * (0, 0, 1) × u[2:4]
     du2 -= -2 * angular_velocity * u[3]
     du3 -= 2 * angular_velocity * u[2]
+    du6 = 0
 
-    return SVector(du1, du2, du3, du4, du5)
+    return SVector(du1, du2, du3, du4, du5, du6)
 end
 
 @inline function Trixi.boundary_condition_slip_wall(u_inner,
@@ -273,7 +273,7 @@ function init_simstate()
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_levels, layers, 6.371229e6, 30000.0,
                                        polydeg = 5, initial_refinement_level = 0)
 
-    # create the data registry and four vectors for the source terms
+    # create the data registry and five vectors for the source terms
     registry = LibTrixiDataRegistry(undef, 5)
 
     nnodesdim = Trixi.nnodes(solver)
@@ -295,7 +295,7 @@ function init_simstate()
                                         boundary_conditions = boundary_conditions)
 
     # for nice results, use 10 days
-    days = 0.02
+    days = 0.04
     tspan = (0.0, days * 24 * 60 * 60.0)
 
     ode = semidiscretize(semi, tspan)

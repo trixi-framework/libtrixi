@@ -145,7 +145,7 @@ function init_simstate()
                                         boundary_conditions = boundary_conditions)
     
     # 3 days
-    days = 3
+    days = 0.02
     tspan = (0.0, days * 24 * 60 * 60.0)
 
     ode = semidiscretize(semi, tspan)
