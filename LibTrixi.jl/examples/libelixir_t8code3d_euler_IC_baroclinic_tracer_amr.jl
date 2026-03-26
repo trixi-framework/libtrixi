@@ -23,39 +23,41 @@ end
 
 # We overwrite Trixi.jl's internal method here such that it calls source_terms with indices
 function Trixi.calc_sources!(du, u, t, source_terms::SourceTerm,
-                             equations::CompressibleEulerEquations3D, dg::DG, cache)
+                             equations::PassiveTracerEquations, dg::DG, cache)
     @unpack node_coordinates = cache.elements
     Trixi.@threaded for element in eachelement(dg, cache)
         for k in eachnode(dg), j in eachnode(dg), i in eachnode(dg)
             u_local = Trixi.get_node_vars(u, equations, dg, i, j, k, element)
             du_local = source_terms(u_local, i, j, k, element, t, equations)
-            #x_local = Trixi.get_node_coords(node_coordinates, equations, dg,
-            #                                i, j, k, element)
-            #du_local_ref = source_terms_baroclinic_instability(u_local, x_local, t,
-            #                                                   equations)
+            x_local = Trixi.get_node_coords(node_coordinates, equations, dg,
+                                            i, j, k, element)
+            du_local_ref = source_terms_baroclinic_instability(u_local, x_local, t,
+                                                               equations)
             Trixi.add_to_node_vars!(du, du_local, equations, dg, i, j, k, element)
+            Trixi.add_to_node_vars!(du, du_local_ref, equations, dg, i, j, k, element)
         end
     end
     return nothing
 end
 
 @inline function (source::SourceTerm)(u, i, j, k, element, t,
-                                      equations::CompressibleEulerEquations3D)
+                                      equations::PassiveTracerEquations)
     @unpack nnodesdim = source
     index_global = (element-1) * nnodesdim^3 + (k-1) * nnodesdim^2 + (j-1) * nnodesdim + i
     du2::Vector{Float64} = source.registry[1]
     du3::Vector{Float64} = source.registry[2]
     du4::Vector{Float64} = source.registry[3]
     du5::Vector{Float64} = source.registry[4]
+    du6::Vector{Float64} = source.registry[5]
     return SVector(zero(eltype(u)), du2[index_global], du3[index_global],
-                   du4[index_global], du5[index_global])
+                   du4[index_global], du5[index_global], du6[index_global])
 end
 
 
 # Initial condition for an idealized baroclinic instability test
 # https://doi.org/10.1002/qj.2241, Section 3.2 and Appendix A
 function initial_condition_baroclinic_instability(x, t,
-                                                  equations::CompressibleEulerEquations3D)
+                                                  equations::PassiveTracerEquations)
     lon, lat, r = cartesian_to_sphere(x)
     radius_earth = 6.371229e6
     # Make sure that the r is not smaller than radius_earth
@@ -70,16 +72,18 @@ function initial_condition_baroclinic_instability(x, t,
 
     #u += u_perturbation
     #v = v_perturbation
+    v = 0
 
     # Convert spherical velocity to Cartesian
-    v1 = -sin(lon) * u
-    v2 = cos(lon) * u
-    v3 = 0
-    #v1 = -sin(lon) * u - sin(lat) * cos(lon) * v
-    #v2 = cos(lon) * u - sin(lat) * sin(lon) * v
-    #v3 = cos(lat) * v
+    v1 = -sin(lon) * u - sin(lat) * cos(lon) * v
+    v2 = cos(lon) * u - sin(lat) * sin(lon) * v
+    v3 = cos(lat) * v
 
-    return prim2cons(SVector(rho, v1, v2, v3, p), equations)
+    # Initial condition for tracers: blob in fraction of density
+    #tracer = 0.2 * exp(-20 * (x[1] + 0.45)^2 - 10 * (x[2] - 0.15)^2 + (x[3])^2)
+    tracer = 0
+
+    return prim2cons(SVector(rho, v1, v2, v3, p, tracer), equations)
 end
 
 function cartesian_to_sphere(x)
@@ -204,7 +208,7 @@ function perturbation_stream_function(lon, lat, z)
 end
 
 @inline function source_terms_baroclinic_instability(u, x, t,
-                                                     equations::CompressibleEulerEquations3D)
+                                                     equations::PassiveTracerEquations)
     radius_earth = 6.371229e6  # a
     gravitational_acceleration = 9.80616     # g
     angular_velocity = 7.29212e-5  # Ω
@@ -226,17 +230,30 @@ end
     # Coriolis term, -2Ω × ρv = -2 * angular_velocity * (0, 0, 1) × u[2:4]
     du2 -= -2 * angular_velocity * u[3]
     du3 -= 2 * angular_velocity * u[2]
+    du6 = 0
 
-    return SVector(du1, du2, du3, du4, du5)
+    return SVector(du1, du2, du3, du4, du5, du6)
 end
 
+@inline function Trixi.boundary_condition_slip_wall(u_inner,
+                                              normal_direction::AbstractVector,
+                                              x, t,
+                                              surface_flux_function,
+                                              tracer_equations::PassiveTracerEquations)
+    @unpack flow_equations = tracer_equations
+    u_flow = Trixi.flow_variables(u_inner, tracer_equations)
+    bc_flow = boundary_condition_slip_wall(u_flow, normal_direction, x, t,
+                                           surface_flux_function, flow_equations)
+    return (bc_flow..., 0)
+end
 
 # The function to create the simulation state needs to be named `init_simstate`
 function init_simstate()
 
     # compressible euler equations
     gamma = 1.4
-    equations = CompressibleEulerEquations3D(gamma)
+    flow_equations = CompressibleEulerEquations3D(gamma)
+    equations = PassiveTracerEquations(flow_equations, n_tracers = 1)
 
     # setup of the problem
     initial_condition = initial_condition_baroclinic_instability
@@ -245,8 +262,8 @@ function init_simstate()
                                :outside => boundary_condition_slip_wall)
 
     # estimate for the speed of sound
-    surface_flux = FluxLMARS(340)
-    volume_flux = flux_kennedy_gruber
+    surface_flux = FluxTracerEquationsCentral(FluxLMARS(340))
+    volume_flux = FluxTracerEquationsCentral(flux_kennedy_gruber)
     solver = DGSEM(polydeg = 5, surface_flux = surface_flux,
                    volume_integral = VolumeIntegralFluxDifferencing(volume_flux))
 
@@ -256,8 +273,8 @@ function init_simstate()
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_levels, layers, 6.371229e6, 30000.0,
                                        polydeg = 5, initial_refinement_level = 0)
 
-    # create the data registry and four vectors for the source terms
-    registry = LibTrixiDataRegistry(undef, 4)
+    # create the data registry and five vectors for the source terms
+    registry = LibTrixiDataRegistry(undef, 5)
 
     nnodesdim = Trixi.nnodes(solver)
     nnodes = nnodesdim^3
@@ -269,6 +286,7 @@ function init_simstate()
     registry[2] = zeros(Float64, nelements*nnodes)
     registry[3] = zeros(Float64, nelements*nnodes)
     registry[4] = zeros(Float64, nelements*nnodes)
+    registry[5] = zeros(Float64, nelements*nnodes)
 
     source_term_data_registry = SourceTerm(nnodesdim, registry)
 
@@ -277,7 +295,7 @@ function init_simstate()
                                         boundary_conditions = boundary_conditions)
 
     # for nice results, use 10 days
-    days = 0.02
+    days = 0.04
     tspan = (0.0, days * 24 * 60 * 60.0)
 
     ode = semidiscretize(semi, tspan)
@@ -289,6 +307,20 @@ function init_simstate()
 
     alive_callback = AliveCallback(analysis_interval = analysis_interval)
 
+    # StepsizeCallback handles the re-calculation of the maximum Δt after each time step
+    #stepsize_callback = StepsizeCallback(cfl = 1.0)
+    
+    # AMRCallback triggers adaptive mesh refinement
+    @inline function first_tracer(u, equations::PassiveTracerEquations)
+        return Trixi.tracers(u, equations)[1]
+    end
+    amr_controller = ControllerThreeLevel(semi, IndicatorMax(semi, variable=first_tracer),
+                                          base_level=0,
+                                          med_level=1, med_threshold=0.0001,
+                                          max_level=1, max_threshold=0.0005)
+    amr_callback = AMRCallback(semi, amr_controller,
+                               interval=20)
+
     save_solution = SaveSolutionCallback(interval = 5,
                                          save_initial_solution = true,
                                          save_final_solution = true,
@@ -298,9 +330,12 @@ function init_simstate()
     callbacks = CallbackSet(summary_callback,
                             analysis_callback,
                             alive_callback,
+                            amr_callback,
                             save_solution)
+    #                        stepsize_callback)
 
     # use a Runge-Kutta method with automatic (error based) time step size control
+    # use OrdinaryDiffEq.False or Trixi.False
     integrator = init(ode, RDPK3SpFSAL49(thread = Trixi.False());
                       abstol = 1.0e-6, reltol = 1.0e-6,
                       ode_default_options()..., callback = callbacks, maxiters=1e7);
