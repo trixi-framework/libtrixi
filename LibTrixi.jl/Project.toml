@@ -12,6 +12,6 @@ Trixi = "a7f1ee26-1774-49b1-8366-f1abc58fbfcb"
 [compat]
 MPI = "0.20.13"
 Pkg = "1.8"
-SciMLBase = "2.33.0"
+SciMLBase = "2.33.0, 3"
 Trixi = "0.15"
 julia = "1.8"
