@@ -65,7 +65,7 @@ jobs:
           key: ${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.t8code_version }}
 
       - name: Install Julia
-        uses: julia-actions/setup-julia@v2
+        uses: julia-actions/setup-julia@v3
         with:
           version: ${{ matrix.julia_version }}
           arch: ${{ matrix.arch }}
