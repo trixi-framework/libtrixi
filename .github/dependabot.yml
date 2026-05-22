@@ -5,3 +5,20 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "monthly"
+    groups:
+      # Group all GitHub Actions PRs into a single PR:
+      all-github-actions:
+        patterns:
+          - "*"
+  - package-ecosystem: "julia"
+    directories: # Location of Julia projects
+      - "/LibTrixi.jl"
+      - "/LibTrixi.jl/test"
+      - "/docs"
+    schedule:
+      interval: "daily"
+    groups:
+      # Group all Julia package updates into a single PR:
+      all-julia-dependencies:
+        patterns:
+          - "*"
