@@ -22,7 +22,7 @@ struct SourceTerm
 end
 
 # We overwrite Trixi.jl's internal method here such that it calls source_terms with indices
-function Trixi.calc_sources!(du, u, t, source_terms::SourceTerm,
+function Trixi.calc_sources!(backend::Nothing, du, u, t, source_terms::SourceTerm,
                              equations::CompressibleEulerEquations3D, dg::DG, cache)
     @unpack node_coordinates = cache.elements
     Trixi.@threaded for element in eachelement(dg, cache)
