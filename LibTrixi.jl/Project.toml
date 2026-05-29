@@ -1,27 +1,17 @@
 name = "LibTrixi"
 uuid = "7e097bd5-a775-4bc1-90b6-ad92bd7220c1"
-authors = ["Michael Schlottke-Lakemper <michael@sloede.com>", "Benedict Geihe <bgeihe@uni-koeln.de>"]
 version = "0.1.6-pre"
+authors = ["Michael Schlottke-Lakemper <michael@sloede.com>", "Benedict Geihe <bgeihe@uni-koeln.de>"]
 
 [deps]
 MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"
-OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+SciMLBase = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
 Trixi = "a7f1ee26-1774-49b1-8366-f1abc58fbfcb"
 
 [compat]
 MPI = "0.20.13"
-OrdinaryDiffEq = "6.53.2"
 Pkg = "1.8"
-Trixi = "0.11.12, 0.12, 0.13"
+SciMLBase = "2.33.0, 3"
+Trixi = "0.15, 0.16"
 julia = "1.8"
-
-[preferences.OrdinaryDiffEq]
-PrecompileAutoSpecialize = false
-PrecompileAutoSwitch = false
-PrecompileDefaultSpecialize = true
-PrecompileFunctionWrapperSpecialize = false
-PrecompileLowStorage = true
-PrecompileNoSpecialize = false
-PrecompileNonStiff = true
-PrecompileStiff = false
