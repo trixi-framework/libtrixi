@@ -22,7 +22,7 @@ struct SourceTerm
 end
 
 # We overwrite Trixi.jl's internal method here such that it calls source_terms with indices
-function Trixi.calc_sources!(du, u, t, source_terms::SourceTerm,
+function Trixi.calc_sources!(backend::Nothing, du, u, t, source_terms::SourceTerm,
                              equations::PassiveTracerEquations, dg::DG, cache)
     @unpack node_coordinates = cache.elements
     Trixi.@threaded for element in eachelement(dg, cache)
@@ -271,7 +271,7 @@ function init_simstate()
     lat_lon_levels = 2
     layers = 4
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_levels, layers, 6.371229e6, 30000.0,
-                                       polydeg = 5, initial_refinement_level = 0)
+                                       polydeg = 5, initial_refinement_level = 1)
 
     # create the data registry and five vectors for the source terms
     registry = LibTrixiDataRegistry(undef, 5)
@@ -319,7 +319,7 @@ function init_simstate()
                                           med_level=1, med_threshold=0.0001,
                                           max_level=1, max_threshold=0.0005)
     amr_callback = AMRCallback(semi, amr_controller,
-                               interval=20)
+                               interval=200)
 
     save_solution = SaveSolutionCallback(interval = 5,
                                          save_initial_solution = true,
@@ -336,7 +336,7 @@ function init_simstate()
 
     # use a Runge-Kutta method with automatic (error based) time step size control
     # use OrdinaryDiffEq.False or Trixi.False
-    integrator = init(ode, RDPK3SpFSAL49(thread = Trixi.False());
+    integrator = init(ode, RDPK3SpFSAL49(;thread = Trixi.Threaded());
                       abstol = 1.0e-6, reltol = 1.0e-6,
                       ode_default_options()..., callback = callbacks, maxiters=1e7);
 

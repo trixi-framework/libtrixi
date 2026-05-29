@@ -52,6 +52,8 @@ int main ( int argc, char *argv[] ) {
     while ( !trixi_is_finished(handle) ) {
 
         trixi_step(handle);
+        // Get time step length
+        printf("*** Trixi controller ***   Current time step length: %f\n", trixi_calculate_dt(handle));
     }
 
     // get number of elements

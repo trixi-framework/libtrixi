@@ -22,7 +22,7 @@ struct SourceTerm
 end
 
 # We overwrite Trixi.jl's internal method here such that it calls source_terms with indices
-function Trixi.calc_sources!(du, u, t, source_terms::SourceTerm,
+function Trixi.calc_sources!(backend::Nothing, du, u, t, source_terms::SourceTerm,
                              equations::PassiveTracerEquations, dg::DG, cache)
     @unpack node_coordinates = cache.elements
     Trixi.@threaded for element in eachelement(dg, cache)
@@ -295,7 +295,7 @@ function init_simstate()
                                         boundary_conditions = boundary_conditions)
 
     # for nice results, use 10 days
-    days = 0.04
+    days = 0.25
     tspan = (0.0, days * 24 * 60 * 60.0)
 
     ode = semidiscretize(semi, tspan)
@@ -307,7 +307,7 @@ function init_simstate()
 
     alive_callback = AliveCallback(analysis_interval = analysis_interval)
 
-    save_solution = SaveSolutionCallback(interval = 5,
+    save_solution = SaveSolutionCallback(interval = 100,
                                          save_initial_solution = true,
                                          save_final_solution = true,
                                          solution_variables = cons2prim,
@@ -320,7 +320,7 @@ function init_simstate()
 
     # use a Runge-Kutta method with automatic (error based) time step size control
     # use OrdinaryDiffEq.False or Trixi.False
-    integrator = init(ode, RDPK3SpFSAL49(thread = Trixi.False());
+    integrator = init(ode, RDPK3SpFSAL49(;thread = Trixi.Threaded());
                       abstol = 1.0e-6, reltol = 1.0e-6,
                       ode_default_options()..., callback = callbacks, maxiters=1e7);
 
