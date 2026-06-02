@@ -268,8 +268,8 @@ function init_simstate()
                    volume_integral = VolumeIntegralFluxDifferencing(volume_flux))
 
     # for nice results, use 4 and 8 here
-    lat_lon_levels = 2
-    layers = 4
+    lat_lon_levels = 4
+    layers = 8
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_levels, layers, 6.371229e6, 30000.0,
                                        polydeg = 5, initial_refinement_level = 1)
 
@@ -295,7 +295,7 @@ function init_simstate()
                                         boundary_conditions = boundary_conditions)
 
     # for nice results, use 10 days
-    days = 0.04
+    days = 5.0
     tspan = (0.0, days * 24 * 60 * 60.0)
 
     ode = semidiscretize(semi, tspan)
@@ -319,7 +319,7 @@ function init_simstate()
                                           med_level=1, med_threshold=0.0001,
                                           max_level=1, max_threshold=0.0005)
     amr_callback = AMRCallback(semi, amr_controller,
-                               interval=200)
+                               interval=10000)
 
     save_solution = SaveSolutionCallback(interval = 5,
                                          save_initial_solution = true,
