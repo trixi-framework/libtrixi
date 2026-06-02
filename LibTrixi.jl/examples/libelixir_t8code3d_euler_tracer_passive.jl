@@ -184,8 +184,6 @@ function init_simstate()
     callbacks = CallbackSet(summary_callback,
                             analysis_callback,
                             alive_callback,
-                            amr_callback,
-                            #stepsize_callback,
                             save_solution)
 
     # use a Runge-Kutta method with automatic (error based) time step size control
