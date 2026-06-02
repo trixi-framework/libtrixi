@@ -4,7 +4,7 @@
 # Note that this libelixir is based on an elixir by Erik Faulhaber for Trixi.jl
 # Source: https://github.com/trixi-framework/Trixi.jl/blob/main/examples/p4est_3d_dgsem/elixir_euler_circular_wind_nonconforming.jl
 
-using OrdinaryDiffEq
+using OrdinaryDiffEqLowStorageRK
 using Trixi
 using LinearAlgebra
 using LibTrixi
@@ -60,7 +60,7 @@ end
 
 # We overwrite Trixi.jl's internal method here such that it calls source_terms with indices
 # and with coordinates, respectively
-function Trixi.calc_sources!(du, u, t, source_terms::SourceTerm,
+function Trixi.calc_sources!(backend::Nothing, du, u, t, source_terms::SourceTerm,
                              equations::PassiveTracerEquations, dg::DG, cache)
     @unpack node_coordinates = cache.elements
     Trixi.@threaded for element in eachelement(dg, cache)
@@ -111,8 +111,8 @@ function init_simstate()
     # setup of the problem
     initial_condition = initial_condition_circular_wind
 
-    boundary_conditions = Dict(:inside => boundary_condition_slip_wall,
-                               :outside => boundary_condition_slip_wall)
+    boundary_conditions = (; inside = boundary_condition_slip_wall,
+                               outside = boundary_condition_slip_wall)
 
     # estimate for speed of sound
     surface_flux = FluxTracerEquationsCentral(FluxLMARS(374))
@@ -191,7 +191,7 @@ function init_simstate()
     # use a Runge-Kutta method with automatic (error based) time step size control
     # alternatively CarpenterKennedy with CFL-based time step control
     integrator = init(ode,
-                      RDPK3SpFSAL49(thread = Trixi.False()); abstol = 1.0e-6, reltol = 1.0e-6,
+                      RDPK3SpFSAL49(;thread = Trixi.Threaded()); abstol = 1.0e-6, reltol = 1.0e-6,
                       #CarpenterKennedy2N54(williamson_condition=false); dt=0.001,
                       ode_default_options()..., callback = callbacks, maxiters=1e7);
 
