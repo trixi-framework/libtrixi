@@ -271,7 +271,7 @@ function init_simstate()
     lat_lon_levels = 4
     layers = 8
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_levels, layers, 6.371229e6, 30000.0,
-                                       polydeg = 5, initial_refinement_level = 0)
+                                       polydeg = 5, initial_refinement_level = 1)
 
     # create the data registry and five vectors for the source terms
     registry = LibTrixiDataRegistry(undef, 5)
