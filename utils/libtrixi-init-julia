@@ -53,30 +53,28 @@ optional arguments:
 
     --hdf5-library HDF5_LIBRARY
                     Path to the HDF5 shared library, i.e., something like
-                    'path/to/libhdf5.so'. If empty, Julia will try to figure out the path
-                    automatically. (default: '')
+                    'path/to/libhdf5.so' or 'path/to/libhdf5.dylib'. If empty, Julia
+                    will try to figure out the path automatically. (default: '')
 
     --mpi-library MPI_LIBRARY
                     Path to the MPI C shared library, i.e., something like
-                    'path/to/libmpi.so'. If empty, Julia will try to figure out the path
-                    automatically. (default: '')
+                    'path/to/libmpi.so' or 'path/to/libmpi.dylib'. If empty, Julia will
+                    try to figure out the path automatically. (default: '')
 
     --t8code-library T8CODE_LIBRARY
                     Path to the t8code shared library, i.e., something like
-                    'path/to/libt8.so'. If empty, Julia will try to figure out the path
-                    automatically. (default: '')
+                    'path/to/libt8.so' or 'path/to/libt8.dylib'. If empty, Julia will
+                    try to figure out the path automatically. (default: '')
 
     --p4est-library P4EST_LIBRARY
                     Path to the p4est shared library, i.e., something like
-                    'path/to/libp4est.so'.  If omitted, it will be assumed to be located
-                    next to the t8code library. (default: '\$(dirname \$T8CODE_LIBRARY)/
-                    libp4est.so')
+                    'path/to/libp4est.so' or 'path/to/libp4est.dylib'. If omitted, it
+                    will be assumed to be located next to the t8code library.
 
     --sc-library SC_LIBRARY
                     Path to the sc shared library, i.e., something like
-                    'path/to/libsc.so'. If omitted, it will be assumed to be located next
-                    to the t8code library. (default: '\$(dirname \$T8CODE_LIBRARY)/
-                    libsc.so')
+                    'path/to/libsc.so' or 'path/to/libsc.dylib'. If omitted, it will be
+                    assumed to be located next to the t8code library.
 EOF
 }
 
@@ -171,29 +169,50 @@ julia_exec="$LIBTRIXI_JULIA_EXEC"
 # Save Julia depot path
 julia_depot="$LIBTRIXI_JULIA_DEPOT"
 
-# Check if libhdf5.so was given by the user or try to find it using Julia
+# Determine platform shared library suffix
+case "$(uname -s)" in
+  Linux)
+    shared_library_suffix=so
+    ;;
+  Darwin)
+    shared_library_suffix=dylib
+    ;;
+  *)
+    shared_library_suffix=so
+    ;;
+esac
+
+# Check if the HDF5 library was given by the user or try to find it using Julia
 if [ -z "$LIBTRIXI_HDF5_LIBRARY" ]; then
-  hdf5_libdir="$($julia_exec -e 'using Libdl; find_library("libhdf5") |> dlpath |> dirname |> println')"
-  if [ -z "$hdf5_libdir" ]; then
-    die "location of hdf5 library could not be determined automatically (use '--hdf5-library' instead)"
+  hdf5_library="$($julia_exec -e '
+using Libdl
+path = find_library("libhdf5")
+isempty(path) || println(dlpath(path))')"
+  if [ -z "$hdf5_library" ]; then
+    die "location of hdf5 library could not be determined; use --hdf5-library"
   fi
 else
-  hdf5_libdir="$(dirname $LIBTRIXI_HDF5_LIBRARY)"
+  hdf5_library="$LIBTRIXI_HDF5_LIBRARY"
 fi
-hdf5_library="$hdf5_libdir/libhdf5.so"
 if [ ! -f "$hdf5_library" ]; then
   die "hdf5 library '$hdf5_library' not found" 2
 fi
-hdf5_hl_library="$hdf5_libdir/libhdf5_hl.so"
+hdf5_libdir="$(dirname $hdf5_library)"
+hdf5_hl_library="$hdf5_libdir/libhdf5_hl.$shared_library_suffix"
 if [ ! -f "$hdf5_hl_library" ]; then
   die "hdf5 library '$hdf5_hl_library' not found" 2
 fi
 
 # Check if MPI library was given by the user or try to find it using Julia
 if [ -z "$LIBTRIXI_MPI_LIBRARY" ]; then
-  mpi_library="$($julia_exec -e 'using Libdl; find_library(["libmpi", "libmpi_ibm", "msmpi", "libmpich", "libmpi_cray", "libmpitrampoline"]) |> dlpath |> println')"
+  mpi_library="$($julia_exec -e '
+using Libdl
+libraries = ["libmpi", "libmpi_ibm", "msmpi", "libmpich", "libmpi_cray",
+             "libmpitrampoline"]
+path = find_library(libraries)
+isempty(path) || println(dlpath(path))')"
   if [ -z "$mpi_library" ]; then
-    die "location of MPI library could not be determined automatically (use '--mpi-library' instead)"
+    die "location of MPI library could not be determined; use --mpi-library"
   fi
 else
   mpi_library="$LIBTRIXI_MPI_LIBRARY"
@@ -202,41 +221,44 @@ if [ ! -f "$mpi_library" ]; then
   die "MPI library '$mpi_library' not found" 2
 fi
 
-# Check if libt8.so was given by the user or try to find it using Julia
+# Check if libt8 was given by the user or try to find it using Julia
 if [ -z "$LIBTRIXI_T8CODE_LIBRARY" ]; then
-  t8code_libdir="$($julia_exec -e 'using Libdl; find_library("libt8") |> dlpath |> dirname |> println')"
+  t8code_libdir="$($julia_exec -e '
+using Libdl
+path = find_library("libt8")
+isempty(path) || println(dirname(dlpath(path)))')"
   if [ -z "$t8code_libdir" ]; then
-    die "location of t8code library could not be determined automatically (use '--t8code-library' instead)"
+    die "location of t8code library could not be determined; use --t8code-library"
   fi
 else
   t8code_libdir="$(dirname $LIBTRIXI_T8CODE_LIBRARY)"
 fi
 t8code_libdir_abs="$(cd $t8code_libdir && pwd)"
-t8code_library="$t8code_libdir_abs/libt8.so"
+t8code_library="$t8code_libdir_abs/libt8.$shared_library_suffix"
 if [ ! -f "$t8code_library" ]; then
   die "t8code library '$t8code_library' not found" 2
 fi
 
-# Check if libp4est.so was given by the user or else assume it is next to libt8.so
+# Check if libp4est was given by the user or else assume it is next to libt8
 if [ -z "$LIBTRIXI_P4EST_LIBRARY" ]; then
   p4est_libdir="$t8code_libdir"
 else
   p4est_libdir="$(dirname $LIBTRIXI_P4EST_LIBRARY)"
 fi
 p4est_libdir_abs="$(cd $p4est_libdir && pwd)"
-p4est_library="$p4est_libdir_abs/libp4est.so"
+p4est_library="$p4est_libdir_abs/libp4est.$shared_library_suffix"
 if [ ! -f "$p4est_library" ]; then
   die "p4est library '$p4est_library' not found" 2
 fi
 
-# Check if libsc.so was given by the user or else assume it is next to libt8.so
+# Check if libsc was given by the user or else assume it is next to libt8
 if [ -z "$LIBTRIXI_SC_LIBRARY" ]; then
   sc_libdir="$t8code_libdir"
 else
   sc_libdir="$(dirname $LIBTRIXI_SC_LIBRARY)"
 fi
 sc_libdir_abs="$(cd $sc_libdir && pwd)"
-sc_library="$sc_libdir_abs/libsc.so"
+sc_library="$sc_libdir_abs/libsc.$shared_library_suffix"
 if [ ! -f "$sc_library" ]; then
   die "sc library '$sc_library' not found" 2
 fi

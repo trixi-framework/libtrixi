@@ -359,3 +359,92 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled && always() }}
         uses: mxschmitt/action-tmate@v3
         timeout-minutes: 15
+
+  macos-smoke:
+    name: macos-latest - smoke - Julia 1.11 - ${{ github.event_name }}
+    runs-on: macos-latest
+    env:
+      JULIA_DEPOT_PATH: ~/.julia
+      T8CODE_VERSION: '3.0.1'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Enable Julia cache
+        uses: julia-actions/cache@v3
+
+      - name: Enable t8code cache
+        id: cache-t8code
+        uses: actions/cache@v5
+        with:
+          path: ./t8code-local
+          key: ${{ runner.os }}-t8code-${{ env.T8CODE_VERSION }}
+
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v3
+        with:
+          version: '1.11'
+
+      - name: Install dependencies available with Homebrew
+        run: |
+          brew install cmake gcc open-mpi hdf5
+
+      - name: Install t8code
+        if: steps.cache-t8code.outputs.cache-hit != 'true'
+        run: |
+          mkdir t8code-local
+          cd t8code-local
+          T8CODE_SOURCE=T8CODE-${T8CODE_VERSION}-Source
+          T8CODE_URL=https://github.com/DLR-AMR/t8code/releases/download
+          curl -L -O "$T8CODE_URL/v${T8CODE_VERSION}/$T8CODE_SOURCE.tar.gz"
+          tar xf "$T8CODE_SOURCE.tar.gz"
+          cmake -S "$T8CODE_SOURCE" -B build \
+                -DCMAKE_C_COMPILER=mpicc \
+                -DCMAKE_CXX_COMPILER=mpicxx \
+                -DCMAKE_Fortran_COMPILER=mpifort \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX="$PWD/prefix" \
+                -DT8CODE_BUILD_TESTS=OFF \
+                -DT8CODE_BUILD_TUTORIALS=OFF \
+                -DT8CODE_BUILD_EXAMPLES=OFF \
+                -DT8CODE_BUILD_BENCHMARKS=OFF \
+                -DT8CODE_ENABLE_MPI=ON \
+                -DT8CODE_BUILD_FORTRAN_INTERFACE=ON
+          cmake --build build --parallel 2
+          cmake --install build
+
+      - name: Build
+        run: |
+          cmake -S . -B build \
+                -DCMAKE_INSTALL_PREFIX="$PWD/install" \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DT8CODE_ROOT="$PWD/t8code-local/prefix"
+          cmake --build build --parallel 2
+          cmake --install build
+
+      - name: Run examples
+        run: |
+          mkdir libtrixi-julia
+          cd libtrixi-julia
+          EXAMPLES_DIR=../install/share/libtrixi/LibTrixi.jl/examples
+          cp "$EXAMPLES_DIR/libelixir_t8code2d_euler_tracer_amr.jl" .
+          HDF5_PREFIX="$(brew --prefix hdf5)"
+          MPI_PREFIX="$(brew --prefix open-mpi)"
+          ../install/bin/libtrixi-init-julia .. \
+              --hdf5-library "$HDF5_PREFIX/lib/libhdf5.dylib" \
+              --mpi-library "$MPI_PREFIX/lib/libmpi.dylib" \
+              --t8code-library ../t8code-local/prefix/lib/libt8.dylib \
+              --julia-depot ~/.julia \
+              --skip-precompile \
+              --force
+          mkdir run-c run-f
+          PROJECT_DIR="$PWD"
+          LIBELIXIR_PATH="$PROJECT_DIR/libelixir_t8code2d_euler_tracer_amr.jl"
+          cd run-c
+          ../../build/examples/trixi_controller_t8code_c \
+              "$PROJECT_DIR" "$LIBELIXIR_PATH"
+          cd ../run-f
+          ../../build/examples/trixi_controller_t8code_f \
+              "$PROJECT_DIR" "$LIBELIXIR_PATH"
+        env:
+          LIBTRIXI_DEBUG: all
