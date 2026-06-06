@@ -388,6 +388,17 @@ jobs:
       - name: Install dependencies available with Homebrew
         run: |
           brew install cmake gcc open-mpi hdf5
+          # Point Open MPI at Homebrew GCC's Fortran compiler
+          GFORTRAN="$(command -v gfortran || true)"
+          if [ -z "$GFORTRAN" ]; then
+              GFORTRAN="$(find "$(brew --prefix gcc)/bin" -name 'gfortran-*' | head -n 1)"
+          fi
+          if [ -z "$GFORTRAN" ]; then
+              echo "gfortran not found" >&2
+              exit 1
+          fi
+          echo "FC=$GFORTRAN" >> "$GITHUB_ENV"
+          echo "OMPI_FC=$GFORTRAN" >> "$GITHUB_ENV"
 
       - name: Install t8code
         if: steps.cache-t8code.outputs.cache-hit != 'true'
