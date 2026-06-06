@@ -302,7 +302,7 @@ function init_simstate()
 
     summary_callback = SummaryCallback()
 
-    analysis_interval = 5000
+    analysis_interval = 10000
     analysis_callback = AnalysisCallback(semi, interval = analysis_interval)
 
     alive_callback = AliveCallback(analysis_interval = analysis_interval)
@@ -319,7 +319,7 @@ function init_simstate()
                                           med_level=1, med_threshold=0.0001,
                                           max_level=1, max_threshold=0.0005)
     amr_callback = AMRCallback(semi, amr_controller,
-                               interval=10000)
+                               interval=analysis_interval)
 
     save_solution = SaveSolutionCallback(interval = 5,
                                          save_initial_solution = true,

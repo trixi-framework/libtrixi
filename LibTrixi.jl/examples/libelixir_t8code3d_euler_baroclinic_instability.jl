@@ -29,11 +29,12 @@ function Trixi.calc_sources!(backend::Nothing, du, u, t, source_terms::SourceTer
         for k in eachnode(dg), j in eachnode(dg), i in eachnode(dg)
             u_local = Trixi.get_node_vars(u, equations, dg, i, j, k, element)
             du_local = source_terms(u_local, i, j, k, element, t, equations)
-            #x_local = Trixi.get_node_coords(node_coordinates, equations, dg,
-            #                                i, j, k, element)
-            #du_local_ref = source_terms_baroclinic_instability(u_local, x_local, t,
-            #                                                   equations)
+            x_local = Trixi.get_node_coords(node_coordinates, equations, dg,
+                                            i, j, k, element)
+            du_local_ref = source_terms_baroclinic_instability(u_local, x_local, t,
+                                                               equations)
             Trixi.add_to_node_vars!(du, du_local, equations, dg, i, j, k, element)
+            Trixi.add_to_node_vars!(du, du_local_ref, equations, dg, i, j, k, element)
         end
     end
     return nothing
@@ -247,10 +248,10 @@ function init_simstate()
                    volume_integral = VolumeIntegralFluxDifferencing(volume_flux))
 
     # for nice results, use 4 and 8 here
-    lat_lon_levels = 2
-    layers = 4
+    lat_lon_levels = 4
+    layers = 8
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_levels, layers, 6.371229e6, 30000.0,
-                                       polydeg = 5, initial_refinement_level = 0)
+                                       polydeg = 5, initial_refinement_level = 1)
 
     # create the data registry and four vectors for the source terms
     registry = LibTrixiDataRegistry(undef, 4)
@@ -268,12 +269,12 @@ function init_simstate()
 
     source_term_data_registry = SourceTerm(nnodesdim, registry)
 
-    semi = SemidiscretizationHyperbolic(mesh, equations, initial_condition, solver;
+    semi = SemidiscretizationHyperbolic(mesh, equations, initial_condition, solver,
                                         source_terms = source_term_data_registry,
                                         boundary_conditions = boundary_conditions)
 
     # for nice results, use 10 days
-    days = 0.02
+    days = 2.0
     tspan = (0.0, days * 24 * 60 * 60.0)
 
     ode = semidiscretize(semi, tspan)
