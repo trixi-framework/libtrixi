@@ -302,7 +302,7 @@ function init_simstate()
 
     summary_callback = SummaryCallback()
 
-    analysis_interval = 5000
+    analysis_interval = 10000
     analysis_callback = AnalysisCallback(semi, interval = analysis_interval)
 
     alive_callback = AliveCallback(analysis_interval = analysis_interval)
