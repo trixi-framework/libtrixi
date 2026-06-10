@@ -112,7 +112,7 @@ function init_simstate()
     initial_condition = initial_condition_circular_wind
 
     boundary_conditions = (; inside = boundary_condition_slip_wall,
-                               outside = boundary_condition_slip_wall)
+                             outside = boundary_condition_slip_wall)
 
     # estimate for speed of sound
     surface_flux = FluxTracerEquationsCentral(FluxLMARS(374))
@@ -145,7 +145,7 @@ function init_simstate()
                                         boundary_conditions = boundary_conditions)
     
     # 3 days
-    days = 3
+    days = 10
     tspan = (0.0, days * 24 * 60 * 60.0)
 
     ode = semidiscretize(semi, tspan)

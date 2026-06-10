@@ -112,7 +112,7 @@ function init_simstate()
     initial_condition = initial_condition_circular_wind
 
     boundary_conditions = (; inside = boundary_condition_slip_wall,
-                               outside = boundary_condition_slip_wall)
+                             outside = boundary_condition_slip_wall)
 
     # estimate for speed of sound
     surface_flux = FluxTracerEquationsCentral(FluxLMARS(374))
@@ -120,7 +120,7 @@ function init_simstate()
 
     # cells in horizonal and vertical direction, respectively
     lat_lon_cells = 4
-    layers = 1
+    layers = 8
 
     # we use half the polynomial degree of the solver (free stream preserving)
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_cells, layers, 6.371229e6, 30000.0,
