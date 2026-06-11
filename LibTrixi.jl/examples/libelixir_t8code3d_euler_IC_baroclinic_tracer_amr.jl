@@ -271,7 +271,7 @@ function init_simstate()
     lat_lon_levels = 4
     layers = 8
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_levels, layers, 6.371229e6, 30000.0,
-                                       polydeg = 5, initial_refinement_level = 1)
+                                       polydeg = 5, initial_refinement_level = 0)
 
     # create the data registry and five vectors for the source terms
     registry = LibTrixiDataRegistry(undef, 5)
@@ -302,7 +302,7 @@ function init_simstate()
 
     summary_callback = SummaryCallback()
 
-    analysis_interval = 10000
+    analysis_interval = 5000
     analysis_callback = AnalysisCallback(semi, interval = analysis_interval)
 
     alive_callback = AliveCallback(analysis_interval = analysis_interval)

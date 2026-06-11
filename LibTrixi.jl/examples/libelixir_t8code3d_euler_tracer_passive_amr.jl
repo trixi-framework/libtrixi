@@ -116,15 +116,15 @@ function init_simstate()
 
     # estimate for speed of sound
     surface_flux = FluxTracerEquationsCentral(FluxLMARS(374))
-    solver = DGSEM(polydeg = 5, surface_flux = surface_flux)
+    solver = DGSEM(polydeg = 4, surface_flux = surface_flux)
 
     # cells in horizonal and vertical direction, respectively
     lat_lon_cells = 4
-    layers = 8
+    layers = 1
 
     # we use half the polynomial degree of the solver (free stream preserving)
     mesh = Trixi.T8codeMeshCubedSphere(lat_lon_cells, layers, 6.371229e6, 30000.0,
-                                       polydeg = 5, initial_refinement_level = 1)
+                                       polydeg = 2, initial_refinement_level = 0)
 
     # create the data registry and one vector for the source terms
     registry = LibTrixiDataRegistry(undef, 1)
@@ -152,7 +152,7 @@ function init_simstate()
 
     summary_callback = SummaryCallback()
 
-    analysis_interval = 10000
+    analysis_interval = 1000
     analysis_callback = AnalysisCallback(semi, interval = analysis_interval)
 
     alive_callback = AliveCallback(analysis_interval = analysis_interval)
