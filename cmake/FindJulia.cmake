@@ -45,19 +45,19 @@ endif()
 # Get flags
 #
 execute_process(
-    COMMAND ${JULIA_EXECUTABLE} ${JULIA_SHARE}/julia-config.jl --cflags
+    COMMAND ${JULIA_SHARE}/julia-config.jl --cflags
     OUTPUT_VARIABLE JULIA_CFLAGS
     RESULT_VARIABLE RESULT
 )
 
 execute_process(
-    COMMAND ${JULIA_EXECUTABLE} ${JULIA_SHARE}/julia-config.jl --ldflags
+    COMMAND ${JULIA_SHARE}/julia-config.jl --ldflags
     OUTPUT_VARIABLE JULIA_LDFLAGS
     RESULT_VARIABLE RESULT
 )
 
 execute_process(
-    COMMAND ${JULIA_EXECUTABLE} ${JULIA_SHARE}/julia-config.jl --ldlibs
+    COMMAND ${JULIA_SHARE}/julia-config.jl --ldlibs
     OUTPUT_VARIABLE JULIA_LDLIBS
     RESULT_VARIABLE RESULT
 )
