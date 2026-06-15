@@ -70,11 +70,13 @@ optional arguments:
                     Path to the p4est shared library, i.e., something like
                     'path/to/libp4est.so' or 'path/to/libp4est.dylib'. If omitted, it
                     will be assumed to be located next to the t8code library.
+                    (default: '\$(dirname \$T8CODE_LIBRARY)/libp4est.<suffix>')
 
     --sc-library SC_LIBRARY
                     Path to the sc shared library, i.e., something like
                     'path/to/libsc.so' or 'path/to/libsc.dylib'. If omitted, it will be
                     assumed to be located next to the t8code library.
+                    (default: '\$(dirname \$T8CODE_LIBRARY)/libsc.<suffix>')
 EOF
 }
 
@@ -182,22 +184,19 @@ case "$(uname -s)" in
     ;;
 esac
 
-# Check if the HDF5 library was given by the user or try to find it using Julia
+# Check if libhdf5 was given by the user or try to find it using Julia
 if [ -z "$LIBTRIXI_HDF5_LIBRARY" ]; then
-  hdf5_library="$($julia_exec -e '
-using Libdl
-path = find_library("libhdf5")
-isempty(path) || println(dlpath(path))')"
-  if [ -z "$hdf5_library" ]; then
-    die "location of hdf5 library could not be determined; use --hdf5-library"
+  hdf5_libdir="$($julia_exec -e 'using Libdl; find_library("libhdf5") |> dlpath |> dirname |> println')"
+  if [ -z "$hdf5_libdir" ]; then
+    die "location of hdf5 library could not be determined automatically (use '--hdf5-library' instead)"
   fi
 else
-  hdf5_library="$LIBTRIXI_HDF5_LIBRARY"
+  hdf5_libdir="$(dirname $LIBTRIXI_HDF5_LIBRARY)"
 fi
+hdf5_library="$hdf5_libdir/libhdf5.$shared_library_suffix"
 if [ ! -f "$hdf5_library" ]; then
   die "hdf5 library '$hdf5_library' not found" 2
 fi
-hdf5_libdir="$(dirname $hdf5_library)"
 hdf5_hl_library="$hdf5_libdir/libhdf5_hl.$shared_library_suffix"
 if [ ! -f "$hdf5_hl_library" ]; then
   die "hdf5 library '$hdf5_hl_library' not found" 2
@@ -205,14 +204,9 @@ fi
 
 # Check if MPI library was given by the user or try to find it using Julia
 if [ -z "$LIBTRIXI_MPI_LIBRARY" ]; then
-  mpi_library="$($julia_exec -e '
-using Libdl
-libraries = ["libmpi", "libmpi_ibm", "msmpi", "libmpich", "libmpi_cray",
-             "libmpitrampoline"]
-path = find_library(libraries)
-isempty(path) || println(dlpath(path))')"
+  mpi_library="$($julia_exec -e 'using Libdl; find_library(["libmpi", "libmpi_ibm", "msmpi", "libmpich", "libmpi_cray", "libmpitrampoline"]) |> dlpath |> println')"
   if [ -z "$mpi_library" ]; then
-    die "location of MPI library could not be determined; use --mpi-library"
+    die "location of MPI library could not be determined automatically (use '--mpi-library' instead)"
   fi
 else
   mpi_library="$LIBTRIXI_MPI_LIBRARY"
@@ -223,12 +217,9 @@ fi
 
 # Check if libt8 was given by the user or try to find it using Julia
 if [ -z "$LIBTRIXI_T8CODE_LIBRARY" ]; then
-  t8code_libdir="$($julia_exec -e '
-using Libdl
-path = find_library("libt8")
-isempty(path) || println(dirname(dlpath(path)))')"
+  t8code_libdir="$($julia_exec -e 'using Libdl; find_library("libt8") |> dlpath |> dirname |> println')"
   if [ -z "$t8code_libdir" ]; then
-    die "location of t8code library could not be determined; use --t8code-library"
+    die "location of t8code library could not be determined automatically (use '--t8code-library' instead)"
   fi
 else
   t8code_libdir="$(dirname $LIBTRIXI_T8CODE_LIBRARY)"
