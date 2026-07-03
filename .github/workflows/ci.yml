@@ -52,14 +52,14 @@ jobs:
       JULIA_DEPOT_PATH: ~/.julia
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Enable Julia cache
         uses: julia-actions/cache@v3
 
       - name: Enable t8code cache
         id: cache-t8code
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ./t8code-local
           key: ${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.t8code_version }}
@@ -341,7 +341,7 @@ jobs:
                --output-file lcov.info
 
       - name: Upload coverage data (Codecov)
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         if: ${{ matrix.test_type == 'coverage' }}
         with:
           files: ./libtrixi-julia/lcov.info,./lcov.info
