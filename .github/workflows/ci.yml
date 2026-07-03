@@ -422,7 +422,7 @@ jobs:
           cmake --build build --parallel 2
           cmake --install build
 
-      - name: Initialize project directory (test_type == 'package-compiler')
+      - name: Initialize project directory
         run: |
           mkdir libtrixi-julia
           cd libtrixi-julia
@@ -440,6 +440,7 @@ jobs:
 
       - name: Run examples
         run: |
+          cd libtrixi-julia
           mkdir run-c run-f
           PROJECT_DIR="$PWD"
           LIBELIXIR_PATH="$PROJECT_DIR/libelixir_t8code2d_euler_tracer_amr.jl"
