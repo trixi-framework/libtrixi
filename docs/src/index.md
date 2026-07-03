@@ -16,7 +16,7 @@
 
 ### Prerequisites
 
-Currently, libtrixi is only developed and tested for Linux. Furthermore, the following
+Currently, libtrixi is developed and tested for Linux and (experimentally) for macOS. Furthermore, the following
 software packages need to be made available locally before installing libtrixi:
 * [Julia](https://julialang.org/downloads/platform/) v1.8+
 * C compiler with support for C11 or later (e.g., [gcc](https://gcc.gnu.org/) or [clang](https://clang.llvm.org/))
