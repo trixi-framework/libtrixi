@@ -38,7 +38,17 @@ if ( T8CODE_FOUND )
 endif()
 
 # enable warnings
-target_compile_options( ${TARGET_NAME} PRIVATE -cpp -Wall -Wextra -Werror -Wno-uninitialized )
+target_compile_options( ${TARGET_NAME} PRIVATE -cpp -Wno-uninitialized )
+
+# Potentially, enable warnings
+if( LIBTRIXI_ENABLE_WARNINGS )
+    target_compile_options( ${TARGET_NAME} PRIVATE ${LIBTRIXI_WARNING_OPTIONS})
+endif()
+
+# Potentially, enable to interpret warnings as errors
+if( LIBTRIXI_ENABLE_WERROR )
+    target_compile_options( ${TARGET_NAME} PRIVATE ${LIBTRIXI_WERROR_OPTION})
+endif()
 
 # pass julia project path
 target_compile_definitions( ${TARGET_NAME} PRIVATE 

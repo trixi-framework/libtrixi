@@ -56,6 +56,10 @@ For building, `cmake` and its typical workflow is used.
     - Specifying the directory `install_directory` for later installation is optional.
     - Optional specification of build type sets some default compiler options for optimized
       or debug code.
+    - By default the Fortran-Interface is built; it may be excluded with `DLIBTRIXI_BUILD_FORTRAN_API=OFF`.
+    - Optional compiler options `-Wall -Wextra` are specified with `-DLIBTRIXI_ENABLE_WARNINGS=ON`.
+    - Optional compiler option `-Werror` is specified with `-DLIBTRIXI_ENABLE_WERROR=ON`.
+    - Building of the test is enabled with `-DLIBTRIXI_ENABLE_TESTING=ON`.
     - Building with t8code support is optional. It requires to pass
       `-DT8CODE_ROOT=<t8code_install_directory>`.
 
