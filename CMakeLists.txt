@@ -99,6 +99,7 @@ if( USE_PACKAGE_COMPILER )
                         COMMENT "Building ${PROJECT_NAME} with PackageCompiler.jl..."
                         COMMAND ${JULIA_EXECUTABLE}
                                 --project=${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib
+                                --threads=1
                                 ${CMAKE_SOURCE_DIR}/LibTrixi.jl/lib/build.jl
                                 ${JULIA_PROJECT_PATH}
                                 ${CMAKE_BINARY_DIR}/prefix-pc
