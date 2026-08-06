@@ -114,6 +114,9 @@ jobs:
           make -j 2
           make install
 
+          # temporary workaround
+          mv ../prefix/PRIVATE_HEADER/* ../prefix/include/
+
       - name: Configure (test_type == 'regular')
         if: ${{ matrix.test_type == 'regular' }}
         run: |
