@@ -103,6 +103,8 @@ jobs:
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_INSTALL_PREFIX="$PWD/../prefix" \
               -DT8CODE_BUILD_TESTS=OFF \
+              -DBUILD_GMOCK=OFF \
+              -DINSTALL_GTEST=OFF \
               -DT8CODE_BUILD_TUTORIALS=OFF \
               -DT8CODE_BUILD_EXAMPLES=OFF \
               -DT8CODE_BUILD_BENCHMARKS=OFF \
