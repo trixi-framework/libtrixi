@@ -26,11 +26,11 @@ void source_terms_baroclinic(int nnodes, double * nodes, t8_forest_t forest,
     // Iterates through all local trees
     for (t8_locidx_t itree = 0, index = 0; itree < num_local_trees; ++itree) {
         // Get number of elements of this tree
-        t8_locidx_t num_elements_in_tree = t8_forest_get_tree_num_elements (forest, itree);
+        t8_locidx_t num_elements_in_tree = t8_forest_get_tree_num_leaf_elements (forest, itree);
         // Iterate through all the local elements
         for (t8_locidx_t ielement = 0; ielement < num_elements_in_tree; ++ielement) {
             // Get a pointer to the current element
-            const t8_element_t *element = t8_forest_get_element_in_tree (forest, itree, ielement);
+            const t8_element_t *element = t8_forest_get_leaf_element_in_tree (forest, itree, ielement);
             for (int k = 0; k < nnodes; ++k) {
                 for (int j = 0; j < nnodes; ++j) {
                     for (int i = 0; i < nnodes; ++i, ++index) {
