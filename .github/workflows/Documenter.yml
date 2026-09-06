@@ -71,6 +71,9 @@ jobs:
           cd docs/doxygen
           doxygen
       - name: Deploy doxygen docs
+        if: >-
+          github.event_name != 'pull_request' ||
+          github.event.pull_request.head.repo.full_name == github.repository
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

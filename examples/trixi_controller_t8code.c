@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <inttypes.h>
 
 #include <t8.h>
 #include <t8_forest/t8_forest_general.h>
@@ -22,7 +23,10 @@ void t8_print_forest_information (t8_forest_t forest)
     global_num_elements = t8_forest_get_global_num_elements (forest);
 
     printf ("\n*** T8code ***  Local number of elements:\t%i\n", local_num_elements);
-    printf ("*** T8code ***  Global number of elements:\t%li\n", global_num_elements);
+
+    // Using PRId64 to print t8_gloidx_t portably across platforms
+    printf ("*** T8code ***  Global number of elements:\t%" PRId64 "\n",
+            global_num_elements);
 }
 
 
