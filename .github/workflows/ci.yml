@@ -120,7 +120,8 @@ jobs:
           cmake .. -DCMAKE_INSTALL_PREFIX=../install \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DT8CODE_ROOT=$PWD/../t8code-local/prefix \
-                   -DENABLE_TESTING=ON -DJULIA_PROJECT_PATH=../libtrixi-julia
+                   -DLIBTRIXI_ENABLE_WARNINGS=ON -DLIBTRIXI_ENABLE_WERROR=ON \
+                   -DLIBTRIXI_ENABLE_TESTING=ON -DJULIA_PROJECT_PATH=../libtrixi-julia
 
       - name: Configure (test_type == 'coverage')
         if: ${{ matrix.test_type == 'coverage' }}
@@ -134,7 +135,8 @@ jobs:
                    -DCMAKE_Fortran_FLAGS="-cpp --coverage -O0" \
                    -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
                    -DCMAKE_SHARED_LINKER_FLAGS="--coverage" \
-                   -DENABLE_TESTING=ON -DJULIA_PROJECT_PATH=../libtrixi-julia
+                   -DLIBTRIXI_ENABLE_WARNINGS=ON -DLIBTRIXI_ENABLE_WERROR=ON \
+                   -DLIBTRIXI_ENABLE_TESTING=ON -DJULIA_PROJECT_PATH=../libtrixi-julia
 
       - name: Build
         if: ${{ matrix.test_type == 'regular' || matrix.test_type == 'coverage' }}
