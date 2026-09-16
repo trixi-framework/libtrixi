@@ -273,6 +273,17 @@ using Pkg
 Pkg.add([\"Preferences\", \"UUIDs\", \"MPIPreferences\", \"T8code\", \
          \"P4est\", \"HDF5\", \"MPI\"])"
 [ $? -eq 0 ] || die "could not install dependencies"
+
+# Workaround for CI runners using OpenMPI version 4
+# See https://github.com/trixi-framework/libtrixi/issues/237#issuecomment-2792609780
+if [ "$CI" = "true" ]; then
+  JULIA_DEPOT_PATH="$julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 \
+      $julia_exec --project=. \
+      -e "
+  using Pkg
+  Pkg.add(name=\"T8code\", rev=\"bg/avoid-loading-t8code_jll\")"
+  [ $? -eq 0 ] || die "could not install dependencies"
+fi
 echo
 
 # Set system MPI library
