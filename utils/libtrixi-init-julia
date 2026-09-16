@@ -281,7 +281,7 @@ if [ "$CI" = "true" ]; then
       $julia_exec --project=. \
       -e "
   using Pkg
-  Pkg.add(name=\"OpenMPI_jll\", version=\"4\")"
+  Pkg.add(name=\"T8code\", rev=\"bg/avoid-loading-t8code_jll\")"
   [ $? -eq 0 ] || die "could not install dependencies"
 fi
 echo
