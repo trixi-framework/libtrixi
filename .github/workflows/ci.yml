@@ -207,6 +207,8 @@ jobs:
           cd build
           make -j2
           du -hL ./prefix-pc/lib/libtrixi.so
+        env:
+          PACKAGECOMPILER_CACHE_BASE_SYSIMAGE: 0
 
       - name: Test external CMake project
         if: ${{ matrix.test_type == 'regular' }}
