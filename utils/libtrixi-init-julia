@@ -273,6 +273,7 @@ using Pkg
 Pkg.add([\"Preferences\", \"UUIDs\", \"MPIPreferences\", \"T8code\", \
          \"P4est\", \"HDF5\", \"MPI\"])"
 [ $? -eq 0 ] || die "could not install dependencies"
+echo
 
 # Set system MPI library
 echo "Use system MPI for Julia... "
