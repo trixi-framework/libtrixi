@@ -115,7 +115,8 @@ jobs:
           make -j 2
           make install
 
-          # temporary workaround
+          # temporary workaround, remove with next release
+          # https://github.com/DLR-AMR/t8code/pull/2355
           mv ../prefix/PRIVATE_HEADER/* ../prefix/include/
 
       - name: Configure (test_type == 'regular')
