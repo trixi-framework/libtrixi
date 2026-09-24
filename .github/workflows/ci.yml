@@ -38,7 +38,7 @@ jobs:
           - '1.10'
           - '1.11'
         t8code_version:
-          - '4.0.0-26-07'
+          - '4.0.0-26.07'
         include:
           - os: ubuntu-latest
             test_type: coverage
