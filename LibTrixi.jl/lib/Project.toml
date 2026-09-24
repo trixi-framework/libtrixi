@@ -3,5 +3,5 @@ PackageCompiler = "9b87118b-4619-50d2-8e1e-99f35a4d4d9d"
 TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 
 [compat]
-PackageCompiler = "2.1.9"
+PackageCompiler = "2.1.9, < 2.4.2"
 TOML = "1"
