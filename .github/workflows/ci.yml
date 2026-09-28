@@ -97,7 +97,7 @@ jobs:
       - name: Install dependencies available with Homebrew
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          brew install cmake gcc open-mpi hdf5
+          brew install cmake gcc open-mpi hdf5 googletest
 
       - name: Install t8code
         if: steps.cache-t8code.outputs.cache-hit != 'true'
