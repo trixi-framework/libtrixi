@@ -24,7 +24,7 @@ void t8_print_forest_information (t8_forest_t forest)
 
     printf ("\n*** T8code ***  Local number of elements:\t%i\n", local_num_elements);
 
-    // Using PRId64 to print t8_gloidx_t portably across platforms
+    // Using special format specifier PRId64 to print t8_gloidx_t portably across platforms
     printf ("*** T8code ***  Global number of elements:\t%" PRId64 "\n",
             global_num_elements);
 }
