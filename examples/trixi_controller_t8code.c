@@ -17,10 +17,10 @@ void t8_print_forest_information (t8_forest_t forest)
     T8_ASSERT (t8_forest_is_committed (forest));
 
     // Get the local number of elements.
-    local_num_elements = t8_forest_get_local_num_elements (forest);
+    local_num_elements = t8_forest_get_local_num_leaf_elements (forest);
 
     // Get the global number of elements.
-    global_num_elements = t8_forest_get_global_num_elements (forest);
+    global_num_elements = t8_forest_get_global_num_leaf_elements (forest);
 
     printf ("\n*** T8code ***  Local number of elements:\t%i\n", local_num_elements);
 
