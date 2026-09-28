@@ -113,6 +113,7 @@ jobs:
           cmake \
               -DCMAKE_C_COMPILER=mpicc \
               -DCMAKE_CXX_COMPILER=mpicxx \
+              -DCMAKE_Fortran_COMPILER=mpifort \
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_INSTALL_PREFIX="$PWD/../prefix" \
               -DT8CODE_BUILD_TESTS=OFF \
