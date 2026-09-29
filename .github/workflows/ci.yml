@@ -36,7 +36,7 @@ jobs:
           - x64
         julia_version:
           - '1.10'
-          - '1.12'
+          - '1.11'
         t8code_version:
           - '4.0.0-26.07'
         include:
@@ -171,7 +171,11 @@ jobs:
         run: |
           cd build
           make -j 2
-          cd ../build-nofortran
+
+      - name: Build without Fortran
+        if: ${{ matrix.test_type == 'regular' }}
+        run: |
+          cd build-nofortran
           make -j 2
 
       - name: Install
@@ -315,7 +319,7 @@ jobs:
       - name: Run C example (Fortran API disabled)
         if: ${{ matrix.test_type == 'regular'}}
         run: |
-          cd build-nofortran
+          cd build-nofortran/examples
           mpirun -n 2 trixi_controller_simple_c \
               ../../libtrixi-julia \
               ../../LibTrixi.jl/examples/libelixir_p4est2d_euler_sedov.jl
