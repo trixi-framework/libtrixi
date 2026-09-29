@@ -182,7 +182,7 @@ else()
     add_library ( ${PROJECT_NAME}_tls OBJECT
         src/tls.c
     )
-    target_include_directories( ${PROJECT_NAME}_tls SYSTEM ${JULIA_INCLUDE_DIRS} )
+    target_include_directories( ${PROJECT_NAME}_tls SYSTEM PRIVATE ${JULIA_INCLUDE_DIRS} )
 
     # Add test on demand
     if( LIBTRIXI_ENABLE_TESTING )
