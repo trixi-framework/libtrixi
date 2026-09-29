@@ -1,7 +1,8 @@
 # Specify the minimum version
 #   3.9  required for regex submatches
 #   3.12 required for policy CMP0074 (using *_ROOT variables)
-cmake_minimum_required ( VERSION 3.12 )
+#   3.13 required for policy CMP0076 (target_sources() command converts relative paths to absolute)
+cmake_minimum_required ( VERSION 3.13 )
 
 # Reconfigure if Project.toml has changed
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/LibTrixi.jl/Project.toml")
