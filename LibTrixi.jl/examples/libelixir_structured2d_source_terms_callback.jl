@@ -17,7 +17,7 @@ struct SourceTermsCallback
 end
 
 function (callback::SourceTermsCallback)(u, x, t, equations::CompressibleEulerEquations2D)
-    @unpack source_term_fptr, buffer = callback
+    @unpack source_term_fptr = callback
 
     n_vars = nvariables(equations)
     buffer = Ref(ntuple(i -> 0.0, n_vars))
