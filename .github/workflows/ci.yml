@@ -197,14 +197,16 @@ jobs:
           if [ "${{ matrix.os }}" = "macos-latest" ]; then
             HDF5_LIBRARY=$(brew --prefix hdf5)/lib/libhdf5.dylib
             MPI_SWITCH=(--mpi-library "$(brew --prefix open-mpi)/lib/libmpi.dylib")
+            SO_EXT="dylib"
           else
             HDF5_LIBRARY=/usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so
             MPI_SWITCH=()
+            SO_EXT="so"
           fi
           mkdir libtrixi-julia
           cd libtrixi-julia
           cp ../install/share/libtrixi/LibTrixi.jl/examples/libelixir_* .
-          cp ../install/lib/libsource_terms.so .
+          cp ../install/lib/libsource_terms."$SO_EXT" .
           mkdir julia-depot
           ../install/bin/libtrixi-init-julia .. \
               --hdf5-library "$HDF5_LIBRARY" \
