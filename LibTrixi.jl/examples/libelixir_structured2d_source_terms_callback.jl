@@ -1,24 +1,26 @@
 using LibTrixi
 using Trixi
-using OrdinaryDiffEq
+using OrdinaryDiffEqLowStorageRK
 using Libdl
 
-struct SourceTermsCallback{NVARS}
+struct SourceTermsCallback
     source_term_fptr::Ptr{Nothing}
-    buffer::Base.RefValue{NTuple{NVARS, Float64}}
 
-    function SourceTermsCallback(; n_vars, so_path)
+    function SourceTermsCallback(; so_path)
         so_handle = dlopen(so_path)
         @info "Opened library ", dlpath(so_handle)
         source_term_fptr = dlsym(so_handle, "source_term_wave")
         @info "Obtained function pointer ", source_term_fptr
 
-        new{n_vars}(source_term_fptr, Ref(ntuple(i -> 0.0, n_vars)))
+        new(source_term_fptr)
     end
 end
 
 function (callback::SourceTermsCallback)(u, x, t, equations::CompressibleEulerEquations2D)
     @unpack source_term_fptr, buffer = callback
+
+    n_vars = nvariables(equations)
+    buffer = Ref(ntuple(i -> 0.0, n_vars))
     @ccall $source_term_fptr(u::Ptr{Cdouble}, x::Ptr{Cdouble}, t::Cdouble,
                              equations.gamma::Cdouble, buffer::Ptr{Cdouble})::Cvoid
     return SVector(buffer[])
@@ -31,8 +33,7 @@ function init_simstate()
     # semidiscretization of the compressible Euler equations
 
     # use external function in locally compiled shared object
-    source_terms_callback = SourceTermsCallback(n_vars = 4,
-                                                so_path = joinpath(@__DIR__,
+    source_terms_callback = SourceTermsCallback(so_path = joinpath(@__DIR__,
                                                                    "libsource_terms.so"))
 
     equations = CompressibleEulerEquations2D(1.4)
