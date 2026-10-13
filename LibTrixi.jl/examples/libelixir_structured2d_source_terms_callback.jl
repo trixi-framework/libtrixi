@@ -47,10 +47,12 @@ function init_simstate()
 
     cells_per_dimension = (16, 16)
 
-    mesh = StructuredMesh(cells_per_dimension, coordinates_min, coordinates_max)
+    mesh = StructuredMesh(cells_per_dimension, coordinates_min, coordinates_max,
+                          periodicity = true)
 
-    semi = SemidiscretizationHyperbolic(mesh, equations, initial_condition, solver,
-                                        source_terms = source_terms_callback)
+    semi = SemidiscretizationHyperbolic(mesh, equations, initial_condition, solver;
+                                        source_terms = source_terms_callback,
+                                        boundary_conditions = boundary_condition_periodic)
 
     ###############################################################################
     # ODE solvers, callbacks etc.
