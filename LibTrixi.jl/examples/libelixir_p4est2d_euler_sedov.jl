@@ -1,6 +1,6 @@
 using LibTrixi
 using Trixi
-using OrdinaryDiffEq
+using OrdinaryDiffEqLowStorageRK
 
 # The function to create the simulation state needs to be named `init_simstate`
 function init_simstate()
@@ -67,7 +67,8 @@ function init_simstate()
                     coordinates_min=coordinates_min, coordinates_max=coordinates_max,
                     periodicity=true)
 
-    semi = SemidiscretizationHyperbolic(mesh, equations, initial_condition, solver)
+    semi = SemidiscretizationHyperbolic(mesh, equations, initial_condition, solver;
+                                        boundary_conditions = boundary_condition_periodic)
 
     ###############################################################################
     # ODE solvers, callbacks etc.

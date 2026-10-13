@@ -16,7 +16,7 @@
 
 ### Prerequisites
 
-Currently, libtrixi is only developed and tested for Linux. Furthermore, the following
+Currently, libtrixi is developed and tested for Linux and (experimentally) for macOS. Furthermore, the following
 software packages need to be made available locally before installing libtrixi:
 * [Julia](https://julialang.org/downloads/platform/) v1.8+
 * C compiler with support for C11 or later (e.g., [gcc](https://gcc.gnu.org/) or [clang](https://clang.llvm.org/))
@@ -56,6 +56,8 @@ For building, `cmake` and its typical workflow is used.
     - Specifying the directory `install_directory` for later installation is optional.
     - Optional specification of build type sets some default compiler options for optimized
       or debug code.
+    - By default the Fortran-Interface is built; it may be excluded with
+      `-DLIBTRIXI_BUILD_FORTRAN_API=OFF`.
     - Building with t8code support is optional. It requires to pass
       `-DT8CODE_ROOT=<t8code_install_directory>`.
 
@@ -302,7 +304,7 @@ To try this out, perform the following steps:
     *using cmake*
     - Add
       ```
-      -DUSE_PACKAGE_COMPILER=ON -DJULIA_PROJECT_PATH=<libtrixi-julia_directory>
+      -DLIBTRIXI_USE_PACKAGE_COMPILER=ON -DJULIA_PROJECT_PATH=<libtrixi-julia_directory>
       ```
       to your cmake call (see above)
 3. From inside the `examples` folder you should be able to run the example (in parallel)
