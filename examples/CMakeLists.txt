@@ -17,6 +17,11 @@ if ( NOT T8CODE_FOUND )
     list( FILTER EXAMPLES EXCLUDE REGEX "trixi_controller_baroclinic.*" )
 endif()
 
+if (NOT LIBTRIXI_BUILD_FORTRAN_API)
+    # Remove Fortran files if the the Fortran API is not build
+    list( FILTER EXAMPLES EXCLUDE REGEX ".*\.f90" )
+endif()
+
 foreach ( EXAMPLE ${EXAMPLES} )
 
     get_filename_component ( EXAMPLE_EXT ${EXAMPLE} EXT )
@@ -41,7 +46,7 @@ foreach ( EXAMPLE ${EXAMPLES} )
         ${TARGET_NAME}
         PRIVATE MPI::MPI_${EXAMPLE_LANG} ${PROJECT_NAME}
     )
-    if ( NOT USE_PACKAGE_COMPILER )
+    if ( NOT LIBTRIXI_USE_PACKAGE_COMPILER )
         target_link_libraries( ${TARGET_NAME} PRIVATE ${PROJECT_NAME}_tls )
     endif()
     if ( T8CODE_FOUND )
@@ -53,7 +58,9 @@ foreach ( EXAMPLE ${EXAMPLES} )
         ${TARGET_NAME}
         PRIVATE ${CMAKE_SOURCE_DIR}/src
     )
-    if ( T8CODE_FOUND )
+
+    if ( LIBTRIXI_BUILD_FORTRAN_API AND T8CODE_FOUND )
+        # Add the t8code include directory of the Fortran module file
         target_include_directories( ${TARGET_NAME} PRIVATE ${T8CODE_ROOT}/include/t8_fortran_interface/ )
     endif()
 
