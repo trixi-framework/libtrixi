@@ -22,6 +22,13 @@ if (NOT LIBTRIXI_BUILD_FORTRAN_API)
     list( FILTER EXAMPLES EXCLUDE REGEX ".*\.f90" )
 endif()
 
+# exemplary external library providing function used to compute source terms
+add_library ( source_terms SHARED
+    source_terms.h
+    source_terms.c
+)
+
+install( TARGETS source_terms )
 foreach ( EXAMPLE ${EXAMPLES} )
 
     get_filename_component ( EXAMPLE_EXT ${EXAMPLE} EXT )
