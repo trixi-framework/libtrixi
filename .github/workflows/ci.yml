@@ -52,7 +52,8 @@ jobs:
             t8code_version: '4.0.0-26.10'
     env:
       # Necessary for HDF5 to play nice with Julia
-      LD_PRELOAD: /lib/x86_64-linux-gnu/libcurl.so.4
+      LD_PRELOAD: /lib/x86_64-linux-gnu/libcurl.so.4 /lib/x86_64-linux-gnu/libssh2.so.1
+
       # Necessary such that libtrixi will not use its own default for the depot path
       JULIA_DEPOT_PATH: ~/.julia
     steps:
