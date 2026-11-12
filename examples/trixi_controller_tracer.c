@@ -17,7 +17,7 @@ void source_terms_tracer(int nnodes, t8_forest_t forest,
     // Iterates through all local trees
     for (t8_locidx_t itree = 0, index = 0; itree < num_local_trees; ++itree) {
         // Get number of elements of this tree
-        t8_locidx_t num_elements_in_tree = t8_forest_get_tree_num_elements (forest, itree);
+        t8_locidx_t num_elements_in_tree = t8_forest_get_tree_num_leaf_elements (forest, itree);
         // Iterate through all the local elements
         for (t8_locidx_t ielement = 0; ielement < num_elements_in_tree; ++ielement) {
             // Get a pointer to the current element
