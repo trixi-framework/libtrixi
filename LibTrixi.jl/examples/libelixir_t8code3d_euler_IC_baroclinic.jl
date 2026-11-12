@@ -289,7 +289,7 @@ function init_simstate()
 
     alive_callback = AliveCallback(analysis_interval = analysis_interval)
 
-    save_solution = SaveSolutionCallback(interval = 5,
+    save_solution = SaveSolutionCallback(interval = analysis_interval,
                                          save_initial_solution = true,
                                          save_final_solution = true,
                                          solution_variables = cons2prim,
